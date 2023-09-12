@@ -58,6 +58,7 @@ include "src/VsStats.asm"
 include "src/Widescreen.asm"
 include "src/AA.asm"
 include "src/Japan.asm"
+include "src/FGC.asm"
 include "src/FPS.asm"
 include "src/SinglePlayer.asm"
 include "src/Skeleton.asm"
@@ -266,6 +267,9 @@ include "src/NConker/NConker.asm"
 // NBANJO
 include "src/NBanjo/NBanjo.asm"
 
+// RYU
+include "src/Ryu/RyuSpecial.asm"
+include "src/Ryu/Ryu.asm"
 
 // KIRBY
 include "src/Kirby/Kirby.asm"
