@@ -1559,6 +1559,9 @@ scope FGM {
     add_sound(EPuff/sounds/STUN, SAMPLE_RATE_32000, FGM_TYPE_VOICE, 0, -1)
     add_sound(EPuff/sounds/CHANT, SAMPLE_RATE_16000, FGM_TYPE_CHANT, 0, 291)
     add_fgm(Pummeluff Sleep Snore, EPuff/sounds/REST_SNORE_fgm_microcode, 0x15, 0x486, -1, -1, 0x3F0)
+    add_sound(Ryu/sounds/HIT_S, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/HIT_M, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/HIT_L, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
 
     // This is always last
     write_sounds()

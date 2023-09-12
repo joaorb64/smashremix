@@ -220,6 +220,7 @@ scope CharacterSelect {
     dw  0x3500 + 0x200                      // 0x44 - METAL LUIGI
     dw  0xCEE0 + 0x200                      // 0x45 - EBISUMARU
     dw  0x58D0 + 0x200                      // 0x46 - DRAGONKING
+    dw  0xD208 + 0x200                     // 0x44 - RYU
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS
@@ -353,6 +354,7 @@ scope CharacterSelect {
     add_alt_req_list(Character.id.MLUIGI, req/MLUIGI_MODEL)
     add_alt_req_list(Character.id.EBI, req/EBI_MODEL)
     add_alt_req_list(Character.id.DRAGONKING, req/DRAGONKING_MODEL)
+    add_alt_req_list(Character.id.RYU, req/RYU_MODEL)
 
     // POLYGONS
     add_alt_req_list(Character.id.NWARIO, req/NWARIO_MODEL)
@@ -2350,6 +2352,7 @@ scope CharacterSelect {
         constant DEDEDE(0x00022878)
         constant GOEMON(0x00023938)
         constant BANJO(0x00026B68 + 0x10)
+        constant RYU(0x00001078)
         // j
         constant JMARIO(0x00001078)
         constant JFOX(0x00002138)
@@ -5561,6 +5564,7 @@ scope CharacterSelect {
     add_to_css(Character.id.MLUIGI, FGM.announcer.names.MLUIGI,         1.50,         0x00010001, MARIO_BROS,   name_texture.MLUIGI,         portrait_offsets.METALLUIGI,      2)
     add_to_css(Character.id.EBI,    FGM.announcer.names.EBI,            1.50,         0x00010001, GOEMON,       name_texture.EBI,            portrait_offsets.EBI,            20)
     add_to_css(Character.id.DRAGONKING, FGM.announcer.names.DRAGONKING, 1.50,         0x00010002, SMASH,        name_texture.DRAGONKING,     portrait_offsets.DRAGONKING,      7)
+    add_to_css(Character.id.RYU,    FGM.announcer.names.GANONDORF,      1.50,         0x00010001, ZELDA,        name_texture.GND,            portrait_offsets.GND,            -1)
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS
