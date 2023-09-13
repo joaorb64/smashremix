@@ -57,6 +57,7 @@ scope Ryu {
     insert UTILT_H,"moveset/UP_TILT_H.bin"
     insert FTILT_H,"moveset/FORWARD_TILT_H.bin"
     insert JAB_CLOSE,"moveset/JAB_CLOSE.bin"
+    insert FTILT_CLOSE,"moveset/FORWARD_TILT_CLOSE.bin"
     insert ENTRY,"moveset/ENTRY.bin"
 
     TEETER:
@@ -137,7 +138,8 @@ scope Ryu {
     Character.add_new_action_params(RYU,    DTILT_L,           -1,             File.RYU_DTILT_L,               DTILT_L,                      0x00000000)
     Character.add_new_action_params(RYU,    UTILT_L,           -1,             File.RYU_UTILT_L,               UTILT_L,                      0x00000000)
     Character.add_new_action_params(RYU,    FTILT_L,           -1,             File.RYU_FTILT_L,               FTILT_L,                      0x00000000)
-    Character.add_new_action_params(RYU,    JAB_CLOSE,           -1,           File.RYU_UTILT_H,               JAB_CLOSE,                    0x40000000)
+    Character.add_new_action_params(RYU,    JAB_CLOSE,         -1,             File.RYU_UTILT_H,               JAB_CLOSE,                    0x40000000)
+    Character.add_new_action_params(RYU,    FTILT_CLOSE,       -1,             File.RYU_FTILT_CLOSE,           FTILT_CLOSE,                  0x40000000)
 
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
     Character.add_new_action(RYU,    USP_L,              -1,             ActionParams.USP_L,            0x11,           RyuUSP.main_,                   RyuUSP.change_direction_,          RyuUSP.physics_,                 RyuUSP.collision_)
@@ -146,6 +148,7 @@ scope Ryu {
     Character.add_new_action(RYU,    UTILT_L,            -1,             ActionParams.UTILT_L,          0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
     Character.add_new_action(RYU,    FTILT_L,            -1,             ActionParams.FTILT_L,          0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
     Character.add_new_action(RYU,    JAB_CLOSE,            -1,           ActionParams.JAB_CLOSE,        0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
+    Character.add_new_action(RYU,    FTILT_CLOSE,            -1,         ActionParams.FTILT_CLOSE,      0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(RYU,   0x1,               -1,                         VICTORY_POSE_1,             -1)

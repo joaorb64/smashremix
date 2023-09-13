@@ -394,6 +394,10 @@ scope FGC {
         beq    t1, t2, change_action
         addiu  t3, r0, Ryu.Action.JAB_CLOSE
 
+        lli    t2, Ryu.Action.FTILT_L
+        beq    t1, t2, change_action
+        addiu  t3, r0, Ryu.Action.FTILT_CLOSE
+
         b goto_fcg_tap_hold_end_
         nop
     }
@@ -465,6 +469,9 @@ scope FGC {
         beq t0, t1, apply_move_cancel_ground
         nop
         lli    t1, Ryu.Action.JAB_CLOSE
+        beq t0, t1, apply_move_cancel_ground
+        nop
+        lli    t1, Ryu.Action.FTILT_CLOSE
         beq t0, t1, apply_move_cancel_ground
         nop
 

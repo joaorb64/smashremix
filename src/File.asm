@@ -2377,6 +2377,7 @@ scope File {
     constant RYU_TATSU_GND_L(0x1192)
     constant RYU_DSMASH(0x1193)
     constant RYU_DASH(0x1194)
+    constant RYU_FTILT_CLOSE(0x1195)
     constant META_REMIX_STAGE(0x1186)
     constant META_REMIX_HEADER(0x1187)
     constant DARK_SAMUS_IDLE(0x1188)
