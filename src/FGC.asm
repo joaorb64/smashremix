@@ -376,6 +376,12 @@ scope FGC {
         fgc_target_check:
         or      t5, r0, a0
 
+        lw t6, 0x0B18(a0) //
+        lw t7, 0x0B1C(a0) // save player struct variables
+
+        sw      r0, 0x0B18(a0)              // target = NULL
+        sw      r0, 0x0B1C(a0)              // X_DIFF = 0
+
         jal     check_for_targets_          // check_for_targets_
         lw      a0, 0x4(a2)              // a0 = player object
         lw      t0, 0x0B18(a0)              // t0 = target object
@@ -385,6 +391,9 @@ scope FGC {
         // if check_target_ returned a new valid target
         or a2, r0, a0
         lw t1, 0x0024(a2) // t0 = current action
+
+        sw t6, 0x0B18(a0) //
+        sw t7, 0x0B1C(a0) // load player struct variables
 
         or a0, r0, t5
 
