@@ -15,6 +15,11 @@ scope FGC {
     constant B_PRESSED(0x4000)                // bitmask for b press
     constant A_PRESSED(0x8000)                // bitmask for b press
 
+    constant MAX_X_RANGE_FORWARD(0x43E1)            // current setting - float: 450.0
+    constant MAX_X_RANGE_BACK(0x4370)            // current setting - float: 240.0
+    constant MAX_Y_RANGE_UP(0x4496)            // current setting - float: 1200.0
+    constant MAX_Y_RANGE_DOWN(0x4348)            // current setting - float: 200.0
+
     // Ryu auto turnaround logic
     scope fcg_tap_hold: {
         OS.patch_start(0x5D160, 0x800E1960)
@@ -43,11 +48,19 @@ scope FGC {
         // Fix a bug where the next action would be triggered after changing from a move to neutral
         // because the action would still be the previous one, but the frame would be less than 0
         // since the previous animation just finished
-        lui		at, 0x4000					// at = 0.0
+        lui		at, 0x3f80					// at = 0.0
 		mtc1    at, f6                      // ~
         c.le.s  f8, f6                      // f8 <= f6 (current frame < 0) ?
         nop
         bc1tl   goto_fcg_tap_hold_end_    // skip if frame < 0
+        nop
+
+        // If on first animation frame, check if we have to change to the proximity move instead
+        lui at, 0x4000
+        mtc1 at, f6
+        c.eq.s f8, f6
+        nop
+        bc1tl fgc_target_check
         nop
 
         lui		at, 0x40C0					// at = 3.0
@@ -80,6 +93,10 @@ scope FGC {
         // we'll use t3 to define the action to switch to
 
         lli    t2, Action.Jab1
+        beq    t1, t2, change_action
+        addiu  t3, r0, Ryu.Action.JAB_L
+
+        lli    t2, Ryu.Action.JAB_CLOSE
         beq    t1, t2, change_action
         addiu  t3, r0, Ryu.Action.JAB_L
 
@@ -170,35 +187,6 @@ scope FGC {
         j goto_fcg_tap_hold_end_
         nop
 
-        cancel_itself_change_action:
-        addiu   sp, sp,-0x0030              // allocate stack space
-        sw      ra, 0x0004(sp)
-        sw      a0, 0x0008(sp)
-        sw      a1, 0x000C(sp)              // store variables
-        sw      a2, 0x0010(sp)              // store variables
-        sw      a3, 0x0014(sp)              // store variables
-        addiu   sp, sp,-0x0030              // allocate stack space
-
-        addiu   s0, a2, 0
-        sw      r0, 0x0010(sp)              // argument 4 = 0
-        addiu   a1, t3, 0
-        or      a2, r0, r0                  // a2 = float: 0.0
-        jal     0x800E6F24                  // change action
-        lui     a3, 0x3F80                  // a3 = float: 1.0
-        jal     0x800E0830                  // unknown common subroutine
-        lw      a0, 0x4(s0)                 // a0 = player object
-
-        addiu   sp, sp, 0x0030              // allocate stack space
-        lw      ra, 0x0004(sp)              // restore ra
-        lw      a0, 0x0008(sp)
-        lw      a1, 0x000C(sp)              // restore a2
-        lw      a2, 0x0010(sp)              // restore a2
-        lw      a3, 0x0014(sp)              // restore a2
-        addiu   sp, sp, 0x0030              // deallocate stack space
-
-        j goto_fcg_tap_hold_end_
-        nop
-
         goto_fcg_tap_hold_end_:
         OS.restore_registers()
         
@@ -206,6 +194,207 @@ scope FGC {
         slti at, v0, 0x0002 // original line 2
 
         j fcg_tap_hold_end_
+        nop
+
+        // @ Description
+        // Subroutine which checks for valid targets for Sonic's homing attack.
+        // a0 - player object
+        scope check_for_targets_: {
+            addiu   sp, sp,-0x0050              // allocate stack space
+            sw      ra, 0x001C(sp)              // ~
+            sw      s0, 0x0020(sp)              // ~
+            sw      s1, 0x0024(sp)              // ~
+            sw      s2, 0x0028(sp)              // store ra, s0-s2
+
+            or      s0, a0, r0                  // s0 = Sonic player object
+            li      s1, 0x800466FC              // s1 = player object head
+            lw      s1, 0x0000(s1)              // s1 = first player object
+            lw      s2, 0x0084(s0)              // s2 = player struct
+
+            _player_loop:
+            beqz    s1, _player_loop_exit       // exit loop when s1 no longer holds an object pointer
+            nop
+            beql    s1, s0, _player_loop        // loop if player and target object match...
+            lw      s1, 0x0004(s1)              // ...and load next object into s1
+
+            _team_check:
+            li      t0, Global.match_info       // ~
+            lw      t0, 0x0000(t0)              // t0 = match info struct
+            lbu     t1, 0x0002(t0)              // t1 = team battle flag
+            beqz    t1, _action_check           // branch if team battle flag = FALSE
+            lbu     t1, 0x0009(t0)              // t1 = team attack flag
+            bnez    t1, _action_check           // branch if team attack flag != FALSE
+            nop
+
+            // if the match is a team battle with team attack disabled
+            lw      t0, 0x0084(s1)              // t0 = target player struct
+            lbu     t0, 0x000C(t0)              // t0 = target team
+            lbu     t1, 0x000C(s2)              // t1 = player team
+            beq     t0, t1, _player_loop_end    // skip if player and target are on the same team
+            nop
+
+            _action_check:
+            lw      t0, 0x0084(s1)              // t0 = target player struct
+            lw      t0, 0x0024(t0)              // t0 = target player action
+            sltiu   at, t0, 0x0007              // at = 1 if action id < 7, else at = 0
+            bnez    at, _player_loop_end        // skip if target action id < 7 (target is in a KO action)
+            nop
+
+            _target_check:
+            or      a0, s2, r0                  // a0 = player struct
+            lw      a1, 0x0074(s1)              // a1 = target top joint struct
+            jal     check_target_               // check_target_
+            or      a2, s1, r0                  // a2 = target object struct
+            beqz    v0, _player_loop_end        // branch if no new target
+            nop
+
+            // if check_target_ returned a new valid target
+            sw      v0, 0x0B18(s2)              // store target object
+            sw      v1, 0x0B1C(s2)              // store target X_DIFF
+
+            _player_loop_end:
+            b       _player_loop                // loop
+            lw      s1, 0x0004(s1)              // s1 = next object
+
+            _player_loop_exit:
+            lw      t0, 0x0B18(s2)              // t0 = target object
+            bnez    t0, _end                    // end if there is a targeted object
+            nop
+
+            li      s1, 0x80046700              // s1 = item object head
+            lw      s1, 0x0000(s1)              // s1 = first item object
+
+            _item_loop:
+            beqz    s1, _end                    // exit loop when s1 no longer holds an object pointer
+            nop
+
+            lw      t0, 0x0084(s1)              // t0 = item special struct
+            lw      t0, 0x0248(t0)              // t0 = bit field with hurtbox state
+            andi    t0, t0, 0x0001              // t0 = 1 if hurtbox is enabled, else t0 = 0
+            beqz    t0, _item_loop_end          // skip if item doesn't have an active hurtbox
+            nop
+            or      a0, s2, r0                  // a0 = player struct
+            lw      a1, 0x0074(s1)              // a1 = target top joint struct
+            jal     check_target_               // check_target_
+            or      a2, s1, r0                  // a2 = target object struct
+            beqz    v0, _item_loop_end          // branch if no new target
+            nop
+
+            // if check_target_ returned a new valid target
+            sw      v0, 0x0B18(s2)              // store target object
+            sw      v1, 0x0B1C(s2)              // store target X_DIFF
+
+            _item_loop_end:
+            b       _item_loop                  // loop
+            lw      s1, 0x0004(s1)              // s1 = next object
+
+            _end:
+            lw      ra, 0x001C(sp)              // ~
+            lw      s0, 0x0020(sp)              // ~
+            lw      s1, 0x0024(sp)              // ~
+            lw      s2, 0x0028(sp)              // load ra, s0-s2
+            addiu   sp, sp, 0x0050              // deallocate stack space
+            jr      ra                          // return
+            nop
+        }
+
+        // @ Description
+        // Subroutine which checks if a potential target is in range for Sonic's homing attack.
+        // a0 - player struct
+        // a1 - target top joint struct
+        // a2 - target object struct
+        // returns
+        // v0 - target object (NULL when no valid target)
+        // v1 - target X_DIFF
+        scope check_target_: {
+            lw      t8, 0x0078(a0)              // t8 = player x/y/z coordinates
+            addiu   t9, a1, 0x001C              // t9 = target x/y/z coordinates
+
+            // check if the target is within x range
+            mtc1    r0, f0                      // f0 = 0
+            lwc1    f2, 0x0000(t8)              // f2 = player x coordinate
+            lwc1    f4, 0x0000(t9)              // f4 = target x coordinate
+            sub.s   f10, f4, f2                 // f10 = X_DIFF (target x - player x)
+            lwc1    f8, 0x0044(a0)              // ~
+            cvt.s.w f8, f8                      // f8 = DIRECTION
+            mul.s   f10, f10, f8                // f10 = X_DIFF * DIRECTION
+            lui     at, MAX_X_RANGE_FORWARD     // at = MAX_X_RANGE_FORWARD
+            mtc1    at, f8                      // f8 = MAX_X_RANGE_FORWARD
+            c.le.s  f10, f8                     // ~
+            nop                                 // ~
+            bc1fl   _end                        // end if MAX_X_RANGE =< X_DIFF
+            or      v0, r0, r0                  // and return 0
+            lui     at, MAX_X_RANGE_BACK     // at = MAX_X_RANGE_BACK
+            mtc1    at, f8                      // f8 = MAX_X_RANGE_BACK
+            neg.s   f8, f8                      // f8 = -MAX_X_RANGE_BACK
+            c.le.s  f8, f10                      // ~
+            nop                                 // ~
+            bc1fl   _end                        // end if X_DIFF =< MAX_X_RANGE_BACK
+            or      v0, r0, r0                  // and return 0
+
+            // check if there is a previous target
+            lw      t0, 0x0B18(a0)              // t0 = current target
+            beq     t0, r0, _check_y            // branch if there is no current target
+            lwc1    f8, 0x0B1C(a0)              // f8 = current target X_DIFF
+
+            // compare X_DIFF to see if the previous target was within closer x proximity
+            c.le.s  f10, f8                     // ~
+            nop                                 // ~
+            bc1fl   _end                        // end if prev X_DIFF =< current X_DIFF
+            or      v0, r0, r0                  // return 0
+
+            _check_y:
+            // calculate Y_RANGE based on X_DIFF, creating a cone shaped range
+            lwc1    f2, 0x0004(t8)              // f2 = player y coordinate
+            lwc1    f4, 0x0004(t9)              // f4 = target y coordinate
+            sub.s   f12, f4, f2                 // f12 = Y_DIFF (target y - player y)
+
+            lui     at, MAX_Y_RANGE_UP          // at = MAX_Y_RANGE_UP
+            mtc1    at, f8                      // f8 = MAX_Y_RANGE_UP
+            c.le.s  f12, f8                     // ~
+            nop                                 // ~
+            bc1fl   _end                        // end if Y_RANGE =< Y_DIFF
+            or      v0, r0, r0                  // and return 0
+
+            lui     at, MAX_Y_RANGE_DOWN        // at = MAX_Y_RANGE_DOWN
+            mtc1    at, f8                      // f8 = MAX_Y_RANGE_DOWN
+            neg.s   f8, f8                      // f8 = -MAX_Y_RANGE_DOWN
+            c.le.s  f8, f12                     // ~
+            nop                                 // ~
+            bc1fl   _end                        // end if Y_RANGE >= Y_DIFF
+            or      v0, r0, r0                  // return 0
+
+            // if we're here then the target is the closest within range
+            or      v0, a2, r0                  // v0 = target object
+            mfc1    v1, f10                     // v1 = X_DIFF
+
+            _end:
+            jr      ra                          // return
+            nop
+        }
+
+        fgc_target_check:
+        or      t5, r0, a0
+
+        jal     check_for_targets_          // check_for_targets_
+        lw      a0, 0x4(a2)              // a0 = player object
+        lw      t0, 0x0B18(a0)              // t0 = target object
+        beq     t0, r0, goto_fcg_tap_hold_end_          // branch if no target was found
+        nop
+
+        // if check_target_ returned a new valid target
+        or a2, r0, a0
+        lw t1, 0x0024(a2) // t0 = current action
+
+        or a0, r0, t5
+
+        // we'll use t3 to define the action to switch to
+
+        lli    t2, Action.Jab1
+        beq    t1, t2, change_action
+        addiu  t3, r0, Ryu.Action.JAB_CLOSE
+
+        b goto_fcg_tap_hold_end_
         nop
     }
 
@@ -273,6 +462,9 @@ scope FGC {
         beq t0, t1, apply_move_cancel_ground
         nop
         lli    t1, Action.DSmash
+        beq t0, t1, apply_move_cancel_ground
+        nop
+        lli    t1, Ryu.Action.JAB_CLOSE
         beq t0, t1, apply_move_cancel_ground
         nop
 
