@@ -60,8 +60,11 @@ scope Ryu {
     insert JAB_CLOSE,"moveset/JAB_CLOSE.bin"
     insert FTILT_CLOSE,"moveset/FORWARD_TILT_CLOSE.bin"
     insert ENTRY,"moveset/ENTRY.bin"
-    insert THROWF,"moveset/THROWF.bin"
-    insert THROWB,"moveset/THROWB.bin"
+
+    insert THROWF_DATA, "moveset/THROWF_DATA.bin"
+    THROWF:; Moveset.THROW_DATA(THROWF_DATA); insert "moveset/THROWF.bin"
+    insert THROWB_DATA, "moveset/THROWB_DATA.bin"
+    THROWB:; Moveset.THROW_DATA(THROWB_DATA); insert "moveset/THROWB.bin"
 
     TEETER:
     dw FACE.SHOCK; dw 0;
