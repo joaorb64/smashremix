@@ -59,6 +59,8 @@ scope Ryu {
     insert JAB_CLOSE,"moveset/JAB_CLOSE.bin"
     insert FTILT_CLOSE,"moveset/FORWARD_TILT_CLOSE.bin"
     insert ENTRY,"moveset/ENTRY.bin"
+    insert THROWF,"moveset/THROWF.bin"
+    insert THROWB,"moveset/THROWB.bin"
 
     TEETER:
     dw FACE.SHOCK; dw 0;
@@ -73,10 +75,15 @@ scope Ryu {
     OS.align(16)
 
     // Modify Action Parameters             // Action               // Animation                // Moveset Data             // Flags
-    Character.edit_action_parameters(RYU,   Action.Idle,            -1,                         IDLE,                       -1)
+    Character.edit_action_parameters(RYU,   Action.Idle,            File.RYU_IDLE,              IDLE,                       -1)
     Character.edit_action_parameters(RYU,   Action.Run,             -1,                         RUN,                        -1)
     Character.edit_action_parameters(RYU,   Action.Dash,            File.RYU_DASH,              -1,                         -1)
     Character.edit_action_parameters(RYU,   Action.Teeter,          -1,                         TEETER,                     -1)
+    Character.edit_action_parameters(RYU,   Action.Fall,            File.RYU_FALL,              -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.JumpF,           File.RYU_JUMPF,             -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.JumpB,           File.RYU_JUMPB,             -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.ThrowF,          File.RYU_THROWF,            THROWF,                     0x10000000)
+    Character.edit_action_parameters(RYU,   Action.ThrowB,          File.RYU_THROWB,            THROWB,                     0x50000000)
     Character.edit_action_parameters(RYU,   Action.JumpAerialF,     -1,                         JUMP2,                      -1)
     Character.edit_action_parameters(RYU,   Action.JumpAerialB,     -1,                         JUMP2,                      -1)
     Character.edit_action_parameters(RYU,   Action.DownBounceD,     -1,                         DOWN_BOUNCE,                -1)
