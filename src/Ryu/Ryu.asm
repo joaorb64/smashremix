@@ -13,6 +13,7 @@ scope Ryu {
     insert IDLE,"moveset/IDLE.bin"
     insert RUN,"moveset/RUN.bin"; Moveset.GO_TO(RUN)            // loops
     insert JUMP2, "moveset/JUMP2.bin"
+    insert JUMPB, "moveset/JUMPB.bin"
     insert TECHSTAND, "moveset/TECHSTAND.bin"
     insert TECHROLL, "moveset/TECHFROLL.bin"
     insert EDGEATTACKF, "moveset/EDGEATTACKF.bin"
@@ -79,9 +80,9 @@ scope Ryu {
     Character.edit_action_parameters(RYU,   Action.Run,             -1,                         RUN,                        -1)
     Character.edit_action_parameters(RYU,   Action.Dash,            File.RYU_DASH,              -1,                         -1)
     Character.edit_action_parameters(RYU,   Action.Teeter,          -1,                         TEETER,                     -1)
-    Character.edit_action_parameters(RYU,   Action.Fall,            File.RYU_FALL,              -1,                         -1)
-    Character.edit_action_parameters(RYU,   Action.JumpF,           File.RYU_JUMPF,             -1,                         -1)
-    Character.edit_action_parameters(RYU,   Action.JumpB,           File.RYU_JUMPB,             -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.Fall,            File.RYU_FALL,              -1,                         0x00000000)
+    Character.edit_action_parameters(RYU,   Action.JumpF,           File.RYU_JUMPF,             -1,                         0x00000000)
+    Character.edit_action_parameters(RYU,   Action.JumpB,           File.RYU_JUMPB,             JUMPB,                      0x80000000)
     Character.edit_action_parameters(RYU,   Action.ThrowF,          File.RYU_THROWF,            THROWF,                     0x10000000)
     Character.edit_action_parameters(RYU,   Action.ThrowB,          File.RYU_THROWB,            THROWB,                     0x50000000)
     Character.edit_action_parameters(RYU,   Action.JumpAerialF,     -1,                         JUMP2,                      -1)

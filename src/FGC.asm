@@ -21,6 +21,7 @@ scope FGC {
     constant MAX_Y_RANGE_DOWN(0x4348)            // current setting - float: 200.0
 
     // Ryu auto turnaround logic
+    // https://decomp.me/scratch/d0Ors 0x800E1260 @ 0x700
     scope fcg_tap_hold: {
         OS.patch_start(0x5D160, 0x800E1960)
         j       fcg_tap_hold
@@ -42,6 +43,11 @@ scope FGC {
         nop
 
         main_logic:
+        lw      t0, 0x0024(a2) // t0 = current action
+        sltiu   at, t0, Action.Jab1              // at = 1 if action id < JAB1, else at = 0
+        bnez    at, goto_fcg_tap_hold_end_        // skip if target action id < 7 (target is in a KO action)
+        nop
+
         lw t1,  0x4(a2)                     // t1 = fighter object
         lwc1    f8, 0x0078(t1)              // load current frame into f8
 
@@ -384,18 +390,19 @@ scope FGC {
 
         jal     check_for_targets_          // check_for_targets_
         lw      a0, 0x4(a2)              // a0 = player object
+
         lw      t0, 0x0B18(a0)              // t0 = target object
+
+        or a2, r0, a0 // restore a2
+        sw t6, 0x0B18(a0) //
+        sw t7, 0x0B1C(a0) // restore player struct variables
+        or a0, r0, t5
+
         beq     t0, r0, goto_fcg_tap_hold_end_          // branch if no target was found
         nop
 
         // if check_target_ returned a new valid target
-        or a2, r0, a0
         lw t1, 0x0024(a2) // t0 = current action
-
-        sw t6, 0x0B18(a0) //
-        sw t7, 0x0B1C(a0) // load player struct variables
-
-        or a0, r0, t5
 
         // we'll use t3 to define the action to switch to
 
@@ -421,8 +428,8 @@ scope FGC {
 
         // when a character is in hitstun, their knockback is stored at player struct offset 0x7EC
         // when not in hitstun, it returns zero
-        lw      t0, 0x07EC(a2)              // t0 = current knockback value
-        beqz    t0, hitlag_step_attacker   // branch if knockback == 0 (we're the attacker)
+        lw      t6, 0x07EC(a2)              // t0 = current knockback value
+        beqz    t6, hitlag_step_attacker   // branch if knockback == 0 (we're the attacker)
         nop
 
         b goto_hitlag_step_end
