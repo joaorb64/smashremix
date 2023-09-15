@@ -354,7 +354,7 @@ scope RyuUSP {
 
 scope RyuNSP {
     // floating point constants for physics and fsm
-    constant AIR_Y_SPEED(0x4250)            // current setting - float32 92
+    constant AIR_Y_SPEED(0x4220)            // current setting - float32 60
     constant GROUND_Y_SPEED(0x42C4)         // current setting - float32 98
     constant X_SPEED(0x0)                // current setting - float32 10
     constant AIR_ACCELERATION(0x3C88)       // current setting - float32 0.0166
@@ -442,9 +442,21 @@ scope RyuNSP {
         sw      a2, 0x0038(sp)
         lw      t7, 0x0038(sp)
 		sw      s0, 0x0018(sp)
-        li      s0, _blaster_fireball_struct       // load blaster format address
 
+        // Check if B is pressed to switch between light and strong hadouken
+        // v0 = player struct
+        la      s0, _blaster_fireball_struct       // s0 = light hadouken address
+
+        lhu     t0, 0x01BC(v0)              // load button press buffer
+        andi    t1, t0, 0x4000           // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, projectile_stage_setting_continue // skip if (!B_PRESSED)
+        nop
+
+        la      s0, _blaster_fireball_heavy_struct       // s0 = light hadouken address
+        b       projectile_stage_setting_continue
+        nop
         
+        projectile_stage_setting_continue:
         sw      a1, 0x0034(sp)
         sw      ra, 0x001C(sp)
         lw      t6, 0x0084(a0)
@@ -525,27 +537,27 @@ scope RyuNSP {
         addiu   t2, r0, r0          // used to use free space area, but for no apparent reason, effects graphics
         lw      v1, 0x0074(t1)
         or      v0, r0, r0
-        lwc1    f8, 0x0020(a0)      // load current speed
-		lui		at, 0x3F84          // speed multiplier (accel) loaded in at (1.03125)
-		mtc1	at, f6              // move speed multiplier to floating point register
-		mul.s   f8, f8, f6          // speed multiplied by accel
+        // lwc1    f8, 0x0020(a0)      // load current speed
+		// lui		at, 0x3F84          // speed multiplier (accel) loaded in at (1.03125)
+		// mtc1	at, f6              // move speed multiplier to floating point register
+		// mul.s   f8, f8, f6          // speed multiplied by accel
         
         
-        lw      at, 0x0004(t0)      // load max speed
-        mtc1    at, f6
-        lw      at, 0x029C(a0)      // load multiplier that is typically one, unless reflected
-        mtc1    at, f10
-        mul.s   f6, f6, f10
-        c.le.s  f8, f6
-        nop
-        bc1f    _scaling
-        swc1    f6, 0x0020(a0)      // if speed is greater than max rightward velocity, save max speed
-        neg.s   f6, f6
-        c.le.s  f8, f6
-        nop
-        bc1t    _scaling
-        swc1    f6, 0x0020(a0)      // if speed is less than max leftward velocity, save max speed
-		swc1    f8, 0x0020(a0)      // save new speed amount to projectile hitbox information
+        // lw      at, 0x0004(t0)      // load max speed
+        // mtc1    at, f6
+        // lw      at, 0x029C(a0)      // load multiplier that is typically one, unless reflected
+        // mtc1    at, f10
+        // mul.s   f6, f6, f10
+        // c.le.s  f8, f6
+        // nop
+        //bc1f    _scaling
+        // swc1    f6, 0x0020(a0)      // if speed is greater than max rightward velocity, save max speed
+        //neg.s   f6, f6
+        //c.le.s  f8, f6
+        //nop
+        //bc1t    _scaling
+        // swc1    f6, 0x0020(a0)      // if speed is less than max leftward velocity, save max speed
+		//swc1    f8, 0x0020(a0)      // save new speed amount to projectile hitbox information
         
         _scaling:
         // v1 = projectile joint 1
@@ -567,8 +579,8 @@ scope RyuNSP {
         lui at, 0x3FC0
         mtc1    at, f6
 
-        swc1    f6, 0x0040(v1)      // store x size multiplier to projectile joint
-        swc1    f6, 0x0044(v1)      // store y size multiplier to projectile joint
+        // swc1    f6, 0x0040(v1)      // store x size multiplier to projectile joint
+        // swc1    f6, 0x0044(v1)      // store y size multiplier to projectile joint
         
         _end_duration:
         lw      ra, 0x0014(sp)
@@ -675,15 +687,30 @@ scope RyuNSP {
 
 		
 		_blaster_fireball_struct:
-        dw 100                          // 0x0000 - duration (int)
-        float32 40                     // 0x0004 - max speed
-        float32 40                      // 0x0008 - min speed
+        dw 5                          // 0x0000 - duration (int)
+        float32 18                     // 0x0004 - max speed
+        float32 18                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 40                      // 0x0020   initial speed
+        float32 18                      // 0x0020   initial speed
+        dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
+        dw 0                            // 0x0028   unknown (default 0)
+        float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)
+        OS.copy_segment(0x1038A0, 0x30)
+
+        _blaster_fireball_heavy_struct:
+        dw 4                          // 0x0000 - duration (int)
+        float32 38                     // 0x0004 - max speed
+        float32 38                      // 0x0008 - min speed
+        float32 0                       // 0x000C - gravity
+        float32 0                       // 0x0010 - bounce multiplier
+        float32 0                       // 0x0014 - rotation angle
+        float32 0                       // 0x0018 - initial angle (ground)
+        float32 0                       // 0x001C   initial angle (air)
+        float32 38                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)
@@ -779,42 +806,29 @@ scope RyuNSP {
         or      a1, s1, r0                  // a1 = attributes pointer
 
         _check_begin:
-        //lw      t0, 0x0038(sp)              // t0 = player object
-        lwc1    f8, 0x4(s0)              // load current animation frame
+        lw      t0,  0x4(s0) // t1 = player object
+        lwc1    f8, 0x0078(t0)                 // load current animation frame
 
-        lui		at, 0xE4E4					// at = 1.0
+        lui		at, 0x4000					// at = 1.0
 		mtc1    at, f6                      // ~
         c.eq.s  f8, f6                      // f8 == f6 (current frame == 1) ?
         nop
-        bc1fl   _check_begin_move           // skip if frame isn't 1
+        bc1fl   _check_hop           // skip if frame isn't 1
         nop
 
         sw      r0, 0x0048(s0)              // x velocity = 0
-        sw      r0, 0x004C(s0)              // y velocity = 0
+        // sw      r0, 0x004C(s0)              // y velocity = 0
 
-        _check_begin_move:
-        lw      t0, 0x0184(s0)              // t0 = temp variable 3
-        ori     t1, r0, BEGIN_MOVE          // t1 = BEGIN_MOVE
-        bne     t0, t1, _end                // skip if temp variable 3 != BEGIN_MOVE
+        _check_hop:
+        lwc1    f8, 0x0078(t0)                 // load current animation frame
+        lui		at, 0x4130					// at = 10.0
+		mtc1    at, f6                      // ~
+        c.eq.s  f8, f6                      // f8 == f6 (current frame == 10) ?
         nop
-        // initialize x/y velocity
-        lw      t0, 0x0024(s0)              // t0 = current action
-        lli     t1, Marina.Action.USPG      // t1 = Action.USPG
-        beq     t0, t1, _apply_velocity     // branch if current action = USP_GROUND
-        lui     t1, GROUND_Y_SPEED          // t1 = GROUND_Y_SPEED
-        // if current action != USP_GROUND
+        bc1fl   _end           // skip if frame isn't 10
+        nop
+
         lui     t1, AIR_Y_SPEED             // t1 = AIR_Y_SPEED
-
-        _apply_velocity:
-        lui     t0, X_SPEED                 // ~
-        mtc1    t0, f2                      // f2 = X_SPEED
-        lwc1    f0, 0x0044(s0)              // ~
-        cvt.s.w f0, f0                      // f0 = direction
-        mul.s   f2, f0, f2                  // f2 = x velocity * direction
-        ori     t0, r0, MOVE                // t0 = MOVE
-        sw      t0, 0x0184(s0)              // temp variable 3 = MOVE
-
-        // swc1    f2, 0x0048(s0)              // store x velocity
         sw      t1, 0x004C(s0)              // store y velocity
 
         _end:
