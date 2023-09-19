@@ -1562,6 +1562,16 @@ scope FGM {
     add_sound(Ryu/sounds/HIT_S, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     add_sound(Ryu/sounds/HIT_M, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     add_sound(Ryu/sounds/HIT_L, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/WHOOSH_S, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/WHOOSH_M, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/WHOOSH_L, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/THROW, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/HADOUKEN, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/SHORYUKEN, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/TATSU, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/TATSU_S, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/SHORYUKEN_S, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Ryu/sounds/DIE, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
 
     // This is always last
     write_sounds()

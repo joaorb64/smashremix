@@ -106,19 +106,67 @@ scope RyuUSP {
         nop
         bc1tl   _change_temp2                // skip if haven't reached frame 2
         nop
-        
-        j _main_normal
-        nop
 
         _change_temp2:
         ori     v1, r0, 0x0002              // ~
         sw      v1, 0x0184(a0)              // temp variable 3 = 0x2(BEGIN_MOVE)
-        j _main_normal
-        nop 
 
         _change_temp3:
         ori     v1, r0, 0x0003              // ~
         sw      v1, 0x0184(a0)              // temp variable 3 = 0x2(BEGIN_MOVE)
+        j light_to_hard
+        nop
+
+        light_to_hard:
+        // if not in light ups, skip
+        lw     t7, 0x0024(a2)              // t7 = current action
+        lli    t2, Ryu.Action.USP_L
+        bne    t7, t2, _main_normal
+        nop
+
+        lui		at, 0x4080					// at = 2.0
+		mtc1    at, f6                      // ~
+        c.eq.s  f8, f6                      // f8 >= f6 (current frame >= 2) ?
+        nop
+        bc1fl   _main_normal                // skip if haven't reached frame 2
+        nop
+
+        lhu     t0, 0x01BC(a2)              // load button press buffer
+        andi    t1, t0, 0x4000              // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, _main_normal        // skip if (!B_PRESSED)
+        nop
+
+        addiu   sp, sp,-0x0038              // allocate stack space
+        sw      ra, 0x0004(sp)
+        sw      a0, 0x0008(sp)
+        sw      a1, 0x000C(sp)              // store variables
+        sw      a2, 0x0010(sp)              // store variables
+        sw      a3, 0x0014(sp)              // store variables
+        sw      v0, 0x0018(sp)              // store variables
+        addiu   sp, sp,-0x0030              // allocate stack space
+
+        lw      v0, 0x0034(a2)              // v0 = player struct
+
+        lli     a1, Ryu.Action.USP_H      // a1 = Action.USPG
+        lw      a2, 0x0078(a0)              // a2(starting frame) = current animation frame
+        lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        jal     0x800E6F24                  // change action
+        nop
+
+        addiu   sp, sp, 0x0030              // allocate stack space
+        lw      ra, 0x0004(sp)              // restore ra
+        lw      a0, 0x0008(sp)
+        lw      a1, 0x000C(sp)              // restore a2
+        lw      a2, 0x0010(sp)              // restore a2
+        lw      a3, 0x0014(sp)              // restore a2
+        lw      v0, 0x0018(sp)              // restore a2
+        addiu   sp, sp, 0x0038              // deallocate stack space
+        lw      a0, 0x4(a1)                 // restore a0 = player object
+
+        jr      ra                          // return
+        nop
+        
         j _main_normal
         nop
 
@@ -898,6 +946,63 @@ scope RyuDSP {
         lbu     t2, 0x0000(t3)              // t2 = button_press_buffer
         sb      t1, 0x0000(t3)              // update button_press_buffer with current inputs
         or      t3, t1, t2                  // t3 = button_pressed | button_press_buffer 
+
+        light_to_hard:
+        // if not currently doing grounded light tatsu, skip
+        lw     t7, 0x0024(a2)              // t7 = current action
+        lli    t2, 0xE6 // grounded dsp = 0xE6
+        bne    t7, t2, _move
+        nop
+
+        lwc1    f8, 0x0078(a0)              // load current animation frame
+        lui		at, 0x40C0					// at = 6.0
+		mtc1    at, f6                      // ~
+        c.eq.s  f8, f6                      // f8 == f6 (current frame == 1) ?
+        nop
+        bc1fl   _move           // skip if frame isn't greater than 6
+        nop
+
+        lhu     t0, 0x01BC(a2)              // load button press buffer
+        andi    t1, t0, 0x4000              // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, _move               // skip if (!B_PRESSED)
+        nop
+
+        addiu   sp, sp,-0x0038              // allocate stack space
+        sw      ra, 0x0004(sp)
+        sw      a0, 0x0008(sp)
+        sw      a1, 0x000C(sp)              // store variables
+        sw      a2, 0x0010(sp)              // store variables
+        sw      a3, 0x0014(sp)              // store variables
+        sw      v0, 0x0018(sp)              // store variables
+        addiu   sp, sp,-0x0030              // allocate stack space
+
+        lw      v0, 0x0034(a2)              // v0 = player struct
+
+        lli     a1, Ryu.Action.DSP_H        // a1 = Action.USPG
+        lw      a2, 0x0078(a0)              // a2(starting frame) = current animation frame
+        lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        jal     0x800E6F24                  // change action
+        nop
+
+        addiu   sp, sp, 0x0030              // allocate stack space
+        lw      ra, 0x0004(sp)              // restore ra
+        lw      a0, 0x0008(sp)
+        lw      a1, 0x000C(sp)              // restore a2
+        lw      a2, 0x0010(sp)              // restore a2
+        lw      a3, 0x0014(sp)              // restore a2
+        lw      v0, 0x0018(sp)              // restore a2
+        addiu   sp, sp, 0x0038              // deallocate stack space
+
+        OS.restore_registers()
+
+        // lw      a0, 0x4(a2)                 // restore a0 = player object
+
+        jr      ra                          // return
+        nop
+        
+        j _move
+        nop
         
         _move:
         lwc1    f8, 0x0078(a0)              // load current animation frame
@@ -908,38 +1013,8 @@ scope RyuDSP {
         bc1tl   _end           // skip if frame isn't greater than 6
         nop
 
-        // ori     t1, r0, MOVE                // t1 = MOVE
-        // bne     t0, t1, _check_end_move     // skip if t0 != MOVE
-        // nop
         lui     t1, X_SPEED                 // t1 = X_SPEED
         sw		t1, 0x0060(a2)	            // ground x velocity = X_SPEED
-        
-        _shorten:
-        andi    t1, t3, B_PRESSED           // t1 = 0x40 if (B_PRESSED); else t1 = 0
-        beq     t1, r0, _end                // skip if !(B_PRESSED)
-        nop
-        ori     t1, r0, END_MOVE            // ~
-        sw      t1, 0x0184(a2)              // temp variable 3 = END_MOVE
-        beq     r0, r0, _end_move           // branch and end movement
-        nop
-        
-        _check_end_move:
-        ori     t1, r0, END_MOVE            // t1 = END_MOVE
-        bne     t0, t1, _end                // skip if t0 != END_MOVE
-        nop
-        
-        _end_move:
-        lui     t1, X_SPEED_END_GROUND      // t1 = X_SPEED_END_GROUND
-        lwc1    f2, 0x0044(a2)              // ~
-        cvt.s.w f2, f2                      // f2 = DIRECTION
-        sw		t1, 0x0060(a2)	            // ground x velocity = X_SPEED
-        sw      r0, 0x0184(a2)              // temp variable 3 = 0
-        lw      t1, 0x0A88(a2)              // t1 = overlay settings
-        li      t2, 0x7FFFFFFF              // t2 = bitmask
-        and     t1, t1, t2                  // ~
-        sw      t1, 0x0A88(a2)              // disable colour overlay bit
-        jal     0x800E8518                  // end hitboxes
-        nop
         
         _end:
         OS.restore_registers()

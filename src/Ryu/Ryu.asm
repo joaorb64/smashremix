@@ -42,7 +42,10 @@ scope Ryu {
     insert NSP_GROUND,"moveset/NSP_GROUND.bin"
     insert NSP_AIR,"moveset/NSP_AIR.bin"
     insert USP_L,"moveset/SHORYUKEN_L.bin"
-    insert DSP_GROUND,"moveset/DOWN_SPECIAL_GROUND.bin"
+    insert USP_H,"moveset/SHORYUKEN_H.bin"
+    insert DSP_L,"moveset/DOWN_SPECIAL_L.bin"
+    insert DSP_M,"moveset/DOWN_SPECIAL_M.bin"
+    insert DSP_H,"moveset/DOWN_SPECIAL_H.bin"
     insert DSP_FLIP,"moveset/DOWN_SPECIAL_FLIP.bin"
     insert DSP_LAND,"moveset/DOWN_SPECIAL_LANDING.bin"
     insert DSP_AIR,"moveset/DOWN_SPECIAL_AIR.bin"
@@ -129,10 +132,10 @@ scope Ryu {
 	Character.edit_action_parameters(RYU,   0xE3,                   File.GND_ENTRY_2_RIGHT,      ENTRY_2,                   0x40000000)
 	Character.edit_action_parameters(RYU,   0xE4,                   File.RYU_HADOUKEN_GND,          NSP_AIR,                 0x40000000)
     Character.edit_action_parameters(RYU,   0xE5,                   File.RYU_HADOUKEN_GND,          NSP_AIR,                 0x40000000)
-    Character.edit_action_parameters(RYU,   0xE6,                   File.RYU_TATSU_GND_L,       DSP_GROUND,                 -1)
+    Character.edit_action_parameters(RYU,   0xE6,                   File.RYU_TATSU_GND_L,       DSP_L,                 -1)
     Character.edit_action_parameters(RYU,   0xE7,                   -1,                         DSP_FLIP,                   -1)
     Character.edit_action_parameters(RYU,   0xE8,                   -1,                         DSP_LAND,                   -1)
-    Character.edit_action_parameters(RYU,   0xE9,                   File.RYU_TATSU_GND_L,       DSP_GROUND,                 -1) // aerial dsp
+    Character.edit_action_parameters(RYU,   0xE9,                   File.RYU_TATSU_GND_M,       DSP_M,                 -1) // aerial dsp
 
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
     Character.edit_action(RYU,  0xE4,              -1,             RyuNSP.main,  				-1,                             RyuNSP.physics_,                RyuNSP.air_collision_)
@@ -151,6 +154,8 @@ scope Ryu {
     Character.add_new_action_params(RYU,    FTILT_L,           -1,             File.RYU_FTILT_L,               FTILT_L,                      0x00000000)
     Character.add_new_action_params(RYU,    JAB_CLOSE,         -1,             File.RYU_UTILT_H,               JAB_CLOSE,                    0x40000000)
     Character.add_new_action_params(RYU,    FTILT_CLOSE,       -1,             File.RYU_FTILT_CLOSE,           FTILT_CLOSE,                  0x40000000)
+    Character.add_new_action_params(RYU,    DSP_H,             0xE6,             File.RYU_TATSU_GND_H,           DSP_H,                        -1)
+    Character.add_new_action_params(RYU,    USP_H,             -1,             File.RYU_SHORYKEN_H,            USP_H,                        0x40000000)
 
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
     Character.add_new_action(RYU,    USP_L,              -1,             ActionParams.USP_L,            0x11,           RyuUSP.main_,                   RyuUSP.change_direction_,          RyuUSP.physics_,                 RyuUSP.collision_)
@@ -160,6 +165,9 @@ scope Ryu {
     Character.add_new_action(RYU,    FTILT_L,            -1,             ActionParams.FTILT_L,          0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
     Character.add_new_action(RYU,    JAB_CLOSE,            -1,           ActionParams.JAB_CLOSE,        0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
     Character.add_new_action(RYU,    FTILT_CLOSE,            -1,         ActionParams.FTILT_CLOSE,      0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
+
+    Character.add_new_action(RYU,    DSP_H,              -1,             ActionParams.DSP_H,            0x11,           RyuDSP.main_,                   RyuDSP.ground_subroutine_,          RyuNSP.physics_,            RyuDSP.air_collision_)
+    Character.add_new_action(RYU,    USP_H,              -1,             ActionParams.USP_H,            0x11,           RyuUSP.main_,                   RyuUSP.change_direction_,           RyuUSP.physics_,                RyuUSP.collision_)
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(RYU,   0x1,               -1,                         VICTORY_POSE_1,             -1)
