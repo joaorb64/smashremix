@@ -2392,6 +2392,8 @@ scope File {
     constant RYU_SHORYKEN_H(0x11A1)
     constant RYU_TATSU_GND_M(0x11A2)
     constant RYU_TATSU_GND_H(0x11A3)
+    constant RYU_PROJECTILE_GRAPHIC(0x11A4)
+    constant RYU_PROJECTILE_HITBOX(0x11A5)
     constant META_REMIX_STAGE(0x1186)
     constant META_REMIX_HEADER(0x1187)
     constant DARK_SAMUS_IDLE(0x1188)

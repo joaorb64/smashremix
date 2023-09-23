@@ -531,6 +531,35 @@ scope RyuNSP {
         sw      t2, 0x029C(v1)           // save 1(fp) to projectile struct free space
         lw      t3, 0x0000(s0)
         sw      t3, 0x0268(v1)
+
+        // ==============
+        // EDIT HITBOX
+        // ==============
+
+        // Hitbox size
+        lui     at, 0x42f0              // at = 120.0 (fp)
+        sw      at, 0x0128(v1)          // save
+
+        // Hitbox damage
+        lli     at, 0x000A              // at = 10.0
+        sw      at, 0x0104(v1)          // save
+
+        // // Hit type
+        lli     at, 0x0                 // at = 0.0 (fp)
+        lui     at, 0x0                 // at = 0.0 (fp)
+        sh      at, 0x010C(v1)          // save
+
+        // // Hitbox base knockback
+        // lui     at, 0x42c8              // at = 100.0 (fp)
+        // sw      at, 0x0138(v1)          // save
+
+        // Hit FGM
+        lli     at, 0x0504               // at = RYU_HIT_M
+        sh      at, 0x0146(v1)          // save
+        
+        // ==============
+        // END EDIT HITBOX
+        // ==============
    
         OS.copy_segment(0xE3268, 0x2C)   
         lw      t6, 0x002C(sp)
@@ -572,7 +601,12 @@ scope RyuNSP {
         sw      a0, 0x0020(sp)
         swc1    f10, 0x0024(sp)
         lw      a0, 0x0084(a0)
-        sw      a0, 0x001C(sp)
+
+        jal     0x80167FE8      // check if duration is over
+        sw      a0, 0x001C(sp)  // store a0
+        bnez    v0, _end_duration        // branch if duration over
+        addiu   v0, r0, 1       // return 1 (destroy projectile)
+        lw      a0, 0x001C(sp)  // if here, restore a0
         
         _continue:
         addiu   t8, r0, r0          // used to use free space area, but for no apparent reason, affects graphics
@@ -624,12 +658,12 @@ scope RyuNSP {
         // mul.s   f6, f6, f10         // f6 = (current speed + 66) * 0.25
         // div.s   f6, f6, f8          // f6 = x size multiplier (adjusted current speed / initial speed)
 
-        lui at, 0x3FC0
+        lui at, 0x3FA0
         mtc1    at, f6
 
-        // swc1    f6, 0x0040(v1)      // store x size multiplier to projectile joint
-        // swc1    f6, 0x0044(v1)      // store y size multiplier to projectile joint
-        
+        swc1    f6, 0x0040(v1)      // store x size multiplier to projectile joint
+        swc1    f6, 0x0044(v1)      // store y size multiplier to projectile joint
+
         _end_duration:
         lw      ra, 0x0014(sp)
         lwc1    f10, 0x0024(sp)
@@ -735,7 +769,7 @@ scope RyuNSP {
 
 		
 		_blaster_fireball_struct:
-        dw 5                          // 0x0000 - duration (int)
+        dw 80                          // 0x0000 - duration (int)
         float32 18                     // 0x0004 - max speed
         float32 18                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
@@ -750,7 +784,7 @@ scope RyuNSP {
         OS.copy_segment(0x1038A0, 0x30)
 
         _blaster_fireball_heavy_struct:
-        dw 4                          // 0x0000 - duration (int)
+        dw 65                          // 0x0000 - duration (int)
         float32 38                     // 0x0004 - max speed
         float32 38                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
