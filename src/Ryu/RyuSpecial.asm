@@ -948,6 +948,49 @@ scope RyuNSP {
         jr      ra                          // return
         nop
     }
+
+    // @ Description
+    // Subroutine which allows a direction change for Ryu's up special.
+    // Uses the moveset data command 580000XX (orignally identified as "set flag" by toomai)
+    // This command's purpose appears to be setting a temporary variable in the player struct.
+    // Variable values used by this subroutine:
+    // 0x2 = change direction
+    scope change_direction_: {
+        // begin by checking for turn inputs
+        lw      a1, 0x0084(a0)              // a1 = player struct
+
+        lui		at, 0x4000					// at = 1.0
+        mtc1    at, f6                      // ~
+        lwc1    f8, 0x0078(a0)              // ~
+        c.eq.s  f8, f6                      // ~
+        nop
+        bc1fl   _end               // skip if haven't reached frame 3
+        nop
+
+        lb      t6, 0x01C2(a1)              // t6 = stick_x
+        lw      t7, 0x0044(a1)              // t7 = DIRECTION
+        multu   t6, t7                      // ~
+        mflo    t6                          // t6 = stick_x * DIRECTION
+        slti    at, t6, -39                 // at = 1 if stick_x < -39, else at = 0
+        beqz    at, _end                    // branch if stick_x >= -39
+        nop
+
+        // if we're here, stick_x is opposite the facing direction, so turn the character around
+        subu    t7, r0, t7                  // ~
+        sw      t7, 0x0044(a1)              // reverse and update DIRECTION
+
+        mtc1    t7, f6                      // ~
+        cvt.s.w f6, f6                      // f6 = direction
+        lui     at, 0x8013                  // ~
+        lwc1    f8, 0xFE90(at)              // at = rotation constant
+        mul.s   f8, f8, f6                  // f8 = rotation constant * direction
+        lw      t7, 0x08E8(a1)              // t6 = character control joint struct
+        swc1    f8, 0x0034(t7)              // update character rotation to match direction
+
+        _end:
+        jr      ra                          // return
+        nop
+    }
 }
 
 scope RyuDSP {

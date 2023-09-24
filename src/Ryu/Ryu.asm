@@ -139,8 +139,8 @@ scope Ryu {
     Character.edit_action_parameters(RYU,   0xE9,                   File.RYU_TATSU_GND_M,       DSP_M,                 -1) // aerial dsp
 
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
-    Character.edit_action(RYU,  0xE4,              -1,             RyuNSP.main,  				-1,                             RyuNSP.physics_,                RyuNSP.air_collision_)
-	Character.edit_action(RYU,  0xE5,              -1,             RyuNSP.main,  				-1,                             RyuNSP.physics_,                RyuNSP.air_collision_)
+    Character.edit_action(RYU,  0xE4,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                RyuNSP.air_collision_)
+	Character.edit_action(RYU,  0xE5,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                RyuNSP.air_collision_)
     Character.edit_action(RYU, 0xE6,               -1,             RyuDSP.main_,                  RyuDSP.ground_subroutine_,      RyuNSP.physics_,              RyuDSP.air_collision_)
     Character.edit_action(RYU, 0xE9,               -1,             RyuDSP.main_,                  RyuDSP.air_subroutine_,         RyuDSP.air_physics_,            RyuDSP.air_collision_)
 
