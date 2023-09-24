@@ -950,7 +950,7 @@ scope RyuNSP {
     }
 
     // @ Description
-    // Subroutine which allows a direction change for Ryu's up special.
+    // Subroutine which allows a direction change
     // Uses the moveset data command 580000XX (orignally identified as "set flag" by toomai)
     // This command's purpose appears to be setting a temporary variable in the player struct.
     // Variable values used by this subroutine:
@@ -995,10 +995,11 @@ scope RyuNSP {
 
 scope RyuDSP {
     constant X_SPEED(0x4220)                // current setting - float:460.0
-    constant X_SPEED_AIR(0x4200)                // current setting - float:460.0
+    constant X_SPEED_AIR(0x41C8)            // current setting - float:460.0
     constant X_SPEED_END_AIR(0x41F0)        // current setting - float:30.0
     constant X_SPEED_END_GROUND(0x4270)     // current setting - float:60.0
     constant Y_SPEED_INITIAL(0x4248)        // current setting - float:50.0
+    constant FRAME_START_GRAVITY(0x41A0)    // frame to start applying gravity on aerial version
     constant LANDING_FSM(0x3EB3)            // current setting - float:0.35
     constant B_PRESSED(0x40)                // bitmask for b press
     
@@ -1128,27 +1129,6 @@ scope RyuDSP {
         swc1    f2, 0x0008(sp)              // store f0, f2
         OS.save_registers()
         lw      t0, 0x0184(a2)              // t0 = temp variable 3
-        
-        _update_buffer:
-        lbu     t1, 0x000D(a2)              // t1 = player port
-        li      t2, button_press_buffer     // ~
-        addu    t3, t2, t1                  // t3 = px button_press_buffer address
-        lbu     t1, 0x01BE(a2)              // t1 = button_pressed
-        lbu     t2, 0x0000(t3)              // t2 = button_press_buffer
-        sb      t1, 0x0000(t3)              // update button_press_buffer with current inputs
-        or      t3, t1, t2                  // t3 = button_pressed | button_press_buffer 
-        
-        // _initial_setup:
-        // ori     t1, r0, INITIAL_SETUP       // t1 = INITIAL_SETUP
-        // bne     t0, t1, _check_freeze_y     // skip if t0 != INITIAL_SETUP
-        // nop
-        // lbu     t1, 0x018D(a2)              // t1 = fast fall flag
-        // ori     t2, r0, 0x0007              // t2 = bitmask (01111111)
-        // and     t1, t1, t2                  // ~
-        // sb      t1, 0x018D(a2)              // disable fast fall flag
-        // sw      r0, 0x0048(a2)              // x velocity = 0
-        // lui     t1, Y_SPEED_INITIAL         // ~
-        // sw      t1, 0x004C(a2)              // y velocity = Y_SPEED_INITIAL
 
         lwc1    f8, 0x0078(a0)              // load current animation frame
         lui		at, 0x4000					// at = 6.0
@@ -1266,7 +1246,7 @@ scope RyuDSP {
 
         lw      t0, 0x4(a2)                      // t0 = character pointer
         lwc1    f8, 0x0078(t0)              // load current animation frame
-        lui		at, 0x40D0					// at = 6.0
+        lui		at, FRAME_START_GRAVITY					// at = 6.0
 		mtc1    at, f6                      // ~
         c.le.s  f8, f6                      // f8 == f6 (current frame == 1) ?
         nop
