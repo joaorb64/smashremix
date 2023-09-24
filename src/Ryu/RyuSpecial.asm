@@ -544,14 +544,18 @@ scope RyuNSP {
         lli     at, 0x000A              // at = 10.0
         sw      at, 0x0104(v1)          // save
 
-        // // Hit type
+        // Hit type
         lli     at, 0x0                 // at = 0.0 (fp)
         lui     at, 0x0                 // at = 0.0 (fp)
         sh      at, 0x010C(v1)          // save
 
+        // Hit angle
+        lli  t3, 0
+        sw   t3, 0x012C(v1)
+
         // // Hitbox base knockback
-        // lui     at, 0x42c8              // at = 100.0 (fp)
-        // sw      at, 0x0138(v1)          // save
+        lli     at, 0x0014              // at = 100
+        sw      at, 0x0138(v1)          // save
 
         // Hit FGM
         lli     at, 0x0504               // at = RYU_HIT_M
@@ -769,7 +773,7 @@ scope RyuNSP {
 
 		
 		_blaster_fireball_struct:
-        dw 80                          // 0x0000 - duration (int)
+        dw 85                          // 0x0000 - duration (int)
         float32 18                     // 0x0004 - max speed
         float32 18                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
