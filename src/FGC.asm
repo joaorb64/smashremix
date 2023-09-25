@@ -22,6 +22,7 @@ scope FGC {
 
     // Ryu auto turnaround logic
     // https://decomp.me/scratch/d0Ors 0x800E1260 @ 0x700
+    // @ 488
     scope fcg_tap_hold: {
         OS.patch_start(0x5D160, 0x800E1960)
         j       fcg_tap_hold
@@ -69,27 +70,20 @@ scope FGC {
         bc1tl fgc_target_check
         nop
 
-        lui		at, 0x40C0					// at = 3.0
+        lui		at, 0x40B0					// at = 3.0
 		mtc1    at, f6                      // ~
         c.le.s  f8, f6                      // f8 <= f6 (current frame < 3) ?
         nop
         bc1tl   button_check                // skip if frame > 3
         nop
 
-        lui		at, 0x0					// at = 6.0 4110 419C 41A0 41A8
-		mtc1    at, f6                      // ~
-        c.le.s  f6, f8                      // f6 >= f8 (6 > current frame) ?
-        nop
-        bc1tl   cancel_itself_button_check                // skip if current frame is lower than 6
-        nop
-
-        b goto_fcg_tap_hold_end_
+        b cancel_itself_frame_check
         nop
 
         button_check:
         lhu     t1, 0x01BC(a2)              // load button press buffer
         andi    t2, t1, A_PRESSED           // t2 = 0x80 if (A_PRESSED); else t2 = 0
-        bne     t2, r0, goto_fcg_tap_hold_end_ // skip if (!A_PRESSED)
+        bne     t2, r0, cancel_itself_frame_check // skip if (!A_PRESSED)
         nop
         // else, check action
 
@@ -118,7 +112,7 @@ scope FGC {
         beq    t1, t2, change_action
         addiu  t3, r0, Ryu.Action.FTILT_L
 
-        j goto_fcg_tap_hold_end_
+        j cancel_itself_frame_check
         nop
 
         change_action:
@@ -152,6 +146,17 @@ scope FGC {
         j goto_fcg_tap_hold_end_
         nop
 
+        cancel_itself_frame_check:
+        lui		at, 0x40C0					    // at = 0.0
+		mtc1    at, f6                      // ~
+        c.le.s  f6, f8                      // f6 >= f8 (6 > current frame) ?
+        nop
+        bc1tl   cancel_itself_button_check                // skip if current frame is lower than 6
+        nop
+
+        j goto_fcg_tap_hold_end_
+        nop
+
         cancel_itself_button_check:
         lhu     t1, 0x01BE(a2)              // load button tap buffer
         andi    t2, t1, A_PRESSED           // t2 = 0x80 if (A_PRESSED); else t2 = 0
@@ -169,6 +174,13 @@ scope FGC {
         slti    t1, t0, -39                                 // at = 1 if stick_y < -39, else at = 0
         bnel    t1, r0, cancel_itself_dtilt_check          // branch if stick_y >= -40...
         nop
+
+        // If we get to here, joystick Y is neutral
+        lw      t1, 0x0024(a2) // t0 = current action
+
+        lli    t2, Ryu.Action.UTILT_L
+        beq    t1, t2, change_action
+        addiu  t3, r0, Action.Jab1
 
         b goto_fcg_tap_hold_end_
         nop
@@ -198,6 +210,8 @@ scope FGC {
         
         lw v0, 0x0174(a2) // original line 1
         slti at, v0, 0x0002 // original line 2
+        // lbu     t9,0x191(a2) // original line 1 (488)
+        // lw      t3,0x40(a2) // original line 2
 
         j fcg_tap_hold_end_
         nop
@@ -439,6 +453,10 @@ scope FGC {
         lw a0, 0x20(sp) // a0 = player object
 
         lhu     t0, 0x01BC(a2)              // load button press buffer
+        lhu     t1, 0x01BE(a2)              // load button hold buffer
+
+        or     t0, t0, t1                  // join both so we cover press or hold
+
         andi    t1, t0, B_PRESSED           // t1 = 0x40 if (B_PRESSED); else t1 = 0
         beq     t1, r0, goto_hitlag_step_end                // skip if (!B_PRESSED)
         nop
