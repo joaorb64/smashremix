@@ -147,7 +147,7 @@ scope FGC {
         nop
 
         cancel_itself_frame_check:
-        lui		at, 0x40C0					    // at = 0.0
+        lui		at, 0x40B0					    // at = 0.0
 		mtc1    at, f6                      // ~
         c.le.s  f6, f8                      // f6 >= f8 (6 > current frame) ?
         nop

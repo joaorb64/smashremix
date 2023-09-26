@@ -124,7 +124,7 @@ scope RyuUSP {
         bne    t7, t2, _main_normal
         nop
 
-        lui		at, 0x4080					// at = 2.0
+        lui		at, 0x40A0					// at = 2.0
 		mtc1    at, f6                      // ~
         c.eq.s  f8, f6                      // f8 >= f6 (current frame >= 2) ?
         nop
@@ -895,7 +895,7 @@ scope RyuNSP {
         lw      t0,  0x4(s0) // t1 = player object
         lwc1    f8, 0x0078(t0)                 // load current animation frame
 
-        lui		at, 0x4000					// at = 1.0
+        lui		at, 0x4040					// at = 1.0
 		mtc1    at, f6                      // ~
         c.eq.s  f8, f6                      // f8 == f6 (current frame == 1) ?
         nop
@@ -907,7 +907,7 @@ scope RyuNSP {
 
         _check_hop:
         lwc1    f8, 0x0078(t0)                 // load current animation frame
-        lui		at, 0x4130					// at = 10.0
+        lui		at, 0x4140					// at = 12.0
 		mtc1    at, f6                      // ~
         c.eq.s  f8, f6                      // f8 == f6 (current frame == 10) ?
         nop
