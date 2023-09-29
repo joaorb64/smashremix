@@ -15,9 +15,9 @@ scope FGC {
     constant B_PRESSED(0x4000)                // bitmask for b press
     constant A_PRESSED(0x8000)                // bitmask for b press
 
-    constant MAX_X_RANGE_FORWARD(0x43E1)            // current setting - float: 450.0
+    constant MAX_X_RANGE_FORWARD(0x43C8)            // current setting - float: 400.0
     constant MAX_X_RANGE_BACK(0x4370)            // current setting - float: 240.0
-    constant MAX_Y_RANGE_UP(0x4496)            // current setting - float: 1200.0
+    constant MAX_Y_RANGE_UP(0x447A)            // current setting - float: 1000.0
     constant MAX_Y_RANGE_DOWN(0x4348)            // current setting - float: 200.0
 
     // Ryu auto turnaround logic
@@ -70,7 +70,7 @@ scope FGC {
         bc1tl fgc_target_check
         nop
 
-        lui		at, 0x40B0					// at = 3.0
+        lui		at, 0x40C0					// at = 3.0
 		mtc1    at, f6                      // ~
         c.le.s  f8, f6                      // f8 <= f6 (current frame < 3) ?
         nop
@@ -458,12 +458,32 @@ scope FGC {
         or     t0, t0, t1                  // join both so we cover press or hold
 
         andi    t1, t0, B_PRESSED           // t1 = 0x40 if (B_PRESSED); else t1 = 0
-        beq     t1, r0, goto_hitlag_step_end                // skip if (!B_PRESSED)
+        beq     t1, r0, hitlag_step_attacker_jab                // skip if (!B_PRESSED)
         nop
 
         lw      t0, 0x0008(a2)              // t0 = character id
         ori     t1, r0, Character.id.RYU    // t1 = id.RYU
         beq     t0, t1, check_move_cancel_ryu
+        nop
+
+        b goto_hitlag_step_end
+        nop
+
+        hitlag_step_attacker_jab:
+        lw a0, 0x20(sp) // a0 = player object
+
+        lhu     t0, 0x01BC(a2)              // load button press buffer
+        lhu     t1, 0x01BE(a2)              // load button hold buffer
+
+        or     t0, t0, t1                  // join both so we cover press or hold
+
+        andi    t1, t0, A_PRESSED           // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, goto_hitlag_step_end                // skip if (!A_PRESSED)
+        nop
+
+        lw      t0, 0x0008(a2)              // t0 = character id
+        ori     t1, r0, Character.id.RYU    // t1 = id.RYU
+        beq     t0, t1, check_jab_cancel_ryu
         nop
 
         b goto_hitlag_step_end
@@ -508,8 +528,52 @@ scope FGC {
         lli    t1, Ryu.Action.FTILT_CLOSE
         beq t0, t1, apply_move_cancel_ground
         nop
+        lli    t1, Ryu.Action.JAB_L
+        beq t0, t1, apply_move_cancel_ground
+        nop
+        lli    t1, Ryu.Action.JAB_L2
+        beq t0, t1, apply_move_cancel_ground
+        nop
 
         j goto_hitlag_step_end
+        nop
+
+        check_jab_cancel_ryu:
+        lw      t0, 0x0024(a2) // t0 = current action
+
+        // we're using t2 to set the action to change to
+
+        lli    t1, Ryu.Action.JAB_L
+        lli    t2, Ryu.Action.JAB_L2
+        beq    t0, t1, apply_jab_cancel
+        nop
+
+        lli    t1, Ryu.Action.JAB_L2
+        lli    t2, Ryu.Action.JAB_L3
+        beq    t0, t1, apply_jab_cancel
+        nop
+
+        j goto_hitlag_step_end
+        nop
+
+        apply_jab_cancel:
+        // we're using t2 to set the action to change to
+        addiu   sp, sp,-0x0030              // allocate stack space
+        sw      ra, 0x0004(sp)
+        sw      a1, 0x0008(sp)
+        sw      a2, 0x000C(sp)              // store variables
+        sw      a3, 0x0010(sp)              // store variables
+        addiu   sp, sp,-0x0030              // allocate stack space
+        
+        lw      a0, 0x4(a2)                 // a0 = player object
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        or     a1, r0, t2
+        or      a2, r0, r0                  // a2 = float: 0.0
+        jal     0x800E6F24                  // change action
+        lui     a3, 0x3F80                  // a3 = float: 1.0
+        nop
+
+        b apply_move_cancel_ground_end
         nop
 
         apply_move_cancel_air:

@@ -23,6 +23,7 @@ scope Ryu {
     insert SHIELD_BREAK,"moveset/SHIELD_BREAK.bin"; Moveset.GO_TO(SPARKLE)            // loops
     insert STUN, "moveset/STUN.bin"; Moveset.GO_TO(STUN)         // loops
     insert JAB_1,"moveset/JAB_1.bin"
+    insert JAB_2,"moveset/JAB_2.bin"
     insert DASH_ATTACK,"moveset/DASH_ATTACK.bin"
     insert FTILT_HI,"moveset/FORWARD_TILT_HIGH.bin"
     insert FTILT_M_HI,"moveset/FORWARD_TILT_MID_HIGH.bin"
@@ -118,7 +119,7 @@ scope Ryu {
     Character.edit_action_parameters(RYU,   Action.FSmashHigh,      0,                          0x80000000,                 0)
     Character.edit_action_parameters(RYU,   Action.FSmash,          File.RYU_FSMASH,            FSMASH,                     0x40000000)
     Character.edit_action_parameters(RYU,   Action.FSmashLow,       0,                          0x80000000,                 0)
-    Character.edit_action_parameters(RYU,   Action.USmash,          File.GND_USMASH,            USMASH,                     0)
+    Character.edit_action_parameters(RYU,   Action.USmash,          File.RYU_USMASH,            USMASH,                     0)
     Character.edit_action_parameters(RYU,   Action.DSmash,          File.RYU_DSMASH,            DSMASH,                     -1)
     Character.edit_action_parameters(RYU,   Action.AttackAirN,      File.RYU_NAIR,              NAIR,                       -1)
     Character.edit_action_parameters(RYU,   Action.AttackAirF,      File.RYU_AIRF,              FAIR,                       -1)
@@ -137,6 +138,8 @@ scope Ryu {
     Character.edit_action_parameters(RYU,   0xE7,                   -1,                         DSP_FLIP,                   -1)
     Character.edit_action_parameters(RYU,   0xE8,                   -1,                         DSP_LAND,                   -1)
     Character.edit_action_parameters(RYU,   0xE9,                   File.RYU_TATSU_GND_M,       DSP_M,                 -1) // aerial dsp
+    
+    Character.edit_action_parameters(RYU,   Action.RunBrake,        File.RYU_DASH,      -1,                         -1)
 
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
     Character.edit_action(RYU,  0xE4,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                RyuNSP.air_collision_)
@@ -149,18 +152,22 @@ scope Ryu {
 
     // Add Action Parameters                // Action Name      // Base Action  // Animation                    // Moveset Data             // Flags
     Character.add_new_action_params(RYU,    USP_L,             -1,             File.RYU_SHORYKEN_L,            USP_L,                        0x40000000)
-    Character.add_new_action_params(RYU,    JAB_L,              -1,            0x0653,                         JAB_1,                       -1)
+    Character.add_new_action_params(RYU,    JAB_L,             -1,             File.RYU_JAB_1,                 JAB_1,                       -1)
+    Character.add_new_action_params(RYU,    JAB_L2,             -1,            File.RYU_JAB_2,                 JAB_2,                       -1)
+    Character.add_new_action_params(RYU,    JAB_L3,             -1,            File.RYU_JAB_3,                 JAB_1,                       0x40000000)
     Character.add_new_action_params(RYU,    DTILT_L,           -1,             File.RYU_DTILT_L,               DTILT_L,                      0x00000000)
     Character.add_new_action_params(RYU,    UTILT_L,           -1,             File.RYU_UTILT_L,               UTILT_L,                      0x00000000)
     Character.add_new_action_params(RYU,    FTILT_L,           -1,             File.RYU_FTILT_L,               FTILT_L,                      0x00000000)
     Character.add_new_action_params(RYU,    JAB_CLOSE,         -1,             File.RYU_UTILT_H,               JAB_CLOSE,                    0x40000000)
     Character.add_new_action_params(RYU,    FTILT_CLOSE,       -1,             File.RYU_FTILT_CLOSE,           FTILT_CLOSE,                  0x40000000)
-    Character.add_new_action_params(RYU,    DSP_H,             0xE6,             File.RYU_TATSU_GND_H,           DSP_H,                        -1)
+    Character.add_new_action_params(RYU,    DSP_H,             0xE6,           File.RYU_TATSU_GND_H,           DSP_H,                        -1)
     Character.add_new_action_params(RYU,    USP_H,             -1,             File.RYU_SHORYKEN_H,            USP_H,                        0x40000000)
 
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
     Character.add_new_action(RYU,    USP_L,              -1,             ActionParams.USP_L,            0x11,           RyuUSP.main_,                   RyuUSP.change_direction_,          RyuUSP.physics_,                 RyuUSP.collision_)
-    Character.add_new_action(RYU,    JAB_L,             -1,              ActionParams.JAB_L,            0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
+    Character.add_new_action(RYU,    JAB_L,              -1,             ActionParams.JAB_L,            0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
+    Character.add_new_action(RYU,    JAB_L2,              -1,            ActionParams.JAB_L2,           0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
+    Character.add_new_action(RYU,    JAB_L3,              -1,            ActionParams.JAB_L3,           0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
     Character.add_new_action(RYU,    DTILT_L,            -1,             ActionParams.DTILT_L,          0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
     Character.add_new_action(RYU,    UTILT_L,            -1,             ActionParams.UTILT_L,          0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
     Character.add_new_action(RYU,    FTILT_L,            -1,             ActionParams.FTILT_L,          0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x80162798)
