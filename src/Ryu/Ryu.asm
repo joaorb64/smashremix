@@ -24,6 +24,7 @@ scope Ryu {
     insert STUN, "moveset/STUN.bin"; Moveset.GO_TO(STUN)         // loops
     insert JAB_1,"moveset/JAB_1.bin"
     insert JAB_2,"moveset/JAB_2.bin"
+    insert JAB_3,"moveset/JAB_3.bin"
     insert DASH_ATTACK,"moveset/DASH_ATTACK.bin"
     insert FTILT_HI,"moveset/FORWARD_TILT_HIGH.bin"
     insert FTILT_M_HI,"moveset/FORWARD_TILT_MID_HIGH.bin"
@@ -108,7 +109,7 @@ scope Ryu {
     Character.edit_action_parameters(RYU,   Action.ShieldBreak,     -1,                         SHIELD_BREAK,               -1)
     Character.edit_action_parameters(RYU,   Action.Stun,             -1,                        STUN,                       -1)
     Character.edit_action_parameters(RYU,   Action.Jab1,            File.RYU_ROUNDHOUSE,        ROUNDHOUSE,                 0)
-    Character.edit_action_parameters(RYU,   Action.DashAttack,      -1,                         DASH_ATTACK,                -1)
+    Character.edit_action_parameters(RYU,   Action.DashAttack,      File.RYU_DASH_ATTACK,       DASH_ATTACK,                0x40000000)
     Character.edit_action_parameters(RYU,   Action.FTiltHigh,       -1,                         FTILT_HI,                   -1)
     Character.edit_action_parameters(RYU,   Action.FTiltMidHigh,    -1,                         FTILT_M_HI,                 -1)
     Character.edit_action_parameters(RYU,   Action.FTilt,           File.RYU_FTILT_H,           FTILT_H,                    0x40000000)
@@ -154,7 +155,7 @@ scope Ryu {
     Character.add_new_action_params(RYU,    USP_L,             -1,             File.RYU_SHORYKEN_L,            USP_L,                        0x40000000)
     Character.add_new_action_params(RYU,    JAB_L,             -1,             File.RYU_JAB_1,                 JAB_1,                       -1)
     Character.add_new_action_params(RYU,    JAB_L2,             -1,            File.RYU_JAB_2,                 JAB_2,                       -1)
-    Character.add_new_action_params(RYU,    JAB_L3,             -1,            File.RYU_JAB_3,                 JAB_1,                       0x40000000)
+    Character.add_new_action_params(RYU,    JAB_L3,             -1,            File.RYU_JAB_3,                 JAB_3,                       -1)
     Character.add_new_action_params(RYU,    DTILT_L,           -1,             File.RYU_DTILT_L,               DTILT_L,                      0x00000000)
     Character.add_new_action_params(RYU,    UTILT_L,           -1,             File.RYU_UTILT_L,               UTILT_L,                      0x00000000)
     Character.add_new_action_params(RYU,    FTILT_L,           -1,             File.RYU_FTILT_L,               FTILT_L,                      0x00000000)

@@ -415,7 +415,7 @@ scope RyuNSP {
 
 
     // tmp variable 1 0x017C
-    // tmp variable 2 0x0180
+    // tmp variable 2 0x0B30 -- use this to check if we're going for shakunetsu
     // tmp variable 3 0x0184
 
     // @ Description 
@@ -439,6 +439,31 @@ scope RyuNSP {
 
         // frame = 1.0
         sw      r0, 0x0048(v0)  // set zero x speed
+
+        // check if we came from a smash input
+        // in this case, do shakunetsu
+        sw r0, 0x0B30(v0) // initialize tmp var 2 as zero
+        
+        // check stick x
+        lb      t0, 0x01C2(v0)              // t0 = stick_x
+        mtc1    t0, f6                     // f6 = stick_x
+        cvt.s.w f6, f6
+        abs.s   f6, f6                    // f6 = abs(stick_x)
+        lui     t1, 0x4260                  // t1 = 56.0
+        mtc1    t1, f8                      // f8 = 56.0
+        c.le.s  f8, f6                      // ~
+        nop                                 // ~
+        bc1fl   main_continue            // skip if absolute stick < 56
+        nop
+
+        // check B buffer
+        lbu      t0, 0x26a(v0)              // t0 = b button press buffer
+        slti    t0, t0, 8
+        beqz   t0, main_continue
+        nop
+
+        lli t0, 0x2
+        sw t0, 0x0B30(v0) // set tmp variable 2 to 1 to know we're going for shakunetsu
         
         main_continue:
         or      a3, a0, r0
@@ -491,6 +516,15 @@ scope RyuNSP {
         lw      t7, 0x0038(sp)
 		sw      s0, 0x0018(sp)
 
+        lw t0, 0x0B30(v0) // t0 = load tmp variable 2
+        lli t1, 0x2 // If it's 0x2, we load shakunetsu
+
+        bne t0, t1, hadouken_branch
+        nop
+
+        b shakunetsu_branch
+
+        hadouken_branch:
         // Check if B is pressed to switch between light and strong hadouken
         // v0 = player struct
         la      s0, _blaster_fireball_struct       // s0 = light hadouken address
@@ -501,6 +535,20 @@ scope RyuNSP {
         nop
 
         la      s0, _blaster_fireball_heavy_struct       // s0 = light hadouken address
+        b       projectile_stage_setting_continue
+        nop
+
+        shakunetsu_branch:
+        // Check if B is pressed to switch between light and strong hadouken
+        // v0 = player struct
+        la      s0, _blaster_shakunetsu_struct       // s0 = light hadouken address
+
+        lhu     t0, 0x01BC(v0)              // load button press buffer
+        andi    t1, t0, 0x4000           // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, projectile_stage_setting_continue // skip if (!B_PRESSED)
+        nop
+
+        la      s0, _blaster_shakunetsu_heavy_struct       // s0 = light hadouken address
         b       projectile_stage_setting_continue
         nop
         
@@ -771,6 +819,20 @@ scope RyuNSP {
         dw 0x80175958                   // This function is run when the projectile is used on ness while using psi magnet
         OS.copy_segment(0x103904, 0x0C) // empty 
 
+        _blaster_shakunetsu_struct:
+        dw 85                          // 0x0000 - duration (int)
+        float32 18                     // 0x0004 - max speed
+        float32 18                      // 0x0008 - min speed
+        float32 0                       // 0x000C - gravity
+        float32 0                       // 0x0010 - bounce multiplier
+        float32 0                       // 0x0014 - rotation angle
+        float32 0                       // 0x0018 - initial angle (ground)
+        float32 0                       // 0x001C   initial angle (air)
+        float32 18                      // 0x0020   initial speed
+        dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
+        dw 0                            // 0x0028   unknown (default 0)
+        float32 1                       // 0x002C   palette index (0 = mario, 1 = luigi)
+        OS.copy_segment(0x1038A0, 0x30)
 		
 		_blaster_fireball_struct:
         dw 85                          // 0x0000 - duration (int)
@@ -785,6 +847,21 @@ scope RyuNSP {
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)
+        OS.copy_segment(0x1038A0, 0x30)
+
+        _blaster_shakunetsu_heavy_struct:
+        dw 65                          // 0x0000 - duration (int)
+        float32 38                     // 0x0004 - max speed
+        float32 38                      // 0x0008 - min speed
+        float32 0                       // 0x000C - gravity
+        float32 0                       // 0x0010 - bounce multiplier
+        float32 0                       // 0x0014 - rotation angle
+        float32 0                       // 0x0018 - initial angle (ground)
+        float32 0                       // 0x001C   initial angle (air)
+        float32 38                      // 0x0020   initial speed
+        dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
+        dw 0                            // 0x0028   unknown (default 0)
+        float32 1                       // 0x002C   palette index (0 = mario, 1 = luigi)
         OS.copy_segment(0x1038A0, 0x30)
 
         _blaster_fireball_heavy_struct:

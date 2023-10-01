@@ -2398,6 +2398,7 @@ scope File {
     constant RYU_JAB_1(0x11A7)
     constant RYU_JAB_2(0x11A8)
     constant RYU_JAB_3(0x11A9)
+    constant RYU_DASH_ATTACK(0x11AA)
     constant META_REMIX_STAGE(0x1186)
     constant META_REMIX_HEADER(0x1187)
     constant DARK_SAMUS_IDLE(0x1188)
