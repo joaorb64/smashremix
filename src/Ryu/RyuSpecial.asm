@@ -523,11 +523,14 @@ scope RyuNSP {
         nop
 
         b shakunetsu_branch
+        nop
 
         hadouken_branch:
         // Check if B is pressed to switch between light and strong hadouken
         // v0 = player struct
         la      s0, _blaster_fireball_struct       // s0 = light hadouken address
+
+        li t2, _blaster_projectile_struct // Load projectile struct address into t2 for later use
 
         lhu     t0, 0x01BC(v0)              // load button press buffer
         andi    t1, t0, 0x4000           // t1 = 0x40 if (B_PRESSED); else t1 = 0
@@ -543,6 +546,8 @@ scope RyuNSP {
         // v0 = player struct
         la      s0, _blaster_shakunetsu_struct       // s0 = light hadouken address
 
+        li t2, _blaster_shakunetsu_projectile_struct // Load projectile struct address into t2 for later use
+
         lhu     t0, 0x01BC(v0)              // load button press buffer
         andi    t1, t0, 0x4000           // t1 = 0x40 if (B_PRESSED); else t1 = 0
         beq     t1, r0, projectile_stage_setting_continue // skip if (!B_PRESSED)
@@ -555,10 +560,10 @@ scope RyuNSP {
         projectile_stage_setting_continue:
         sw      a1, 0x0034(sp)
         sw      ra, 0x001C(sp)
+        or      a1, t2, r0		// use projectile address saved in t2
         lw      t6, 0x0084(a0)
         lw      t0, 0x0024(s0)
         lw      t1, 0x0028(s0)
-        li      a1, _blaster_projectile_struct		// load projectile addresses
         lw      a2, 0x0034(sp)
         lui     a3, 0x8000
         sw      t6, 0x002C(sp)
@@ -580,6 +585,17 @@ scope RyuNSP {
         lw      t3, 0x0000(s0)
         sw      t3, 0x0268(v1)
 
+        lw v0, 0x002C(sp) // load player struct to v0
+        lw t0, 0x0B30(v0) // t0 = load tmp variable 2
+        lli t1, 0x2 // If it's 0x2, we load shakunetsu
+
+        bne t0, t1, _projectile_branch_hadouken
+        nop
+
+        b _projectile_branch_shakunetsu
+        nop
+
+        _projectile_branch_hadouken:
         // ==============
         // EDIT HITBOX
         // ==============
@@ -593,16 +609,13 @@ scope RyuNSP {
         sw      at, 0x0104(v1)          // save
 
         // Hit type
-        lli     at, 0x0                 // at = 0.0 (fp)
-        lui     at, 0x0                 // at = 0.0 (fp)
-        sh      at, 0x010C(v1)          // save
+        sw      r0, 0x010C(v1)          // save
 
         // Hit angle
-        lli  t3, 0x3C // 60
-        sw   t3, 0x012C(v1)
+        sw   r0, 0x012C(v1)
 
         // // Hitbox base knockback
-        lli     at, 0x001C              // at = 28
+        lli     at, 0x0008              // at = 16
         sw      at, 0x0138(v1)          // save
 
         // Hit FGM
@@ -612,7 +625,46 @@ scope RyuNSP {
         // ==============
         // END EDIT HITBOX
         // ==============
+        
+        b _projectile_branch_continue
+        nop
+
+        _projectile_branch_shakunetsu:
+        // ==============
+        // EDIT HITBOX
+        // ==============
+
+        // Hitbox size
+        lui     at, 0x42f0              // at = 120.0 (fp)
+        sw      at, 0x0128(v1)          // save
+
+        // Hitbox damage
+        lli     at, 0x0001              // at = 10.0
+        sw      at, 0x0104(v1)          // save
+
+        // Hit type
+        lli     at, 0x1                 // at = 1 (fire)
+        sw      at, 0x010C(v1)          // save
+
+        // Hit angle
+        lli     at, 0x0050 // 80
+        sw      at, 0x012C(v1)
+
+        // // Hitbox base knockback
+        lli     at, 0x0006              // 6
+        sw      at, 0x0138(v1)          // save
+
+        // Hit FGM
+        lli     at, 0x0504               // at = RYU_HIT_M
+        sh      at, 0x0146(v1)          // save
+
+        sw r0, 0x02A0(v1) // start tmp variable 2 as zero (will be 1 if collided with anything)
+        
+        // ==============
+        // END EDIT HITBOX
+        // ==============
    
+        _projectile_branch_continue:
         OS.copy_segment(0xE3268, 0x2C)   
         lw      t6, 0x002C(sp)
 		lwc1    f6, 0x0020(s0)           // load speed (integer)
@@ -654,7 +706,7 @@ scope RyuNSP {
         swc1    f10, 0x0024(sp)
         lw      a0, 0x0084(a0)
 
-        jal     0x80167FE8      // check if duration is over
+        jal     0x80167FE8      // decrease duration and check if duration is over
         sw      a0, 0x001C(sp)  // store a0
         bnez    v0, _end_duration        // branch if duration over
         addiu   v0, r0, 1       // return 1 (destroy projectile)
@@ -671,44 +723,6 @@ scope RyuNSP {
         addiu   t2, r0, r0          // used to use free space area, but for no apparent reason, effects graphics
         lw      v1, 0x0074(t1)
         or      v0, r0, r0
-        // lwc1    f8, 0x0020(a0)      // load current speed
-		// lui		at, 0x3F84          // speed multiplier (accel) loaded in at (1.03125)
-		// mtc1	at, f6              // move speed multiplier to floating point register
-		// mul.s   f8, f8, f6          // speed multiplied by accel
-        
-        
-        // lw      at, 0x0004(t0)      // load max speed
-        // mtc1    at, f6
-        // lw      at, 0x029C(a0)      // load multiplier that is typically one, unless reflected
-        // mtc1    at, f10
-        // mul.s   f6, f6, f10
-        // c.le.s  f8, f6
-        // nop
-        //bc1f    _scaling
-        // swc1    f6, 0x0020(a0)      // if speed is greater than max rightward velocity, save max speed
-        //neg.s   f6, f6
-        //c.le.s  f8, f6
-        //nop
-        //bc1t    _scaling
-        // swc1    f6, 0x0020(a0)      // if speed is less than max leftward velocity, save max speed
-		//swc1    f8, 0x0020(a0)      // save new speed amount to projectile hitbox information
-        
-        _scaling:
-        // v1 = projectile joint 1
-        // a0 = projectile struct
-        // t1 = projectile object
-
-        // lwc1    f6, 0x0020(a0)      // ~
-        // abs.s   f6, f6              // f6 = absolute current speed
-        // lui     at, 0x41B0          // ~
-        // mtc1    at, f8              // f8 = initial speed (currently 22)
-        // lui     at, 0x3E80          // ~
-        // mtc1    at, f10             // f10 = 0.25
-        // add.s   f6, f6, f8          // ~
-        // add.s   f6, f6, f8          // ~
-        // add.s   f6, f6, f8          // ~
-        // mul.s   f6, f6, f10         // f6 = (current speed + 66) * 0.25
-        // div.s   f6, f6, f8          // f6 = x size multiplier (adjusted current speed / initial speed)
 
         lui at, 0x3FA0
         mtc1    at, f6
@@ -717,6 +731,118 @@ scope RyuNSP {
         swc1    f6, 0x0044(v1)      // store y size multiplier to projectile joint
 
         _end_duration:
+        lw      ra, 0x0014(sp)
+        lwc1    f10, 0x0024(sp)
+        addiu   sp, sp, 0x0024
+        jr      ra
+        nop
+
+        // this subroutine seems to have a variety of functions, but definetly deals with the duration of move and result at the end of duration
+        blaster_duration_shakunetsu:
+        addiu   sp, sp, -0x0024
+        sw      ra, 0x0014(sp)
+        sw      a0, 0x0020(sp)
+        swc1    f10, 0x0024(sp)
+        lw      a0, 0x0084(a0)
+
+        jal     0x80167FE8      // decrease duration and check if duration is over
+        sw      a0, 0x001C(sp)  // store a0
+        bnez    v0, _end_duration        // branch if duration over
+        addiu   v0, r0, 1       // return 1 (destroy projectile)
+        lw      a0, 0x001C(sp)  // if here, restore a0
+        
+        _continue_shakunetsu:
+        addiu   t8, r0, r0          // used to use free space area, but for no apparent reason, affects graphics
+        //lw      t8, 0x029C(a0)
+        li      t0, _blaster_fireball_struct
+        addu    v0, r0, t0
+        lw      a1, 0x000C(v0)
+        lw      a2, 0x0004(v0)
+        lw      t1, 0x0020(sp)
+        addiu   t2, r0, r0          // used to use free space area, but for no apparent reason, effects graphics
+        lw      v1, 0x0074(t1)
+        or      v0, r0, r0
+
+        lw      t0, 0x02A0(a0) // check if collided with anything
+        lli     t1, 0x1
+        bne     t0, t1, _continue_shakunetsu2
+        nop
+        
+        // if collided with anything, continue
+        lwc1    f8, 0x0020(a0)      // load current speed
+
+		lui		at, 0x4180          // new speed = 16.0
+        mtc1    at, f6              // f6 = new speed
+
+        mtc1    r0, f10             // load 0 to f10
+        c.lt.s  f8, f10             // current velocity compared to 0 (less than or equal to)
+        nop
+        bc1f    _slow_shaku_apply // jump if velocity is greater than 0
+        nop
+
+        neg.s   f6, f6
+
+        _slow_shaku_apply:
+        swc1      f6, 0x0020(a0)
+
+        _check_frame_refresh:
+        // Reset hitbox on frames: 7, 9, 13
+        // Reversed (because we use the duration), these are duration = 7, 5, 1
+        lw      t0, 0x0268(a0) // t0 = remaining duration
+
+        lli     t1, 0x7
+        beq     t0, t1, _refresh_hitbox
+        nop
+
+        lli     t1, 0x5
+        beq     t0, t1, _refresh_hitbox
+        nop
+
+        lli     t1, 0x1
+        beq     t0, t1, _refresh_hitbox
+        nop
+
+        b _continue_shakunetsu2
+        nop
+
+        _refresh_hitbox:
+
+        // refresh hitbox
+        sw      r0, 0x0214(a0)              // reset hit object pointer 1
+        sw      r0, 0x021C(a0)              // reset hit object pointer 2
+        sw      r0, 0x0224(a0)              // reset hit object pointer 3
+        sw      r0, 0x022C(a0)              // reset hit object pointer 4
+
+        lli     t1, 0x1
+        bne     t0, t1, _continue_shakunetsu2  // if we're not in the final hit, skip
+        nop
+
+        // Set last hit properties
+        // Hitbox damage
+        lli     t0, 0x000A              // 10
+        sw      t0, 0x0104(a0)          // save
+
+        // Hit angle
+        lli  t1, 0x0037 // 55
+        sw   t1, 0x012C(a0)
+
+        // // Hitbox base knockback
+        lli     t0, 0x0040              // at = 64
+        sw      t0, 0x0138(a0)          // save
+
+        // Hit FGM
+        lli     t0, 0x0504               // at = RYU_HIT_M
+        sh      t0, 0x0146(a0)          // save
+
+        _continue_shakunetsu2:
+
+        lui at, 0x3FA0
+        mtc1    at, f6
+
+        swc1    f6, 0x0040(v1)      // store x size multiplier to projectile joint
+        swc1    f6, 0x0044(v1)      // store y size multiplier to projectile joint
+
+        _end_duration_shakunetsu:
         lw      ra, 0x0014(sp)
         lwc1    f10, 0x0024(sp)
         addiu   sp, sp, 0x0024
@@ -801,8 +927,31 @@ scope RyuNSP {
         or      v0, r0, r0
         jr      ra
         nop
+
+        // @ Description
+        // This subroutine bounces the ryo off shields and changes the rotation of the graphic on top
+        scope shakunetsu_collision: {
+            OS.routine_begin(0x20)              // allocate stackspace
+
+            lw      v0, 0x0084(a0)              // v0 = projectile special struct
+
+            lw      t0, 0x02A0(v0)
+            lli     t1, 0x1
+
+            beq     t0, t1, shakunetsu_collision_end // if already collided, skip
+            nop
+            
+            lli     t0, 0x1
+            sw      t0, 0x02A0(v0)
+
+            lli     t0, 0x9
+            sw      t0, 0x0268(v0)              // set duration to 8
+            
+            shakunetsu_collision_end:
+            addiu   v0, r0, 0                   // return 0 (dont destroy)
+            OS.routine_end(0x20)                // deallocate stackspace and return
+        }
         
-		
 		_blaster_projectile_struct:
         dw 0x00000000                   // this has some sort of bit flag to tell it to use secondary type display list?
 		dw 0x00000000
@@ -814,6 +963,22 @@ scope RyuNSP {
         dw 0x80175958    		        // after_effect 0x801691FC, this one is used when grenade connects with player
         dw 0x80175958                   // after_effect 0x801691FC, used when touched by player when object is still, by setting to null, nothing happens
         dw 0x8016DD2C                   // determines behavior when projectile bounces off shield, this uses Master Hand's projectile coding to determine correct angle of graphic (0x8016898C Fox)
+        dw 0x80175958                   // after_effect                // rocket_after_effect 0x801691FC
+        dw blaster_reflection           // OS.copy_segment(0x1038FC, 0x04)            // this determines reflect behavior (default 0x80168748)
+        dw 0x80175958                   // This function is run when the projectile is used on ness while using psi magnet
+        OS.copy_segment(0x103904, 0x0C) // empty 
+
+        _blaster_shakunetsu_projectile_struct:
+        dw 0x00000000                   // this has some sort of bit flag to tell it to use secondary type display list?
+		dw 0x00000000
+        dw Character.RYU_file_6_ptr    // pointer to file
+        dw 0x00000000                   // 00000000
+        dw 0x12480000                   // rendering routine?
+        dw blaster_duration_shakunetsu             // duration (default 0x80168540) (samus 0x80168F98)
+        dw 0x80175914                   // collision (0x801685F0 - Mario) (0x80169108 - Samus)
+        dw shakunetsu_collision    		        // after_effect 0x801691FC, this one is used when grenade connects with player
+        dw shakunetsu_collision                   // after_effect 0x801691FC, used when touched by player when object is still, by setting to null, nothing happens
+        dw shakunetsu_collision                   // determines behavior when projectile bounces off shield, this uses Master Hand's projectile coding to determine correct angle of graphic (0x8016898C Fox)
         dw 0x80175958                   // after_effect                // rocket_after_effect 0x801691FC
         dw blaster_reflection           // OS.copy_segment(0x1038FC, 0x04)            // this determines reflect behavior (default 0x80168748)
         dw 0x80175958                   // This function is run when the projectile is used on ness while using psi magnet
