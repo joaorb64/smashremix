@@ -786,9 +786,12 @@ scope RyuNSP {
         swc1      f6, 0x0020(a0)
 
         _check_frame_refresh:
-        // Reset hitbox on frames: 7, 9, 13
-        // Reversed (because we use the duration), these are duration = 7, 5, 1
+        // Refresh hitbox on duration = 9, 7, 5, 1
         lw      t0, 0x0268(a0) // t0 = remaining duration
+
+        lli     t1, 0x9
+        beq     t0, t1, _refresh_hitbox
+        nop
 
         lli     t1, 0x7
         beq     t0, t1, _refresh_hitbox
@@ -944,8 +947,11 @@ scope RyuNSP {
             lli     t0, 0x1
             sw      t0, 0x02A0(v0)
 
-            lli     t0, 0x9
+            lli     t0, 0xB
             sw      t0, 0x0268(v0)              // set duration to 8
+
+            lui     t0, 0x4320              // 160.0 (fp)
+            sw      t0, 0x0128(v0)          // save new hitbox size
             
             shakunetsu_collision_end:
             addiu   v0, r0, 0                   // return 0 (dont destroy)
