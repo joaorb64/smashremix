@@ -84,6 +84,8 @@ scope Ryu {
     OS.align(16)
 
     // Modify Action Parameters             // Action               // Animation                // Moveset Data             // Flags
+    Character.edit_action_parameters(RYU,   Action.Entry,           File.RYU_IDLE,              IDLE,                         -1)
+    Character.edit_action_parameters(RYU,   0x006,                  File.RYU_IDLE,              IDLE,                         -1)
     Character.edit_action_parameters(RYU,   Action.Idle,            File.RYU_IDLE,              IDLE,                       -1)
     Character.edit_action_parameters(RYU,   Action.Run,             -1,                         RUN,                        -1)
     Character.edit_action_parameters(RYU,   Action.Dash,            File.RYU_DASH,              -1,                         -1)
@@ -131,10 +133,8 @@ scope Ryu {
     Character.edit_action_parameters(RYU,   Action.LandingAirF,     0,                          0x80000000,                 -1)
     Character.edit_action_parameters(RYU,   0xE0,                   File.SHEIK_ENTRY_LEFT,      ENTRY,                     0x40000009)
     Character.edit_action_parameters(RYU,   0xE1,                   File.SHEIK_ENTRY_RIGHT,     ENTRY,                     0x40000009)
-	Character.edit_action_parameters(RYU,   0xE2,                   File.GND_ENTRY_2_LEFT,      ENTRY_2,                    0x40000000)
-	Character.edit_action_parameters(RYU,   0xE3,                   File.GND_ENTRY_2_RIGHT,      ENTRY_2,                   0x40000000)
-	Character.edit_action_parameters(RYU,   0xE4,                   File.RYU_HADOUKEN_GND,          NSP_AIR,                 0x40000000)
-    Character.edit_action_parameters(RYU,   0xE5,                   File.RYU_HADOUKEN_GND,          NSP_AIR,                 0x40000000)
+	Character.edit_action_parameters(RYU,   0xE4,                   File.RYU_HADOUKEN_GND,      NSP_AIR,                 0x40000000)
+    Character.edit_action_parameters(RYU,   0xE5,                   File.RYU_HADOUKEN_GND,      NSP_AIR,                 0x40000000)
     Character.edit_action_parameters(RYU,   0xE6,                   File.RYU_TATSU_GND_L,       DSP_L,                 -1)
     Character.edit_action_parameters(RYU,   0xE7,                   -1,                         DSP_FLIP,                   -1)
     Character.edit_action_parameters(RYU,   0xE8,                   -1,                         DSP_LAND,                   -1)
@@ -264,10 +264,10 @@ scope Ryu {
         //constant JabLoopStart(0x0DD)
         //constant JabLoop(0x0DE)
         //constant JabLoopEnd(0x0DF)
-        constant AppearLeft1(0x0E0)
+        // constant AppearLeft1(0x0E0)
         constant Blaster(0x0E4)
         constant BlasterAir(0x0E5)
-        constant AppearRight2(0x0E3)
+        // constant AppearRight2(0x0E3)
         constant Hadouken(0x0E4)
         constant HadoukenAir(0x0E5)
         constant WarlockKick(0x0E6)
@@ -285,10 +285,10 @@ scope Ryu {
         //string_0x0DD:; String.insert("JabLoopStart")
         //string_0x0DE:; String.insert("JabLoop")
         //string_0x0DF:; String.insert("JabLoopEnd")
-        string_0x0E0:; String.insert("AppearLeft1")
-        string_0x0E1:; String.insert("AppearRight1")
-        string_0x0E2:; String.insert("AppearLeft1")
-        string_0x0E3:; String.insert("AppearRight2")
+        // string_0x0E0:; String.insert("AppearLeft1")
+        // string_0x0E1:; String.insert("AppearRight1")
+        // string_0x0E2:; String.insert("AppearLeft1")
+        // string_0x0E3:; String.insert("AppearRight2")
         string_0x0E4:; String.insert("Hadouken")
         string_0x0E5:; String.insert("HadoukenAir")
         string_0x0E6:; String.insert("WarlockKick")
@@ -306,10 +306,6 @@ scope Ryu {
         dw 0
         dw 0
         dw 0
-        dw string_0x0E0
-        dw string_0x0E1
-        dw string_0x0E2
-        dw string_0x0E3
         dw string_0x0E4
         dw string_0x0E5
         dw string_0x0E6

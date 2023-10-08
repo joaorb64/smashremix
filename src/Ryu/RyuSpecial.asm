@@ -648,7 +648,7 @@ scope RyuNSP {
 
         // Hit angle
         lli     at, 0x0050 // 80
-        sw      at, 0x012C(v1)
+        sw      r0, 0x012C(v1)
 
         // // Hitbox base knockback
         lli     at, 0x0006              // 6

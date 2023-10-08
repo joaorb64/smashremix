@@ -44,11 +44,6 @@ scope FGC {
         nop
 
         main_logic:
-        lw      t0, 0x0024(a2) // t0 = current action
-        sltiu   at, t0, Action.Jab1              // at = 1 if action id < JAB1, else at = 0
-        bnez    at, goto_fcg_tap_hold_end_        // skip if target action id < 7 (target is in a KO action)
-        nop
-
         lw t1,  0x4(a2)                     // t1 = fighter object
         lwc1    f8, 0x0078(t1)              // load current frame into f8
 
@@ -394,6 +389,21 @@ scope FGC {
         }
 
         fgc_target_check:
+        lw      t0, 0x0024(a2) // t0 = current action
+        subi    at, t0, Action.Jab1              // at = 1 if action id < JAB1, else at = 0
+        beqz    at, fgc_target_check_continue        // skip if target action id < 7 (target is in a KO action)
+        nop
+
+        lw      t0, 0x0024(a2) // t0 = current action
+        subi    at, t0, Ryu.Action.FTILT_L        // at = 1 if action id < JAB1, else at = 0
+        beqz    at, fgc_target_check_continue        // skip if target action id < 7 (target is in a KO action)
+        nop
+
+        b goto_fcg_tap_hold_end_
+        nop
+
+        fgc_target_check_continue:
+
         or      t5, r0, a0
 
         lw t6, 0x0B18(a0) //
