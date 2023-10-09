@@ -111,6 +111,22 @@ scope FGC {
         beq    t1, t2, change_action
         addiu  t3, r0, Ryu.Action.FTILT_L
 
+        lli    t2, Action.FTiltHigh
+        beq    t1, t2, change_action
+        addiu  t3, r0, Ryu.Action.FTILT_L
+
+        lli    t2, Action.FTiltMidHigh
+        beq    t1, t2, change_action
+        addiu  t3, r0, Ryu.Action.FTILT_L
+
+        lli    t2, Action.FTiltMidLow
+        beq    t1, t2, change_action
+        addiu  t3, r0, Ryu.Action.FTILT_L
+
+        lli    t2, Action.FTiltLow
+        beq    t1, t2, change_action
+        addiu  t3, r0, Ryu.Action.FTILT_L
+
         j cancel_itself_frame_check
         nop
 
@@ -398,7 +414,6 @@ scope FGC {
         beqz    at, fgc_target_check_continue        // skip if target action id < 7 (target is in a KO action)
         nop
 
-        lw      t0, 0x0024(a2) // t0 = current action
         subi    at, t0, Ryu.Action.FTILT_L        // at = 1 if action id < JAB1, else at = 0
         beqz    at, fgc_target_check_continue        // skip if target action id < 7 (target is in a KO action)
         nop
@@ -407,7 +422,6 @@ scope FGC {
         nop
 
         fgc_target_check_continue:
-
         or      t5, r0, a0
 
         lw t6, 0x0B18(a0) //
