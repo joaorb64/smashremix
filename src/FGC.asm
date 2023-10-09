@@ -57,25 +57,29 @@ scope FGC {
         bc1tl   goto_fcg_tap_hold_end_    // skip if frame < 0
         nop
 
-        // If on first animation frame, check if we have to change to the proximity move instead
+        // If on first animation frame, check if we have to change to the proximity move
         lui at, 0x4000
         mtc1 at, f6
         c.eq.s f8, f6
         nop
         bc1tl fgc_target_check
         nop
+        
+        b button_check
+        nop
 
+        button_check:
+        // check current animation frame
+        lw t1,  0x4(a2)                     // t1 = fighter object
+        lwc1    f8, 0x0078(t1)              // load current frame into f8
+        
         lui		at, 0x40C0					// at = 3.0
 		mtc1    at, f6                      // ~
         c.le.s  f8, f6                      // f8 <= f6 (current frame < 3) ?
         nop
-        bc1tl   button_check                // skip if frame > 3
+        bc1fl   cancel_itself_frame_check                // skip if frame > 3
         nop
-
-        b cancel_itself_frame_check
-        nop
-
-        button_check:
+        
         lhu     t1, 0x01BC(a2)              // load button press buffer
         andi    t2, t1, A_PRESSED           // t2 = 0x80 if (A_PRESSED); else t2 = 0
         bne     t2, r0, cancel_itself_frame_check // skip if (!A_PRESSED)
@@ -399,7 +403,7 @@ scope FGC {
         beqz    at, fgc_target_check_continue        // skip if target action id < 7 (target is in a KO action)
         nop
 
-        b goto_fcg_tap_hold_end_
+        b button_check
         nop
 
         fgc_target_check_continue:
@@ -422,7 +426,7 @@ scope FGC {
         sw t7, 0x0B1C(a0) // restore player struct variables
         or a0, r0, t5
 
-        beq     t0, r0, goto_fcg_tap_hold_end_          // branch if no target was found
+        beq     t0, r0, button_check          // branch if no target was found
         nop
 
         // if check_target_ returned a new valid target
@@ -438,7 +442,7 @@ scope FGC {
         beq    t1, t2, change_action
         addiu  t3, r0, Ryu.Action.FTILT_CLOSE
 
-        b goto_fcg_tap_hold_end_
+        b button_check
         nop
     }
 
