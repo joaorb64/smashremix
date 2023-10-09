@@ -655,7 +655,7 @@ scope RyuNSP {
         sw      at, 0x0138(v1)          // save
 
         // Hit FGM
-        lli     at, 0x0504               // at = RYU_HIT_M
+        lli     at, FGM.hit.FIRE_S               // at = RYU_HIT_M
         sh      at, 0x0146(v1)          // save
 
         sw r0, 0x02A0(v1) // start tmp variable 2 as zero (will be 1 if collided with anything)
@@ -829,12 +829,16 @@ scope RyuNSP {
         lli  t1, 0x0037 // 55
         sw   t1, 0x012C(a0)
 
-        // // Hitbox base knockback
-        lli     t0, 0x0040              // at = 64
+        // Hitbox base knockback
+        lli     t0, 0x0040              // 64
         sw      t0, 0x0138(a0)          // save
 
+        // Hitbox knockback growth
+        lli     t0, 0x001E              // 30
+        sw      t0, 0x0130(a0)          // save
+
         // Hit FGM
-        lli     t0, 0x0504               // at = RYU_HIT_M
+        lli     t0, FGM.hit.FIRE_M      // at = RYU_HIT_M
         sh      t0, 0x0146(a0)          // save
 
         _continue_shakunetsu2:
@@ -1242,9 +1246,9 @@ scope RyuNSP {
 }
 
 scope RyuDSP {
-    constant X_SPEED(0x4220)                // current setting - float:460.0
-    constant X_SPEED_AIR(0x41C8)            // current setting - float:460.0
-    constant X_SPEED_END_AIR(0x41F0)        // current setting - float:30.0
+    constant X_SPEED(0x4220)                // current setting - float:40.0
+    constant X_SPEED_AIR(0x41F0)            // current setting - float:30.0
+    constant X_SPEED_END_AIR(0x4220)        // current setting - float:40.0
     constant X_SPEED_END_GROUND(0x4270)     // current setting - float:60.0
     constant Y_SPEED_INITIAL(0x4248)        // current setting - float:50.0
     constant FRAME_START_GRAVITY(0x41A0)    // frame to start applying gravity on aerial version
