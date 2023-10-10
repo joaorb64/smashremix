@@ -184,6 +184,12 @@ scope RyuUSP {
 
         _end:
         addiu   sp, sp, 0x0028              // deallocate stack space
+
+        OS.save_registers()
+        jal RyuDSP.check_ledge_grab_        // cliff catch routine
+        nop
+        OS.restore_registers()
+
         jr      ra                          // return
         nop
     }
@@ -1512,12 +1518,38 @@ scope RyuDSP {
         swc1    f0, 0x004C(a2)              // store updated y velocity
         
         _end:
+        jal check_ledge_grab_           // cliff catch routine
+        nop
+
         OS.restore_registers()
         lwc1    f0, 0x0004(sp)              // ~
         lwc1    f2, 0x0008(sp)              // load f0, f2
         addiu   sp, sp, 0x0010              // deallocate stack space
         jr      ra                          // return
         nop 
+    }
+
+    scope check_ledge_grab_: {
+        addiu   sp, sp,-0x0030              // allocate stack space
+        sw      ra, 0x0014(sp)              // ~
+        sw      a0, 0x0018(sp)              // store ra, a0
+        jal     0x800DE87C                  // check ledge/floor collision?
+        nop
+        beq     v0, r0, _end                // skip if !collision
+        nop
+        lw      a0, 0x0018(sp)              // a0 = player object
+        lw      a1, 0x0084(a0)              // a1 = player struct
+        lhu     a2, 0x00D2(a1)              // a2 = collision flags?
+        andi    a2, a2, 0x3000              // bitmask
+        beq     a2, r0, _end                // skip if !ledge_collision
+        nop
+        jal     0x80144C24                  // ledge grab subroutine
+        nop
+        
+        _end:
+        lw      ra, 0x0014(sp)              // load ra
+        jr      ra                          // return
+        addiu   sp, sp, 0x0030              // deallocate stack space
     }
     
     // @ Description

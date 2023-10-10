@@ -93,6 +93,7 @@ scope Ryu {
     Character.edit_action_parameters(RYU,   Action.TeeterStart,     -1,                         IDLE,                       -1)
     Character.edit_action_parameters(RYU,   Action.Fall,            File.RYU_FALL,              -1,                         0x00000000)
     Character.edit_action_parameters(RYU,   Action.FallAerial,      File.RYU_AIRFALL,           -1,                         0x00000000)
+    Character.edit_action_parameters(RYU,   Action.FallSpecial,      File.RYU_FALLSPECIAL,           -1,                         -1)
     Character.edit_action_parameters(RYU,   Action.JumpF,           File.RYU_JUMPF,             -1,                         0x00000000)
     Character.edit_action_parameters(RYU,   Action.JumpB,           File.RYU_JUMPB,             JUMPB,                      0x80000000)
     Character.edit_action_parameters(RYU,   Action.ThrowF,          File.RYU_THROWF,            THROWF,                     0x10000000)

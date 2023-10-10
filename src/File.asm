@@ -2403,6 +2403,7 @@ scope File {
     constant RYU_AIRJUMPF(0x11AC)
     constant RYU_AIRJUMPB(0x11AD)
     constant RYU_AIRFALL(0x11AE)
+    constant RYU_FALLSPECIAL(0x11AF)
     constant META_REMIX_STAGE(0x1186)
     constant META_REMIX_HEADER(0x1187)
     constant DARK_SAMUS_IDLE(0x1188)
