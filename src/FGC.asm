@@ -57,15 +57,265 @@ scope FGC {
         bc1tl   goto_fcg_tap_hold_end_    // skip if frame < 0
         nop
 
+        lw t1, 0x0B24(a2)
+
+        blez t1, thingie // if cancel window <= 0, skip
+        nop
+
+        subi t1, 0x1
+        sw t1, 0x0B24(a2)
+
+        lw t2,  0x4(a2)                     // t2 = fighter object
+
+        lhu     t0, 0x01BC(a2)              // load button press buffer
+        lhu     t1, 0x01BE(a2)              // load button hold buffer
+
+        or     t0, t0, t1                  // join both so we cover press or hold
+
+        andi    t1, t0, B_PRESSED           // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, hitlag_step_attacker_jab                // skip if (!B_PRESSED)
+        nop
+
+        lw      t0, 0x0008(a2)              // t0 = character id
+        ori     t1, r0, Character.id.RYU    // t1 = id.RYU
+        beq     t0, t1, check_move_cancel_ryu
+        nop
+
+        b thingie
+        nop
+
+        hitlag_step_attacker_jab:
+        lw t2,  0x4(a2)                     // t2 = fighter object
+
+        lhu     t0, 0x01BC(a2)              // load button press buffer
+        lhu     t1, 0x01BE(a2)              // load button hold buffer
+
+        or     t0, t0, t1                  // join both so we cover press or hold
+
+        andi    t1, t0, A_PRESSED           // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, thingie                // skip if (!A_PRESSED)
+        nop
+
+        lw      t0, 0x0008(a2)              // t0 = character id
+        ori     t1, r0, Character.id.RYU    // t1 = id.RYU
+        beq     t0, t1, check_jab_cancel_ryu
+        nop
+
+        b thingie
+        nop
+        
+        check_jab_cancel_ryu:
+        lw      t0, 0x0024(a2) // t0 = current action
+
+        // we're using t2 to set the action to change to
+
+        lli    t1, Ryu.Action.JAB_L
+        lli    t2, Ryu.Action.JAB_L2
+        beq    t0, t1, apply_jab_cancel
+        nop
+
+        lli    t1, Ryu.Action.JAB_L2
+        lli    t2, Ryu.Action.JAB_L3
+        beq    t0, t1, apply_jab_cancel
+        nop
+
+        j thingie
+        nop
+
+        apply_jab_cancel:
+        // we're using t2 to set the action to change to
+        addiu   sp, sp,-0x0030              // allocate stack space
+        sw      ra, 0x0004(sp)
+        sw      a1, 0x0008(sp)
+        sw      a2, 0x000C(sp)              // store variables
+        sw      a3, 0x0010(sp)              // store variables
+        addiu   sp, sp,-0x0030              // allocate stack space
+        
+        lw      a0, 0x4(a2)                 // a0 = player object
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        or      a1, r0, t2
+        lui     a2, 0x3F80                  // a2 = float: 0.0
+        jal     0x800E6F24                  // change action
+        lui     a3, 0x3F80                  // a3 = float: 1.0
+        nop
+
+        b apply_move_cancel_ground_end
+        nop
+
+        check_move_cancel_ryu:
+        lw      t0, 0x0024(a2) // t0 = current action
+
+        lli    t1, Action.AttackAirN
+        beq t0, t1, apply_move_cancel_air
+        nop
+        lli    t1, Action.AttackAirF
+        beq t0, t1, apply_move_cancel_air
+        nop
+        lli    t1, Action.AttackAirB
+        beq t0, t1, apply_move_cancel_air
+        nop
+        lli    t1, Action.AttackAirU
+        beq t0, t1, apply_move_cancel_air
+        nop
+        lli    t1, Action.AttackAirD
+        beq t0, t1, apply_move_cancel_air
+        nop
+        lli    t1, Action.DTilt
+        beq t0, t1, apply_move_cancel_ground
+        nop
+        lli    t1, Ryu.Action.DTILT_L
+        beq t0, t1, apply_move_cancel_ground
+        nop
+        lli    t1, Action.UTilt
+        beq t0, t1, apply_move_cancel_ground
+        nop
+        lli    t1, Ryu.Action.UTILT_L
+        beq t0, t1, apply_move_cancel_ground
+        nop
+        lli    t1, Action.DSmash
+        beq t0, t1, apply_move_cancel_ground
+        nop
+        lli    t1, Ryu.Action.JAB_CLOSE
+        beq t0, t1, apply_move_cancel_ground
+        nop
+        lli    t1, Ryu.Action.FTILT_CLOSE
+        beq t0, t1, apply_move_cancel_ground
+        nop
+        lli    t1, Ryu.Action.JAB_L
+        beq t0, t1, apply_move_cancel_ground
+        nop
+        lli    t1, Ryu.Action.JAB_L2
+        beq t0, t1, apply_move_cancel_ground
+        nop
+
+        j thingie
+        nop
+
+        apply_move_cancel_air:
+        addiu   sp, sp,-0x0030              // allocate stack space
+        sw      ra, 0x0004(sp)
+        sw      a1, 0x0008(sp)
+        sw      a2, 0x000C(sp)              // store variables
+        sw      a3, 0x0010(sp)              // store variables
+        addiu   sp, sp,-0x0030              // allocate stack space
+
+        lb      t0, 0x01C3(a2)              // a1 = stick_y
+
+        slti    t1, t0, 40                             // at = 1 if stick_y < 40, else at = 0
+        beql    t1, r0, apply_move_cancel_airU      // branch if stick_y >= 40...
+        nop
+
+        slti    t1, t0, -39                                 // at = 1 if stick_y < -39, else at = 0
+        bnel    t1, r0, apply_move_cancel_airD          // branch if stick_y >= -40...
+        nop
+
+        b apply_move_cancel_airN
+        nop
+
+        apply_move_cancel_airU:
+        jal RyuUSP.air_initial_
+        nop
+        b apply_move_cancel_ground_end
+        nop
+
+        apply_move_cancel_airD:
+        lw      a0, 0x4(a2)                 // a0 = player object
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        lli     a1, 0xE9
+        or      a2, r0, r0                  // a2 = float: 0.0
+        jal     0x800E6F24                  // change action
+        lui     a3, 0x3F80                  // a3 = float: 1.0
+        nop
+        
+        b apply_move_cancel_ground_end
+        nop
+
+        apply_move_cancel_airN:
+        lw      a0, 0x4(a2)                 // a0 = player object
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        lli     a1, 0xE5
+        or      a2, r0, r0                  // a2 = float: 0.0
+        jal     0x800E6F24                  // change action
+        lui     a3, 0x3F80                  // a3 = float: 1.0
+        nop
+
+        b apply_move_cancel_ground_end
+        nop
+
+        apply_move_cancel_ground:
+        addiu   sp, sp,-0x0030              // allocate stack space
+        sw      ra, 0x0004(sp)
+        sw      a1, 0x0008(sp)
+        sw      a2, 0x000C(sp)              // store variables
+        sw      a3, 0x0010(sp)              // store variables
+        addiu   sp, sp,-0x0030              // allocate stack space
+
+        lb      t0, 0x01C3(a2)              // a1 = stick_y
+
+        slti    t1, t0, 40                             // at = 1 if stick_y < 40, else at = 0
+        beql    t1, r0, apply_move_cancel_groundU      // branch if stick_y >= 40...
+        nop
+
+        slti    t1, t0, -39                                 // at = 1 if stick_y < -39, else at = 0
+        bnel    t1, r0, apply_move_cancel_groundD          // branch if stick_y >= -40...
+        nop
+
+        b apply_move_cancel_groundN
+        nop
+
+        apply_move_cancel_groundU:
+        jal RyuUSP.ground_initial_
+        nop
+        b apply_move_cancel_ground_end
+        nop
+
+        apply_move_cancel_groundD:
+        lw      a0, 0x4(a2)                 // a0 = player object
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        lli     a1, 0xE6
+        or      a2, r0, r0                  // a2 = float: 0.0
+        jal     0x800E6F24                  // change action
+        lui     a3, 0x3F80                  // a3 = float: 1.0
+        nop
+        
+        b apply_move_cancel_ground_end
+        nop
+
+        apply_move_cancel_groundN:
+        lw      a0, 0x4(a2)                 // a0 = player object
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        lli     a1, 0xE4
+        or      a2, r0, r0                  // a2 = float: 0.0
+        jal     0x800E6F24                  // change action
+        lui     a3, 0x3F80                  // a3 = float: 1.0
+        nop
+
+        b apply_move_cancel_ground_end
+        nop
+
+        apply_move_cancel_ground_end:
+        addiu   sp, sp, 0x0030              // allocate stack space
+        lw      ra, 0x0004(sp)              // restore ra
+        lw      a1, 0x0008(sp)
+        lw      a2, 0x000C(sp)              // restore a2
+        lw      a3, 0x0010(sp)              // restore a2
+        addiu   sp, sp, 0x0030              // deallocate stack space
+
+        sw r0, 0x0B24(a2)
+
+        j goto_fcg_tap_hold_end_
+        nop
+
+        thingie:
+        lw t1,  0x4(a2)                     // t1 = fighter object
+        lwc1    f8, 0x0078(t1)              // load current frame into f8
+
         // If on first animation frame, check if we have to change to the proximity move
         lui at, 0x4000
         mtc1 at, f6
         c.eq.s f8, f6
         nop
         bc1tl fgc_target_check
-        nop
-        
-        b button_check
         nop
 
         button_check:
@@ -409,6 +659,8 @@ scope FGC {
         }
 
         fgc_target_check:
+        sw r0, 0x0B24(a2)
+
         lw      t0, 0x0024(a2) // t0 = current action
         subi    at, t0, Action.Jab1              // at = 1 if action id < JAB1, else at = 0
         beqz    at, fgc_target_check_continue        // skip if target action id < 7 (target is in a KO action)
@@ -457,271 +709,6 @@ scope FGC {
         addiu  t3, r0, Ryu.Action.FTILT_CLOSE
 
         b button_check
-        nop
-    }
-
-    // Hitlag just ended
-    scope hitlag_step: {
-        OS.patch_start(0x5CEC4, 0x800E16C4)
-        j       hitlag_step
-        nop
-        hitlag_step_end_:
-        OS.patch_end()
-
-        // when a character is in hitstun, their knockback is stored at player struct offset 0x7EC
-        // when not in hitstun, it returns zero
-        lw      t6, 0x07EC(a2)              // t0 = current knockback value
-        beqz    t6, hitlag_step_attacker   // branch if knockback == 0 (we're the attacker)
-        nop
-
-        b goto_hitlag_step_end
-        nop
-
-        hitlag_step_attacker:
-        lw a0, 0x20(sp) // a0 = player object
-
-        lhu     t0, 0x01BC(a2)              // load button press buffer
-        lhu     t1, 0x01BE(a2)              // load button hold buffer
-
-        or     t0, t0, t1                  // join both so we cover press or hold
-
-        andi    t1, t0, B_PRESSED           // t1 = 0x40 if (B_PRESSED); else t1 = 0
-        beq     t1, r0, hitlag_step_attacker_jab                // skip if (!B_PRESSED)
-        nop
-
-        lw      t0, 0x0008(a2)              // t0 = character id
-        ori     t1, r0, Character.id.RYU    // t1 = id.RYU
-        beq     t0, t1, check_move_cancel_ryu
-        nop
-
-        b goto_hitlag_step_end
-        nop
-
-        hitlag_step_attacker_jab:
-        lw a0, 0x20(sp) // a0 = player object
-
-        lhu     t0, 0x01BC(a2)              // load button press buffer
-        lhu     t1, 0x01BE(a2)              // load button hold buffer
-
-        or     t0, t0, t1                  // join both so we cover press or hold
-
-        andi    t1, t0, A_PRESSED           // t1 = 0x40 if (B_PRESSED); else t1 = 0
-        beq     t1, r0, goto_hitlag_step_end                // skip if (!A_PRESSED)
-        nop
-
-        lw      t0, 0x0008(a2)              // t0 = character id
-        ori     t1, r0, Character.id.RYU    // t1 = id.RYU
-        beq     t0, t1, check_jab_cancel_ryu
-        nop
-
-        b goto_hitlag_step_end
-        nop
-
-        check_move_cancel_ryu:
-        lw      t0, 0x0024(a2) // t0 = current action
-
-        lli    t1, Action.AttackAirN
-        beq t0, t1, apply_move_cancel_air
-        nop
-        lli    t1, Action.AttackAirF
-        beq t0, t1, apply_move_cancel_air
-        nop
-        lli    t1, Action.AttackAirB
-        beq t0, t1, apply_move_cancel_air
-        nop
-        lli    t1, Action.AttackAirU
-        beq t0, t1, apply_move_cancel_air
-        nop
-        lli    t1, Action.AttackAirD
-        beq t0, t1, apply_move_cancel_air
-        nop
-        lli    t1, Action.DTilt
-        beq t0, t1, apply_move_cancel_ground
-        nop
-        lli    t1, Ryu.Action.DTILT_L
-        beq t0, t1, apply_move_cancel_ground
-        nop
-        lli    t1, Action.UTilt
-        beq t0, t1, apply_move_cancel_ground
-        nop
-        lli    t1, Ryu.Action.UTILT_L
-        beq t0, t1, apply_move_cancel_ground
-        nop
-        lli    t1, Action.DSmash
-        beq t0, t1, apply_move_cancel_ground
-        nop
-        lli    t1, Ryu.Action.JAB_CLOSE
-        beq t0, t1, apply_move_cancel_ground
-        nop
-        lli    t1, Ryu.Action.FTILT_CLOSE
-        beq t0, t1, apply_move_cancel_ground
-        nop
-        lli    t1, Ryu.Action.JAB_L
-        beq t0, t1, apply_move_cancel_ground
-        nop
-        lli    t1, Ryu.Action.JAB_L2
-        beq t0, t1, apply_move_cancel_ground
-        nop
-
-        j goto_hitlag_step_end
-        nop
-
-        check_jab_cancel_ryu:
-        lw      t0, 0x0024(a2) // t0 = current action
-
-        // we're using t2 to set the action to change to
-
-        lli    t1, Ryu.Action.JAB_L
-        lli    t2, Ryu.Action.JAB_L2
-        beq    t0, t1, apply_jab_cancel
-        nop
-
-        lli    t1, Ryu.Action.JAB_L2
-        lli    t2, Ryu.Action.JAB_L3
-        beq    t0, t1, apply_jab_cancel
-        nop
-
-        j goto_hitlag_step_end
-        nop
-
-        apply_jab_cancel:
-        // we're using t2 to set the action to change to
-        addiu   sp, sp,-0x0030              // allocate stack space
-        sw      ra, 0x0004(sp)
-        sw      a1, 0x0008(sp)
-        sw      a2, 0x000C(sp)              // store variables
-        sw      a3, 0x0010(sp)              // store variables
-        addiu   sp, sp,-0x0030              // allocate stack space
-        
-        lw      a0, 0x4(a2)                 // a0 = player object
-        sw      r0, 0x0010(sp)              // argument 4 = 0
-        or     a1, r0, t2
-        or      a2, r0, r0                  // a2 = float: 0.0
-        jal     0x800E6F24                  // change action
-        lui     a3, 0x3F80                  // a3 = float: 1.0
-        nop
-
-        b apply_move_cancel_ground_end
-        nop
-
-        apply_move_cancel_air:
-        addiu   sp, sp,-0x0030              // allocate stack space
-        sw      ra, 0x0004(sp)
-        sw      a1, 0x0008(sp)
-        sw      a2, 0x000C(sp)              // store variables
-        sw      a3, 0x0010(sp)              // store variables
-        addiu   sp, sp,-0x0030              // allocate stack space
-
-        lb      t0, 0x01C3(a2)              // a1 = stick_y
-
-        slti    t1, t0, 40                             // at = 1 if stick_y < 40, else at = 0
-        beql    t1, r0, apply_move_cancel_airU      // branch if stick_y >= 40...
-        nop
-
-        slti    t1, t0, -39                                 // at = 1 if stick_y < -39, else at = 0
-        bnel    t1, r0, apply_move_cancel_airD          // branch if stick_y >= -40...
-        nop
-
-        b apply_move_cancel_airN
-        nop
-
-        apply_move_cancel_airU:
-        jal RyuUSP.air_initial_
-        nop
-        b apply_move_cancel_ground_end
-        nop
-
-        apply_move_cancel_airD:
-        lw      a0, 0x4(a2)                 // a0 = player object
-        sw      r0, 0x0010(sp)              // argument 4 = 0
-        lli     a1, 0xE9
-        or      a2, r0, r0                  // a2 = float: 0.0
-        jal     0x800E6F24                  // change action
-        lui     a3, 0x3F80                  // a3 = float: 1.0
-        nop
-        
-        b apply_move_cancel_ground_end
-        nop
-
-        apply_move_cancel_airN:
-        lw      a0, 0x4(a2)                 // a0 = player object
-        sw      r0, 0x0010(sp)              // argument 4 = 0
-        lli     a1, 0xE5
-        or      a2, r0, r0                  // a2 = float: 0.0
-        jal     0x800E6F24                  // change action
-        lui     a3, 0x3F80                  // a3 = float: 1.0
-        nop
-
-        b apply_move_cancel_ground_end
-        nop
-
-        apply_move_cancel_ground:
-        addiu   sp, sp,-0x0030              // allocate stack space
-        sw      ra, 0x0004(sp)
-        sw      a1, 0x0008(sp)
-        sw      a2, 0x000C(sp)              // store variables
-        sw      a3, 0x0010(sp)              // store variables
-        addiu   sp, sp,-0x0030              // allocate stack space
-
-        lb      t0, 0x01C3(a2)              // a1 = stick_y
-
-        slti    t1, t0, 40                             // at = 1 if stick_y < 40, else at = 0
-        beql    t1, r0, apply_move_cancel_groundU      // branch if stick_y >= 40...
-        nop
-
-        slti    t1, t0, -39                                 // at = 1 if stick_y < -39, else at = 0
-        bnel    t1, r0, apply_move_cancel_groundD          // branch if stick_y >= -40...
-        nop
-
-        b apply_move_cancel_groundN
-        nop
-
-        apply_move_cancel_groundU:
-        jal RyuUSP.ground_initial_
-        nop
-        b apply_move_cancel_ground_end
-        nop
-
-        apply_move_cancel_groundD:
-        lw      a0, 0x4(a2)                 // a0 = player object
-        sw      r0, 0x0010(sp)              // argument 4 = 0
-        lli     a1, 0xE6
-        or      a2, r0, r0                  // a2 = float: 0.0
-        jal     0x800E6F24                  // change action
-        lui     a3, 0x3F80                  // a3 = float: 1.0
-        nop
-        
-        b apply_move_cancel_ground_end
-        nop
-
-        apply_move_cancel_groundN:
-        lw      a0, 0x4(a2)                 // a0 = player object
-        sw      r0, 0x0010(sp)              // argument 4 = 0
-        lli     a1, 0xE4
-        or      a2, r0, r0                  // a2 = float: 0.0
-        jal     0x800E6F24                  // change action
-        lui     a3, 0x3F80                  // a3 = float: 1.0
-        nop
-
-        b apply_move_cancel_ground_end
-        nop
-
-        apply_move_cancel_ground_end:
-        addiu   sp, sp, 0x0030              // allocate stack space
-        lw      ra, 0x0004(sp)              // restore ra
-        lw      a1, 0x0008(sp)
-        lw      a2, 0x000C(sp)              // restore a2
-        lw      a3, 0x0010(sp)              // restore a2
-        addiu   sp, sp, 0x0030              // deallocate stack space
-
-        b goto_hitlag_step_end
-        nop
-
-        goto_hitlag_step_end:
-        lbu t6, 0x0192(a2) // original line 1
-        lw v0, 0x0A08(a2) // original line 2
-
-        j hitlag_step_end_
         nop
     }
 
@@ -786,6 +773,9 @@ scope FGC {
         mtc1 at, f0 // load 1.5 into f0
         mul.s f18, f18, f0  // f18 = f18 * f0 (hitlag *= 1.5)
         swc1 f18,0x7a4(s1) // save new hitlag multiplier value
+
+        lli t0, 0xA
+        sw t0, 0x0B24(s1)
 
         goto_hitlag_attacker_fgc_multiply_end_:
         lw t3, 0x0010(s2) // original line 1
