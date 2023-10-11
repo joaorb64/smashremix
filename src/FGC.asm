@@ -712,45 +712,45 @@ scope FGC {
         nop
     }
 
-    // // The original code sets it to 1.5
-    // // Here we make it so it loads the hitbox's hitlag multiplier
-    // // And then multiply it by 1.5 instead
-    // // So we can have multiple multipliers applied
-    // scope hitlag_attacker_electric_multiply: {
-    //     OS.patch_start(0x5FCC4, 0x800E44C4)
-    //     j       hitlag_attacker_electric_multiply
-    //     nop
-    //     hitlag_attacker_electric_multiply_end_:
-    //     OS.patch_end()
+    // Hitlag just ended
+    scope hitlag_step: {
+        OS.patch_start(0x5CEC4, 0x800E16C4)
+        j       hitlag_step
+        nop
+        hitlag_step_end_:
+        OS.patch_end()
 
-    //     lwc1 f18,0x7a4(s1) // load hitbox hitlag value into f18
-    //     lui f18, 0x2
-    //     lui at,0x3fc0 // original line 1
-    //     mtc1 at, f0 // load 1.5 into f0
-    //     mul.s f18, f18, f0  // f18 = f18 * f0 (hitlag *= 1.5)
-    //     swc1 f18,0x7a4(s1) // save new hitlag multiplier value
+        // when a character is in hitstun, their knockback is stored at player struct offset 0x7EC
+        // when not in hitstun, it returns zero
+        lw      t6, 0x07EC(a2)              // t0 = current knockback value
+        beqz    t6, hitlag_step_attacker   // branch if knockback == 0 (we're the attacker)
+        nop
 
-    //     j hitlag_attacker_electric_multiply_end_
-    //     nop
-    // }
+        b goto_hitlag_step_end
+        nop
 
-    // // same as above, now for defender
-    // scope hitlag_defender_electric_multiply: {
-    //     OS.patch_start(0x6002D, 0x800E482C)
-    //     j       hitlag_defender_electric_multiply
-    //     nop
-    //     hitlag_defender_electric_multiply_end_:
-    //     OS.patch_end()
+        hitlag_step_attacker:
+        lw a0, 0x20(sp) // a0 = player object
 
-    //     lwc1 f18,0x7a4(s5) // load hitbox hitlag value into f18
-    //     lui at,0x3fc0 // original line 1
-    //     mtc1 at, f0 // load 1.5 into f0
-    //     mul.s f18, f18, f0  // f18 = f18 * f0 (hitlag *= 1.5)
-    //     swc1 f18,0x7a4(s5) // save new hitlag multiplier value
+        lw      t0, 0x0008(a2)              // t0 = character id
+        ori     t1, r0, Character.id.RYU    // t1 = id.RYU
+        beq     t0, t1, set_cancel_window
+        nop
 
-    //     j hitlag_defender_electric_multiply_end_
-    //     nop
-    // }
+        b goto_hitlag_step_end
+        nop
+
+        set_cancel_window:
+        lli t0, 0xA
+        sw t0, 0x0B24(a2)
+    
+        goto_hitlag_step_end:
+        lbu t6, 0x0192(a2) // original line 1
+        lw v0, 0x0A08(a2) // original line 2
+
+        j hitlag_step_end_
+        nop
+    }
 
     scope hitlag_attacker_fgc_multiply: {
         OS.patch_start(0x5FCA0, 0x800E44A0)
