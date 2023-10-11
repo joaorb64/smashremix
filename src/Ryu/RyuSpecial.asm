@@ -657,8 +657,11 @@ scope RyuNSP {
         sw      r0, 0x012C(v1)
 
         // // Hitbox base knockback
-        lli     at, 0x0006              // 6
+        lli     at, 0x0014              // 20
         sw      at, 0x0138(v1)          // save
+
+        // Hitbox knockback growth
+        sw      r0, 0x0130(v1)          // 0
 
         // Hit FGM
         lli     at, FGM.hit.FIRE_S               // at = RYU_HIT_M
