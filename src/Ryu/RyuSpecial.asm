@@ -607,11 +607,11 @@ scope RyuNSP {
         // ==============
 
         // Hitbox size
-        lui     at, 0x42f0              // at = 120.0 (fp)
+        lui     at, 0x4302              // at = 130.0 (fp)
         sw      at, 0x0128(v1)          // save
 
         // Hitbox damage
-        lli     at, 0x000A              // at = 10.0
+        lli     at, 0x000A              // 10
         sw      at, 0x0104(v1)          // save
 
         // Hit type
@@ -641,11 +641,11 @@ scope RyuNSP {
         // ==============
 
         // Hitbox size
-        lui     at, 0x42f0              // at = 120.0 (fp)
+        lui     at, 0x4302              // at = 130.0 (fp)
         sw      at, 0x0128(v1)          // save
 
         // Hitbox damage
-        lli     at, 0x0001              // at = 10.0
+        lli     at, 0x0001              // 1
         sw      at, 0x0104(v1)          // save
 
         // Hit type
@@ -733,7 +733,7 @@ scope RyuNSP {
         lw      v1, 0x0074(t1)
         or      v0, r0, r0
 
-        lui at, 0x3FA0
+        lui at, 0x3FA0 // 1.25
         mtc1    at, f6
 
         swc1    f6, 0x0040(v1)      // store x size multiplier to projectile joint
@@ -795,18 +795,18 @@ scope RyuNSP {
         swc1      f6, 0x0020(a0)
 
         _check_frame_refresh:
-        // Refresh hitbox on duration = 9, 7, 5, 1
+        // Refresh hitbox on duration = 14, 11, 8, 1
         lw      t0, 0x0268(a0) // t0 = remaining duration
 
-        lli     t1, 0x9
+        lli     t1, 0xE
         beq     t0, t1, _refresh_hitbox
         nop
 
-        lli     t1, 0x7
+        lli     t1, 0xB
         beq     t0, t1, _refresh_hitbox
         nop
 
-        lli     t1, 0x5
+        lli     t1, 0x8
         beq     t0, t1, _refresh_hitbox
         nop
 
@@ -847,12 +847,12 @@ scope RyuNSP {
         sw      t0, 0x0130(a0)          // save
 
         // Hit FGM
-        lli     t0, FGM.hit.FIRE_M      // at = RYU_HIT_M
+        lli     t0, FGM.hit.FIRE_L      // at = RYU_HIT_M
         sh      t0, 0x0146(a0)          // save
 
         _continue_shakunetsu2:
 
-        lui at, 0x3FA0
+        lui at, 0x3FA0 // 1.25
         mtc1    at, f6
 
         swc1    f6, 0x0040(v1)      // store x size multiplier to projectile joint
@@ -960,10 +960,10 @@ scope RyuNSP {
             lli     t0, 0x1
             sw      t0, 0x02A0(v0)
 
-            lli     t0, 0xB
-            sw      t0, 0x0268(v0)              // set duration to 8
+            lli     t0, 0x11
+            sw      t0, 0x0268(v0)              // set duration to 17
 
-            lui     t0, 0x4320              // 160.0 (fp)
+            lui     t0, 0x433E              // 190.0 (fp)
             sw      t0, 0x0128(v0)          // save new hitbox size
             
             shakunetsu_collision_end:
@@ -1004,60 +1004,60 @@ scope RyuNSP {
         OS.copy_segment(0x103904, 0x0C) // empty 
 
         _blaster_shakunetsu_struct:
-        dw 85                          // 0x0000 - duration (int)
-        float32 18                     // 0x0004 - max speed
-        float32 18                      // 0x0008 - min speed
+        dw 78                          // 0x0000 - duration (int)
+        float32 15                     // 0x0004 - max speed
+        float32 15                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 18                      // 0x0020   initial speed
+        float32 15                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 1                       // 0x002C   palette index (0 = mario, 1 = luigi)
         OS.copy_segment(0x1038A0, 0x30)
 		
 		_blaster_fireball_struct:
-        dw 85                          // 0x0000 - duration (int)
-        float32 18                     // 0x0004 - max speed
-        float32 18                      // 0x0008 - min speed
+        dw 84                          // 0x0000 - duration (int)
+        float32 17                     // 0x0004 - max speed
+        float32 17                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 18                      // 0x0020   initial speed
+        float32 17                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)
         OS.copy_segment(0x1038A0, 0x30)
 
         _blaster_shakunetsu_heavy_struct:
-        dw 65                          // 0x0000 - duration (int)
-        float32 38                     // 0x0004 - max speed
-        float32 38                      // 0x0008 - min speed
+        dw 54                          // 0x0000 - duration (int)
+        float32 44                     // 0x0004 - max speed
+        float32 44                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 38                      // 0x0020   initial speed
+        float32 44                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 1                       // 0x002C   palette index (0 = mario, 1 = luigi)
         OS.copy_segment(0x1038A0, 0x30)
 
         _blaster_fireball_heavy_struct:
-        dw 65                          // 0x0000 - duration (int)
-        float32 38                     // 0x0004 - max speed
-        float32 38                      // 0x0008 - min speed
+        dw 49                          // 0x0000 - duration (int)
+        float32 40                     // 0x0004 - max speed
+        float32 40                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 38                      // 0x0020   initial speed
+        float32 40                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)
