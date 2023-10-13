@@ -12,6 +12,8 @@ include "OS.asm"
 include "String.asm"
 
 scope FGC {
+    constant FGC_PROJECTILE_ID(0x1008)
+
     constant B_PRESSED(0x4000)                // bitmask for b press
     constant A_PRESSED(0x8000)                // bitmask for b press
 
@@ -818,6 +820,35 @@ scope FGC {
         nop
 
         j hitlag_defender_fgc_multiply_end_
+        nop
+    }
+
+
+    scope hitlag_defender_fgc_projectile: {
+        OS.patch_start(0x5FE00, 0x800E4600)
+        j       hitlag_defender_fgc_projectile
+        nop
+        hitlag_defender_fgc_projectile_end_:
+        OS.patch_end()
+
+        lw      t2,0xc(t1) // original line 1 (744)
+        sw      t2,0x800(s5) // original line 2 (748)
+
+        // s4 = projectile struct
+        lw      t1, 0x000C(s4)              // t6 = item ID
+        lli     t2, FGC_PROJECTILE_ID              // at = FGC_PROJECTILE_ID
+        bne     t1, t2, goto_hitlag_defender_fgc_projectile_end_     // skip if item ID != FGC_PROJECTILE_ID
+        nop
+
+        // s5 = this_fp (struct)
+        lwc1 f18,0x7a4(s5) // load hitbox hitlag value into f18
+        lui at, 0x3fc0 // 1.5
+        mtc1 at, f0 // load 1.5 into f0
+        mul.s f18, f18, f0  // f18 = f18 * f0 (hitlag *= 1.5)
+        swc1 f18,0x7a4(s5) // save new hitlag multiplier value
+
+        goto_hitlag_defender_fgc_projectile_end_:
+        j hitlag_defender_fgc_projectile_end_
         nop
     }
 }

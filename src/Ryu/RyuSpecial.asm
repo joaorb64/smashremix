@@ -795,18 +795,18 @@ scope RyuNSP {
         swc1      f6, 0x0020(a0)
 
         _check_frame_refresh:
-        // Refresh hitbox on duration = 14, 11, 8, 1
+        // Refresh hitbox on duration = 9, 7, 5, 1
         lw      t0, 0x0268(a0) // t0 = remaining duration
 
-        lli     t1, 0xE
+        lli     t1, 0x9
         beq     t0, t1, _refresh_hitbox
         nop
 
-        lli     t1, 0xB
+        lli     t1, 0x7
         beq     t0, t1, _refresh_hitbox
         nop
 
-        lli     t1, 0x8
+        lli     t1, 0x5
         beq     t0, t1, _refresh_hitbox
         nop
 
@@ -960,8 +960,8 @@ scope RyuNSP {
             lli     t0, 0x1
             sw      t0, 0x02A0(v0)
 
-            lli     t0, 0x11
-            sw      t0, 0x0268(v0)              // set duration to 17
+            lli     t0, 0xB
+            sw      t0, 0x0268(v0)              // set duration to 8
 
             lui     t0, 0x433E              // 190.0 (fp)
             sw      t0, 0x0128(v0)          // save new hitbox size
@@ -973,7 +973,7 @@ scope RyuNSP {
         
 		_blaster_projectile_struct:
         dw 0x00000000                   // this has some sort of bit flag to tell it to use secondary type display list?
-		dw 0x00000000
+		dw FGC.FGC_PROJECTILE_ID
         dw Character.RYU_file_6_ptr    // pointer to file
         dw 0x00000000                   // 00000000
         dw 0x12480000                   // rendering routine?
@@ -989,7 +989,7 @@ scope RyuNSP {
 
         _blaster_shakunetsu_projectile_struct:
         dw 0x00000000                   // this has some sort of bit flag to tell it to use secondary type display list?
-		dw 0x00000000
+		dw FGC.FGC_PROJECTILE_ID
         dw Character.RYU_file_6_ptr    // pointer to file
         dw 0x00000000                   // 00000000
         dw 0x12480000                   // rendering routine?

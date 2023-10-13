@@ -296,13 +296,25 @@ scope Ryu {
         string_0x0E5:; String.insert("HadoukenAir")
         string_0x0E6:; String.insert("WarlockKick")
         string_0x0E7:; String.insert("WarlockKickFromGroundAir")
-        string_0x0E8:; String.insert("LandingWarlockKick")
-        string_0x0E9:; String.insert("WarlockKickEnd")
-        string_0x0EA:; String.insert("CollisionWarlockKick")
-        string_0x0EB:; String.insert("WarlockDive")
+        string_0x0E8:; String.insert("Hadouken")
+        string_0x0E9:; String.insert("HadoukenAir")
+        string_0x0EA:; String.insert("TatsumakiLight")
+        string_0x0EB:; String.insert("---")
         string_0x0EC:; String.insert("DarkDiveCatch")
-        string_0x0ED:; String.insert("DarkDiveEnd1")
+        string_0x0ED:; String.insert("TatsumakiAir")
         string_0x0EE:; String.insert("DarkDiveEnd2")
+
+        string_0x0F3:; String.insert("ShoryukenLight")
+        string_0x0F4:; String.insert("Jab1")
+        string_0x0F5:; String.insert("Jab2")
+        string_0x0F6:; String.insert("Jab3")
+        string_0x0F7:; String.insert("DTiltLight")
+        string_0x0F8:; String.insert("UTiltLight")
+        string_0x0F9:; String.insert("FTiltLight")
+        string_0x0FA:; String.insert("JabClose")
+        string_0x0FB:; String.insert("FTiltClose")
+        string_0x0FC:; String.insert("TatsumakiStrong")
+        string_0x0FD:; String.insert("ShoryukenHard")
 
         action_string_table:
         dw 0
@@ -320,6 +332,22 @@ scope Ryu {
         dw string_0x0EC
         dw string_0x0ED
         dw string_0x0EE
+
+        dw 0
+        dw 0
+        dw 0
+        dw 0
+        dw string_0x0F3
+        dw string_0x0F4
+        dw string_0x0F5
+        dw string_0x0F6
+        dw string_0x0F7
+        dw string_0x0F8
+        dw string_0x0F9
+        dw string_0x0FA
+        dw string_0x0FB
+        dw string_0x0FC
+        dw string_0x0FD
     }
 
     // Set action strings
