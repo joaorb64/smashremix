@@ -221,6 +221,7 @@ scope CharacterSelect {
     dw  0xCEE0 + 0x200                      // 0x45 - EBISUMARU
     dw  0x58D0 + 0x200                      // 0x46 - DRAGONKING
     dw  0xCF50 + 0x200                     // 0x44 - RYU
+    dw  0xD150 + 0x200                     // 0x45 - KEN
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS
@@ -355,6 +356,7 @@ scope CharacterSelect {
     add_alt_req_list(Character.id.EBI, req/EBI_MODEL)
     add_alt_req_list(Character.id.DRAGONKING, req/DRAGONKING_MODEL)
     add_alt_req_list(Character.id.RYU, req/RYU_MODEL)
+    add_alt_req_list(Character.id.KEN, req/KEN_MODEL)
 
     // POLYGONS
     add_alt_req_list(Character.id.NWARIO, req/NWARIO_MODEL)
@@ -2353,6 +2355,7 @@ scope CharacterSelect {
         constant GOEMON(0x00023938)
         constant BANJO(0x00026B68 + 0x10)
         constant RYU(0x00001078)
+        constant KEN(0x00005378)
         // j
         constant JMARIO(0x00001078)
         constant JFOX(0x00002138)
@@ -2772,7 +2775,7 @@ scope CharacterSelect {
         define slot_15(KIRBY)
         define slot_16(FOX)
         define slot_17(PIKACHU)
-        define slot_18(JIGGLYPUFF)
+        define slot_18(KEN) // JIGGLYPUFF
         define slot_19(FALCO)
         define slot_20(SHEIK)
 
@@ -5564,7 +5567,8 @@ scope CharacterSelect {
     add_to_css(Character.id.MLUIGI, FGM.announcer.names.MLUIGI,         1.50,         0x00010001, MARIO_BROS,   name_texture.MLUIGI,         portrait_offsets.METALLUIGI,      2)
     add_to_css(Character.id.EBI,    FGM.announcer.names.EBI,            1.50,         0x00010001, GOEMON,       name_texture.EBI,            portrait_offsets.EBI,            20)
     add_to_css(Character.id.DRAGONKING, FGM.announcer.names.DRAGONKING, 1.50,         0x00010002, SMASH,        name_texture.DRAGONKING,     portrait_offsets.DRAGONKING,      7)
-    add_to_css(Character.id.RYU,    FGM.announcer.names.GANONDORF,      1.50,         0x00010001, ZELDA,        name_texture.GND,            portrait_offsets.GND,            -1)
+    add_to_css(Character.id.RYU,    FGM.announcer.names.MARIO,          1.50,         0x00010001, ZELDA,        name_texture.MARIO,          portrait_offsets.MARIO,          -1)
+    add_to_css(Character.id.KEN,    FGM.announcer.names.LUIGI,          1.50,         0x00010001, ZELDA,        name_texture.LUIGI,          portrait_offsets.LUIGI,          -1)
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS

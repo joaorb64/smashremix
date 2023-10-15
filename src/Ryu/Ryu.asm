@@ -155,7 +155,7 @@ scope Ryu {
     Character.edit_action(RYU, 0xE1,                   -1,            0x8013DA94,                    0,                              0x8013DB2C,                    0x800DE348)   // RIGHT ENTRY
 
     // Add Action Parameters                // Action Name      // Base Action  // Animation                    // Moveset Data             // Flags
-    Character.add_new_action_params(RYU,    USP_L,             -1,             File.RYU_SHORYKEN_L,            USP_L,                        0x40000000)
+    Character.add_new_action_params(RYU,    USP_L,             -1,             File.RYU_SHORYUKEN_L,            USP_L,                        0x40000000)
     Character.add_new_action_params(RYU,    JAB_L,             -1,             File.RYU_JAB_1,                 JAB_1,                       -1)
     Character.add_new_action_params(RYU,    JAB_L2,             -1,            File.RYU_JAB_2,                 JAB_2,                       -1)
     Character.add_new_action_params(RYU,    JAB_L3,             -1,            File.RYU_JAB_3,                 JAB_3,                       -1)
@@ -165,7 +165,7 @@ scope Ryu {
     Character.add_new_action_params(RYU,    JAB_CLOSE,         -1,             File.RYU_UTILT_H,               JAB_CLOSE,                    0x40000000)
     Character.add_new_action_params(RYU,    FTILT_CLOSE,       -1,             File.RYU_FTILT_CLOSE,           FTILT_CLOSE,                  0x40000000)
     Character.add_new_action_params(RYU,    DSP_H,             0xE6,           File.RYU_TATSU_GND_H,           DSP_H,                        -1)
-    Character.add_new_action_params(RYU,    USP_H,             -1,             File.RYU_SHORYKEN_H,            USP_H,                        0x40000000)
+    Character.add_new_action_params(RYU,    USP_H,             -1,             File.RYU_SHORYUKEN_H,            USP_H,                        0x40000000)
 
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
     Character.add_new_action(RYU,    USP_L,              -1,             ActionParams.USP_L,            0x11,           RyuUSP.main_,                   RyuUSP.change_direction_,          RyuUSP.physics_,                 RyuUSP.collision_)

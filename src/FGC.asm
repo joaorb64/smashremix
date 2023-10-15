@@ -42,6 +42,11 @@ scope FGC {
         beq     t1, t2, main_logic
         nop
 
+        lw      t1, 0x0008(a2)              // t0 = character id
+        ori     t2, r0, Character.id.KEN    // t1 = id.RYU
+        beq     t1, t2, main_logic
+        nop
+
         b goto_fcg_tap_hold_end_
         nop
 
@@ -83,6 +88,11 @@ scope FGC {
         beq     t0, t1, check_move_cancel_ryu
         nop
 
+        lw      t0, 0x0008(a2)              // t0 = character id
+        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
+        beq     t0, t1, check_move_cancel_ryu
+        nop
+
         b thingie
         nop
 
@@ -100,6 +110,11 @@ scope FGC {
 
         lw      t0, 0x0008(a2)              // t0 = character id
         ori     t1, r0, Character.id.RYU    // t1 = id.RYU
+        beq     t0, t1, check_jab_cancel_ryu
+        nop
+
+        lw      t0, 0x0008(a2)              // t0 = character id
+        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
         beq     t0, t1, check_jab_cancel_ryu
         nop
 
@@ -739,6 +754,11 @@ scope FGC {
         beq     t0, t1, set_cancel_window
         nop
 
+        lw      t0, 0x0008(a2)              // t0 = character id
+        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
+        beq     t0, t1, set_cancel_window
+        nop
+
         b goto_hitlag_step_end
         nop
 
@@ -763,6 +783,11 @@ scope FGC {
 
         lw      t0, 0x0008(s1)              // t0 = character id
         ori     t1, r0, Character.id.RYU    // t1 = id.RYU
+        beq     t0, t1, _fgc_multiplyier    // if character id = RYU, jump to _fgc_multiplyier
+        nop
+
+        lw      t0, 0x0008(s1)              // t0 = character id
+        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
         beq     t0, t1, _fgc_multiplyier    // if character id = RYU, jump to _fgc_multiplyier
         nop
 
@@ -795,6 +820,11 @@ scope FGC {
 
         lw      t0, 0x0008(s1)              // t0 = character id
         ori     t1, r0, Character.id.RYU    // t1 = id.RYU
+        beq     t0, t1, _fgc_multiplyier_defender    // if character id = RYU, jump to _fgc_multiplyier_defender
+        nop
+
+        lw      t0, 0x0008(s1)              // t0 = character id
+        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
         beq     t0, t1, _fgc_multiplyier_defender    // if character id = RYU, jump to _fgc_multiplyier_defender
         nop
 
