@@ -124,7 +124,7 @@ scope RyuUSP {
         bne    t7, t2, _main_normal
         nop
 
-        lui		at, 0x40A0					// at = 2.0
+        lui		at, 0x4080					// at = 2.0
 		mtc1    at, f6                      // ~
         c.eq.s  f8, f6                      // f8 >= f6 (current frame >= 2) ?
         nop
@@ -468,8 +468,40 @@ scope RyuNSP {
         beqz   t0, main_continue
         nop
 
+        lw      t0, 0x0008(v0)              // t0 = character id
+        ori     t1, r0, Character.id.RYU    // t1 = id.RYU
+        beq     t0, t1, fsmash_b_ryu    // if character id = RYU
+        nop
+
+        lw      t0, 0x0008(v0)              // t0 = character id
+        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
+        beq     t0, t1, fsmash_b_ken    // if character id = KEN
+        nop
+
+        fsmash_b_ryu:
         lli t0, 0x2
         sw t0, 0x0B30(v0) // set tmp variable 2 to 1 to know we're going for shakunetsu
+
+        b main_continue
+        nop
+
+        fsmash_b_ken:
+        lw      t0, 0x014C(v0)              // t0 = kinetic state
+        bnez    t0, main_continue           // branch if kinetic state !grounded
+        nop
+
+        fsmash_b_ken_change_action:
+        // Ken changes action to roundhouse instead
+        OS.save_registers()
+        lli     a1, Ken.Action.ROUNDHOUSE   // a1 = Action.USPG
+        lw      r0, 0x0078(a0)              // a2(starting frame) = 0
+        lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        jal     0x800E6F24                  // change action
+        nop
+        OS.restore_registers()
+        j _end
+        nop
         
         main_continue:
         or      a3, a0, r0

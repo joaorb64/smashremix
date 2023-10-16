@@ -63,6 +63,8 @@ scope Ken {
     insert UTILT_H,"moveset/UP_TILT_H.bin"
     insert FTILT_H,"moveset/FORWARD_TILT_H.bin"
     insert JAB_CLOSE,"moveset/JAB_CLOSE.bin"
+    insert JAB_FAR,"moveset/JAB_FAR.bin"
+    insert COMMAND_KICK_2,"moveset/COMMAND_KICK_2.bin"
     insert FTILT_CLOSE,"moveset/FORWARD_TILT_CLOSE.bin"
     insert ENTRY,"moveset/ENTRY.bin"
 
@@ -113,7 +115,7 @@ scope Ken {
     Character.edit_action_parameters(KEN,   Action.Taunt,           File.GND_TAUNT,             TAUNT,                      -1)
     Character.edit_action_parameters(KEN,   Action.ShieldBreak,     -1,                         SHIELD_BREAK,               -1)
     Character.edit_action_parameters(KEN,   Action.Stun,             -1,                        STUN,                       -1)
-    Character.edit_action_parameters(KEN,   Action.Jab1,            File.RYU_ROUNDHOUSE,        ROUNDHOUSE,                 0)
+    Character.edit_action_parameters(KEN,   Action.Jab1,            File.KEN_FAR_JAB,           JAB_FAR,                 0x40000000)
     Character.edit_action_parameters(KEN,   Action.DashAttack,      File.RYU_DASH_ATTACK,       DASH_ATTACK,                0x40000000)
     Character.edit_action_parameters(KEN,   Action.FTiltHigh,       File.RYU_FTILT_H,           FTILT_H,                   0x40000000)
     Character.edit_action_parameters(KEN,   Action.FTiltMidHigh,    File.RYU_FTILT_H,           FTILT_H,                 0x40000000)
@@ -138,10 +140,10 @@ scope Ken {
     Character.edit_action_parameters(KEN,   0xE1,                   File.RYU_ENTRYR,            ENTRY,                     0x40000009)
 	Character.edit_action_parameters(KEN,   0xE4,                   File.RYU_HADOUKEN_GND,      NSP_AIR,                 0x40000000)
     Character.edit_action_parameters(KEN,   0xE5,                   File.RYU_HADOUKEN_GND,      NSP_AIR,                 0x40000000)
-    Character.edit_action_parameters(KEN,   0xE6,                   File.RYU_TATSU_GND_L,       DSP_L,                 -1)
+    Character.edit_action_parameters(KEN,   0xE6,                   File.KEN_TATSU_L,       DSP_L,                 -1)
     Character.edit_action_parameters(KEN,   0xE7,                   -1,                         DSP_FLIP,                   -1)
     Character.edit_action_parameters(KEN,   0xE8,                   -1,                         DSP_LAND,                   -1)
-    Character.edit_action_parameters(KEN,   0xE9,                   File.RYU_TATSU_GND_M,       DSP_M,                 -1) // aerial dsp
+    Character.edit_action_parameters(KEN,   0xE9,                   File.KEN_TATSU_M,       DSP_M,                 -1) // aerial dsp
     
     Character.edit_action_parameters(KEN,   Action.RunBrake,        File.RYU_DASH,      -1,                         -1)
 
@@ -164,8 +166,10 @@ scope Ken {
     Character.add_new_action_params(KEN,    FTILT_L,           -1,             File.RYU_FTILT_L,               FTILT_L,                      0x00000000)
     Character.add_new_action_params(KEN,    JAB_CLOSE,         -1,             File.RYU_UTILT_H,               JAB_CLOSE,                    0x40000000)
     Character.add_new_action_params(KEN,    FTILT_CLOSE,       -1,             File.RYU_FTILT_CLOSE,           FTILT_CLOSE,                  0x40000000)
-    Character.add_new_action_params(KEN,    DSP_H,             0xE6,           File.RYU_TATSU_GND_H,           DSP_H,                        -1)
+    Character.add_new_action_params(KEN,    DSP_H,             0xE6,           File.KEN_TATSU_H,           DSP_H,                        -1)
     Character.add_new_action_params(KEN,    USP_H,             -1,             File.RYU_SHORYUKEN_H,            USP_H,                        0x40000000)
+    Character.add_new_action_params(KEN,    ROUNDHOUSE,             -1,        File.RYU_ROUNDHOUSE,            ROUNDHOUSE,                   0)
+    Character.add_new_action_params(KEN,    COMMAND_KICK_2,             -1,    File.KEN_COMMAND_KICK_FINISHER,  COMMAND_KICK_2,                   0x40000000)
 
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
     Character.add_new_action(KEN,    USP_L,              -1,             ActionParams.USP_L,            0x11,           RyuUSP.main_,                   RyuUSP.change_direction_,          RyuUSP.physics_,                 RyuUSP.collision_)
@@ -180,6 +184,9 @@ scope Ken {
 
     Character.add_new_action(KEN,    DSP_H,              -1,             ActionParams.DSP_H,            0x11,           RyuDSP.main_,                   RyuDSP.ground_subroutine_,          RyuNSP.physics_,            RyuDSP.air_collision_)
     Character.add_new_action(KEN,    USP_H,              -1,             ActionParams.USP_H,            0x11,           RyuUSP.main_,                   RyuUSP.change_direction_,           RyuUSP.physics_,                RyuUSP.collision_)
+    
+    Character.add_new_action(KEN,    ROUNDHOUSE,            -1,         ActionParams.ROUNDHOUSE,        0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
+    Character.add_new_action(KEN,    COMMAND_KICK_2,            -1,     ActionParams.COMMAND_KICK_2,    0x11,       0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(KEN,   0x1,               -1,                         VICTORY_POSE_1,             -1)

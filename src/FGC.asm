@@ -17,7 +17,7 @@ scope FGC {
     constant B_PRESSED(0x4000)                // bitmask for b press
     constant A_PRESSED(0x8000)                // bitmask for b press
 
-    constant MAX_X_RANGE_FORWARD(0x43C8)            // current setting - float: 400.0
+    constant MAX_X_RANGE_FORWARD(0x4396)            // current setting - float: 300.0
     constant MAX_X_RANGE_BACK(0x4370)            // current setting - float: 240.0
     constant MAX_Y_RANGE_UP(0x447A)            // current setting - float: 1000.0
     constant MAX_Y_RANGE_DOWN(0x4348)            // current setting - float: 200.0
@@ -333,6 +333,61 @@ scope FGC {
         c.eq.s f8, f6
         nop
         bc1tl fgc_target_check
+        nop
+
+        // If we're Ken doing the roundhouse command move,
+        // go to its logic block
+        lw      t0, 0x0008(a2)              // t0 = character id
+        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
+        bne     t0, t1, button_check
+        nop
+
+        lw     t1, 0x0024(a2) // t0 = current action
+        lli    t2, Ken.Action.ROUNDHOUSE
+        beq    t1, t2, ken_roundhouse_part2
+        nop
+
+        b button_check
+        nop
+
+        ken_roundhouse_part2:
+        lhu     t0, 0x01BC(a2)              // load button press buffer
+        lhu     t1, 0x01BE(a2)              // load button hold buffer
+
+        or     t0, t0, t1                  // join both so we cover press or hold
+
+        andi    t1, t0, B_PRESSED           // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, button_check                // skip if (!B_PRESSED)
+        nop
+
+        ken_roundhouse_part2_check_frame:
+        lw t1,  0x4(a2)                     // t1 = fighter object
+        lwc1    f8, 0x0078(t1)              // load current frame into f8
+        
+        lui		at, 0x4130					// at = 11.0
+		mtc1    at, f6                      // ~
+        c.eq.s  f8, f6                      // f8 <= f6 (current frame < 3) ?
+        nop
+        bc1fl   button_check                // skip if frame != at
+        nop
+
+        // if we're here B is held and we're at the right frame
+        addiu  t3, r0, Ken.Action.COMMAND_KICK_2
+
+        OS.save_registers()
+
+        addiu   s0, a2, 0
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        addiu   a1, t3, 0
+        lui     a2, 0x40E0                  // a2 = float: 0.0
+        jal     0x800E6F24                  // change action
+        lui     a3, 0x3F80                  // a3 = float: 1.0
+        jal     0x800E0830                  // unknown common subroutine
+        lw      a0, 0x4(s0)                 // a0 = player object
+
+        OS.restore_registers()
+
+        j goto_fcg_tap_hold_end_
         nop
 
         button_check:
