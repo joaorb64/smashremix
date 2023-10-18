@@ -554,13 +554,35 @@ scope RyuNSP {
         lw      t7, 0x0038(sp)
 		sw      s0, 0x0018(sp)
 
-        lw t0, 0x0B30(v0) // t0 = load tmp variable 2
-        lli t1, 0x2 // If it's 0x2, we load shakunetsu
-
-        bne t0, t1, hadouken_branch
+        // Check if we're Ken
+        lw      t0, 0x0008(v0)              // t0 = character id
+        ori     t1, r0, Character.id.KEN    // t1 = id.KEN
+        beq     t0, t1, hadouken_ken_branch    // if character id = KEN, go for ken_hadouken
         nop
 
-        b shakunetsu_branch
+        // For Ryu
+        lw t0, 0x0B30(v0) // t0 = load tmp variable 2
+        lli t1, 0x2
+        bne t0, t1, hadouken_branch // If it's not 0x2, we load hadouken
+        nop
+
+        b shakunetsu_branch // Else, go for Shakunetsu
+        nop
+
+        hadouken_ken_branch:
+        // Check if B is pressed to switch between light and strong hadouken
+        // v0 = player struct
+        la      s0, _blaster_fireball_ken_struct       // s0 = light hadouken address
+
+        li t2, _blaster_ken_projectile_struct // Load projectile struct address into t2 for later use
+
+        lhu     t0, 0x01BC(v0)              // load button press buffer
+        andi    t1, t0, 0x4000           // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, projectile_stage_setting_continue // skip if (!B_PRESSED)
+        nop
+
+        la      s0, _blaster_fireball_ken_heavy_struct       // s0 = light hadouken address
+        b       projectile_stage_setting_continue
         nop
 
         hadouken_branch:
@@ -627,10 +649,49 @@ scope RyuNSP {
         lw t0, 0x0B30(v0) // t0 = load tmp variable 2
         lli t1, 0x2 // If it's 0x2, we load shakunetsu
 
+        lw      at, 0x0008(v0)              // at = character id
+        ori     t2, r0, Character.id.KEN    // at = id.KEN
+        beq     at, t2, _projectile_branch_ken_hadouken    // if character id = KEN
+        nop
+
         bne t0, t1, _projectile_branch_hadouken
         nop
 
         b _projectile_branch_shakunetsu
+        nop
+
+        _projectile_branch_ken_hadouken:
+        // ==============
+        // EDIT HITBOX
+        // ==============
+
+        // Hitbox size
+        lui     at, 0x4302              // at = 130.0 (fp)
+        sw      at, 0x0128(v1)          // save
+
+        // Hitbox damage
+        lli     at, 0x0005              // 5
+        sw      at, 0x0104(v1)          // save
+
+        // Hit type
+        sw      r0, 0x010C(v1)          // save
+
+        // Hit angle
+        sw   r0, 0x012C(v1)
+
+        // // Hitbox base knockback
+        lli     at, 0x0008              // at = 16
+        sw      at, 0x0138(v1)          // save
+
+        // Hit FGM
+        lli     at, 0x0504               // at = RYU_HIT_M
+        sh      at, 0x0146(v1)          // save
+        
+        // ==============
+        // END EDIT HITBOX
+        // ==============
+        
+        b _projectile_branch_continue
         nop
 
         _projectile_branch_hadouken:
@@ -1035,6 +1096,22 @@ scope RyuNSP {
         dw 0x80175958                   // This function is run when the projectile is used on ness while using psi magnet
         OS.copy_segment(0x103904, 0x0C) // empty 
 
+        _blaster_ken_projectile_struct:
+        dw 0x00000000                   // this has some sort of bit flag to tell it to use secondary type display list?
+		dw FGC.FGC_PROJECTILE_ID
+        dw Character.KEN_file_6_ptr    // pointer to file
+        dw 0x00000000                   // 00000000
+        dw 0x12480000                   // rendering routine?
+        dw blaster_duration             // duration (default 0x80168540) (samus 0x80168F98)
+        dw 0x80175914                   // collision (0x801685F0 - Mario) (0x80169108 - Samus)
+        dw 0x80175958    		        // after_effect 0x801691FC, this one is used when grenade connects with player
+        dw 0x80175958                   // after_effect 0x801691FC, used when touched by player when object is still, by setting to null, nothing happens
+        dw 0x8016DD2C                   // determines behavior when projectile bounces off shield, this uses Master Hand's projectile coding to determine correct angle of graphic (0x8016898C Fox)
+        dw 0x80175958                   // after_effect                // rocket_after_effect 0x801691FC
+        dw blaster_reflection           // OS.copy_segment(0x1038FC, 0x04)            // this determines reflect behavior (default 0x80168748)
+        dw 0x80175958                   // This function is run when the projectile is used on ness while using psi magnet
+        OS.copy_segment(0x103904, 0x0C) // empty 
+
         _blaster_shakunetsu_struct:
         dw 78                          // 0x0000 - duration (int)
         float32 15                     // 0x0004 - max speed
@@ -1090,6 +1167,36 @@ scope RyuNSP {
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
         float32 40                      // 0x0020   initial speed
+        dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
+        dw 0                            // 0x0028   unknown (default 0)
+        float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)
+        OS.copy_segment(0x1038A0, 0x30)
+
+        _blaster_fireball_ken_struct:
+        dw 80                          // 0x0000 - duration (int)
+        float32 20                     // 0x0004 - max speed
+        float32 20                      // 0x0008 - min speed
+        float32 0                       // 0x000C - gravity
+        float32 0                       // 0x0010 - bounce multiplier
+        float32 0                       // 0x0014 - rotation angle
+        float32 0                       // 0x0018 - initial angle (ground)
+        float32 0                       // 0x001C   initial angle (air)
+        float32 20                      // 0x0020   initial speed
+        dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
+        dw 0                            // 0x0028   unknown (default 0)
+        float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)
+        OS.copy_segment(0x1038A0, 0x30)
+        
+        _blaster_fireball_ken_heavy_struct:
+        dw 52                          // 0x0000 - duration (int)
+        float32 34                     // 0x0004 - max speed
+        float32 34                      // 0x0008 - min speed
+        float32 0                       // 0x000C - gravity
+        float32 0                       // 0x0010 - bounce multiplier
+        float32 0                       // 0x0014 - rotation angle
+        float32 0                       // 0x0018 - initial angle (ground)
+        float32 0                       // 0x001C   initial angle (air)
+        float32 34                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)
