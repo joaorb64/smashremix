@@ -1670,7 +1670,7 @@ scope RyuDSP {
     scope main_: {
         // Copy the first 8 lines of subroutine 0x8015C750
         OS.copy_segment(0xD7190, 0x20)
-        bc1fl   _end                        // skip if animation end has not been reached
+        bc1fl   _continue                        // skip if animation end has not been reached
         lw      ra, 0x0024(sp)              // restore ra
         sw      r0, 0x0010(sp)              // unknown argument = 0
         sw      r0, 0x0018(sp)              // interrupt flag = FALSE
@@ -1678,6 +1678,63 @@ scope RyuDSP {
         jal     0x800DEE54                  // transition to idle
         sw      t6, 0x0014(sp)              // store LANDING_FSM
         lw      ra, 0x0024(sp)              // restore ra
+
+        _continue:
+        lw      v0, 0x0084(a0)                      // loads player struct
+
+        // Check if we're on fist frame so we can set x speed to 0
+        lui t1, 0x4000 // t1=1.0
+        mtc1    t1, f6 // f6=1.0
+        lwc1    f8, 0x0078(a0) // f8=current frame, if a2 is player object
+        c.eq.s  f8, f6 // compare less equal f8 f6
+        bc1fl   _end // if frame is not 1.0, continue
+        nop
+
+        // check if we came from a smash input
+        // in this case, do command kick
+        // check stick y
+        lb      t0, 0x01C3(v0)              // t0 = stick_y
+        mtc1    t0, f6                     // f6 = stick_y
+        cvt.s.w f6, f6
+        abs.s   f6, f6                    // f6 = abs(stick_y)
+        lui     t1, 0x4260                  // t1 = 56.0
+        mtc1    t1, f8                      // f8 = 56.0
+        c.le.s  f8, f6                      // ~
+        nop                                 // ~
+        bc1fl   _end            // skip if absolute stick < 56
+        nop
+
+        // check B buffer
+        lbu      t0, 0x26B(v0)              // t0 = b button press buffer
+        slti    t0, t0, 8
+        beqz   t0, _end
+        nop
+
+        lw      t0, 0x0008(v0)              // t0 = character id
+        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
+        beq     t0, t1, dsmash_b_ken    // if character id = KEN
+        nop
+
+        b _end
+        nop
+
+        dsmash_b_ken:
+        lw      t0, 0x014C(v0)              // t0 = kinetic state
+        bnez    t0, _end           // branch if kinetic state !grounded
+        nop
+
+        fsmash_b_ken_change_action:
+        // Ken changes action to roundhouse instead
+        OS.save_registers()
+        lli     a1, Ken.Action.COMMAND_KICK   // a1 = Action.USPG
+        lw      r0, 0x0078(a0)              // a2(starting frame) = 0
+        lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        jal     0x800E6F24                  // change action
+        nop
+        OS.restore_registers()
+        j _end
+        nop
 
         _end:
         addiu   sp, sp, 0x0028              // deallocate stack space

@@ -64,8 +64,7 @@ scope FGC {
         bc1tl   goto_fcg_tap_hold_end_    // skip if frame < 0
         nop
 
-        lw t1, 0x0B24(a2)
-
+        lw t1, 0x0B24(a2) // load cancel window
         blez t1, thingie // if cancel window <= 0, skip
         nop
 
@@ -347,6 +346,22 @@ scope FGC {
         beq    t1, t2, ken_roundhouse_part2
         nop
 
+        lw     t1, 0x0024(a2) // t0 = current action
+        lli    t2, Ken.Action.COMMAND_KICK
+        beq    t1, t2, ken_roundhouse_part2
+        nop
+
+        lw     t1, 0x0024(a2) // t0 = current action
+        lli    t2, Action.Jab1
+        beq    t1, t2, ken_jab1_fix
+        nop
+
+        b button_check
+        nop
+
+        ken_jab1_fix:
+        li t0, 0x800D8C14
+        sw t0, 0x9E0(a2)
         b button_check
         nop
 

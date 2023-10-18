@@ -2414,6 +2414,7 @@ scope File {
     constant KEN_TATSU_L(0x11B7)
     constant KEN_TATSU_M(0x11B8)
     constant KEN_TATSU_H(0x11B9)
+    constant KEN_COMMAND_KICK(0x11BA)
     constant META_REMIX_STAGE(0x1186)
     constant META_REMIX_HEADER(0x1187)
     constant DARK_SAMUS_IDLE(0x1188)

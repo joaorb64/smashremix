@@ -64,6 +64,7 @@ scope Ken {
     insert FTILT_H,"moveset/FORWARD_TILT_H.bin"
     insert JAB_CLOSE,"moveset/JAB_CLOSE.bin"
     insert JAB_FAR,"moveset/JAB_FAR.bin"
+    insert COMMAND_KICK,"moveset/COMMAND_KICK.bin"
     insert COMMAND_KICK_2,"moveset/COMMAND_KICK_2.bin"
     insert FTILT_CLOSE,"moveset/FORWARD_TILT_CLOSE.bin"
     insert ENTRY,"moveset/ENTRY.bin"
@@ -170,6 +171,7 @@ scope Ken {
     Character.add_new_action_params(KEN,    USP_H,             -1,             File.RYU_SHORYUKEN_H,            USP_H,                        0x40000000)
     Character.add_new_action_params(KEN,    ROUNDHOUSE,             -1,        File.RYU_ROUNDHOUSE,            ROUNDHOUSE,                   0)
     Character.add_new_action_params(KEN,    COMMAND_KICK_2,             -1,    File.KEN_COMMAND_KICK_FINISHER,  COMMAND_KICK_2,                   0x40000000)
+    Character.add_new_action_params(KEN,    COMMAND_KICK,             -1,      File.KEN_COMMAND_KICK,         COMMAND_KICK,                   0x40000000)
 
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
     Character.add_new_action(KEN,    USP_L,              -1,             ActionParams.USP_L,            0x11,           RyuUSP.main_,                   RyuUSP.change_direction_,          RyuUSP.physics_,                 RyuUSP.collision_)
@@ -186,7 +188,8 @@ scope Ken {
     Character.add_new_action(KEN,    USP_H,              -1,             ActionParams.USP_H,            0x11,           RyuUSP.main_,                   RyuUSP.change_direction_,           RyuUSP.physics_,                RyuUSP.collision_)
     
     Character.add_new_action(KEN,    ROUNDHOUSE,            -1,         ActionParams.ROUNDHOUSE,        0x11,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
-    Character.add_new_action(KEN,    COMMAND_KICK_2,            -1,     ActionParams.COMMAND_KICK_2,    0x11,       0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
+    Character.add_new_action(KEN,    COMMAND_KICK_2,            -1,     ActionParams.COMMAND_KICK_2,    0x11,       0x800D94C4,                     0,                                  0x800D8C14,                     0x800DDF44)
+    Character.add_new_action(KEN,    COMMAND_KICK,            -1,     ActionParams.COMMAND_KICK,    0x11,            0x800D94C4,                     0,                                  0x800D8C14,                     0x800DDF44)
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(KEN,   0x1,               -1,                         VICTORY_POSE_1,             -1)
