@@ -928,7 +928,7 @@ scope RyuNSP {
         sw      t0, 0x0104(a0)          // save
 
         // Hit angle
-        lli  t1, 0x0037 // 55
+        lli  t1, 0x0030 // 48
         sw   t1, 0x012C(a0)
 
         // Hitbox base knockback
@@ -936,7 +936,7 @@ scope RyuNSP {
         sw      t0, 0x0138(a0)          // save
 
         // Hitbox knockback growth
-        lli     t0, 0x001E              // 30
+        lli     t0, 0x0024              // 36
         sw      t0, 0x0130(a0)          // save
 
         // Hit FGM
@@ -1056,7 +1056,7 @@ scope RyuNSP {
             lli     t0, 0xB
             sw      t0, 0x0268(v0)              // set duration to 8
 
-            lui     t0, 0x433E              // 190.0 (fp)
+            lui     t0, 0x435c              // 220.0 (fp)
             sw      t0, 0x0128(v0)          // save new hitbox size
             
             shakunetsu_collision_end:

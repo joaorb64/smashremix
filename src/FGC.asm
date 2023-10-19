@@ -356,6 +356,11 @@ scope FGC {
         beq    t1, t2, ken_jab1_fix
         nop
 
+        lw     t1, 0x0024(a2) // t0 = current action
+        lli    t2, Action.Jab2
+        beq    t1, t2, ken_jab1_fix
+        nop
+
         b button_check
         nop
 
