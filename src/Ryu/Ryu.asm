@@ -142,6 +142,9 @@ scope Ryu {
     Character.edit_action_parameters(RYU,   0xE7,                   -1,                         DSP_FLIP,                   -1)
     Character.edit_action_parameters(RYU,   0xE8,                   -1,                         DSP_LAND,                   -1)
     Character.edit_action_parameters(RYU,   0xE9,                   File.RYU_TATSU_GND_M,       DSP_M,                 -1) // aerial dsp
+    Character.edit_action_parameters(RYU,   Action.Crouch,          File.RYU_CROUCH_START,        -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.CrouchIdle,      File.RYU_CROUCH_IDLE,         -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.CrouchEnd,       File.RYU_CROUCH_END,          -1,                         -1)
     
     Character.edit_action_parameters(RYU,   Action.RunBrake,        File.RYU_DASH,      -1,                         -1)
 

@@ -118,11 +118,11 @@ scope Ken {
     Character.edit_action_parameters(KEN,   Action.Stun,             -1,                        STUN,                       -1)
     Character.edit_action_parameters(KEN,   Action.Jab1,            File.KEN_FAR_JAB,           JAB_FAR,                 0x40000000)
     Character.edit_action_parameters(KEN,   Action.DashAttack,      File.RYU_DASH_ATTACK,       DASH_ATTACK,                0x40000000)
-    Character.edit_action_parameters(KEN,   Action.FTiltHigh,       File.RYU_FTILT_H,           FTILT_H,                   0x40000000)
-    Character.edit_action_parameters(KEN,   Action.FTiltMidHigh,    File.RYU_FTILT_H,           FTILT_H,                 0x40000000)
-    Character.edit_action_parameters(KEN,   Action.FTilt,           File.RYU_FTILT_H,           FTILT_H,                    0x40000000)
-    Character.edit_action_parameters(KEN,   Action.FTiltMidLow,     File.RYU_FTILT_H,           FTILT_H,                 0x40000000)
-    Character.edit_action_parameters(KEN,   Action.FTiltLow,        File.RYU_FTILT_H,           FTILT_H,                   0x40000000)
+    Character.edit_action_parameters(KEN,   Action.FTiltHigh,       File.KEN_HARD_FTILT,        FTILT_H,                   0x00000000)
+    Character.edit_action_parameters(KEN,   Action.FTiltMidHigh,    File.KEN_HARD_FTILT,        FTILT_H,                 0x00000000)
+    Character.edit_action_parameters(KEN,   Action.FTilt,           File.KEN_HARD_FTILT,        FTILT_H,                    0x00000000)
+    Character.edit_action_parameters(KEN,   Action.FTiltMidLow,     File.KEN_HARD_FTILT,        FTILT_H,                 0x00000000)
+    Character.edit_action_parameters(KEN,   Action.FTiltLow,        File.KEN_HARD_FTILT,        FTILT_H,                   0x00000000)
     Character.edit_action_parameters(KEN,   Action.UTilt,           File.RYU_UTILT_H,           UTILT_H,                    0x40000000)
     Character.edit_action_parameters(KEN,   Action.DTilt,           File.RYU_DTILT_H,           DTILT_H,                      0)
     Character.edit_action_parameters(KEN,   Action.FSmashHigh,      File.RYU_FSMASH,            FSMASH,                 0x40000000)
@@ -145,6 +145,9 @@ scope Ken {
     Character.edit_action_parameters(KEN,   0xE7,                   -1,                         DSP_FLIP,                   -1)
     Character.edit_action_parameters(KEN,   0xE8,                   -1,                         DSP_LAND,                   -1)
     Character.edit_action_parameters(KEN,   0xE9,                   File.KEN_TATSU_M,       DSP_M,                 -1) // aerial dsp
+    Character.edit_action_parameters(KEN,   Action.Crouch,          File.RYU_CROUCH_START,        -1,                         -1)
+    Character.edit_action_parameters(KEN,   Action.CrouchIdle,      File.RYU_CROUCH_IDLE,         -1,                         -1)
+    Character.edit_action_parameters(KEN,   Action.CrouchEnd,       File.RYU_CROUCH_END,          -1,                         -1)
     
     Character.edit_action_parameters(KEN,   Action.RunBrake,        File.RYU_DASH,      -1,                         -1)
 
