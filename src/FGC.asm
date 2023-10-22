@@ -356,11 +356,6 @@ scope FGC {
         beq    t1, t2, ken_jab1_fix
         nop
 
-        lw     t1, 0x0024(a2) // t0 = current action
-        lli    t2, Action.Jab2
-        beq    t1, t2, ken_jab1_fix
-        nop
-
         b button_check
         nop
 
@@ -504,7 +499,7 @@ scope FGC {
         nop
 
         cancel_itself_frame_check:
-        lui		at, 0x40B0					    // at = 0.0
+        lui		at, 0x4040					    // at = 0.0
 		mtc1    at, f6                      // ~
         c.le.s  f6, f8                      // f6 >= f8 (6 > current frame) ?
         nop
@@ -871,9 +866,41 @@ scope FGC {
 
         _fgc_multiplyier:
         lwc1 f18,0x7a4(s1) // load hitbox hitlag value into f18
-        lui at, 0x3fc0 // 1.5
-        mtc1 at, f0 // load 1.5 into f0
-        mul.s f18, f18, f0  // f18 = f18 * f0 (hitlag *= 1.5)
+
+        // branches for moves with specific hitlag
+        // save hitlag to at then jump
+        lw t1, 0x0024(s1) // t0 = current action
+
+        lli    t0, Ryu.Action.DTILT_L
+        beq    t1, t0, _fgc_multiplyier_continue
+        lui    at, 0x3ff3 // 1.9
+
+        lli   t0, Ryu.Action.JAB_L
+        beq   t1, t0, _fgc_multiplyier_continue
+        lui   at, 0x4000 // 2.0
+
+        lli   t0, Ryu.Action.JAB_L2
+        beq   t1, t0, _fgc_multiplyier_continue
+        lui   at, 0x4000 // 2.0
+
+        lli   t0, Ryu.Action.JAB_L3
+        beq   t1, t0, _fgc_multiplyier_continue
+        lui   at, 0x4000 // 2.0
+
+        lli   t0, Ryu.Action.USP_H
+        beq   t1, t0, _fgc_multiplyier_continue
+        lui   at, 0x4000 // 2.0
+
+        lli   t0, Ryu.Action.USP_L
+        beq   t1, t0, _fgc_multiplyier_continue
+        lui   at, 0x4000 // 2.0
+
+        // default is 1.5
+        lui   at, 0x3fc0 // 1.5
+        
+        _fgc_multiplyier_continue:
+        mtc1 at, f0 // load at into f0
+        mul.s f18, f18, f0  // f18 = f18 * f0 (hitlag multiplier)
         swc1 f18,0x7a4(s1) // save new hitlag multiplier value
 
         lli t0, 0xA
@@ -908,9 +935,41 @@ scope FGC {
 
         _fgc_multiplyier_defender:
         lwc1 f18,0x7a4(s5) // load hitbox hitlag value into f18
-        lui at, 0x3fc0 // 1.5
-        mtc1 at, f0 // load 1.5 into f0
-        mul.s f18, f18, f0  // f18 = f18 * f0 (hitlag *= 1.5)
+
+        // branches for moves with specific hitlag
+        // save hitlag to at then jump
+        lw t1, 0x0024(s1) // t0 = current action
+
+        lli   t0, Ryu.Action.DTILT_L
+        beq   t1, t0, _fgc_multiplyier_defender_continue
+        lui   at, 0x3ff3 // 1.9
+
+        lli   t0, Ryu.Action.JAB_L
+        beq   t1, t0, _fgc_multiplyier_defender_continue
+        lui   at, 0x4000 // 2.0
+
+        lli   t0, Ryu.Action.JAB_L2
+        beq   t1, t0, _fgc_multiplyier_defender_continue
+        lui   at, 0x4000 // 2.0
+
+        lli   t0, Ryu.Action.JAB_L3
+        beq   t1, t0, _fgc_multiplyier_defender_continue
+        lui   at, 0x4000 // 2.0
+
+        lli   t0, Ryu.Action.USP_H
+        beq   t1, t0, _fgc_multiplyier_defender_continue
+        lui   at, 0x4000 // 2.0
+
+        lli   t0, Ryu.Action.USP_L
+        beq   t1, t0, _fgc_multiplyier_defender_continue
+        lui   at, 0x4000 // 2.0
+
+        // default is 1.5
+        lui   at, 0x3fc0 // 1.5
+        
+        _fgc_multiplyier_defender_continue:
+        mtc1 at, f0 // load at into f0
+        mul.s f18, f18, f0  // f18 = f18 * f0 (hitlag multiplier)
         swc1 f18,0x7a4(s5) // save new hitlag multiplier value
 
         goto_hitlag_defender_fgc_multiply_end_:

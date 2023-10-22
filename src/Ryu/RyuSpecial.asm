@@ -928,15 +928,15 @@ scope RyuNSP {
         sw      t0, 0x0104(a0)          // save
 
         // Hit angle
-        lli  t1, 0x0030 // 48
+        lli  t1, 0x0037 // 55
         sw   t1, 0x012C(a0)
 
         // Hitbox base knockback
-        lli     t0, 0x0040              // 64
+        lli     t0, 0x0044              // 68
         sw      t0, 0x0138(a0)          // save
 
         // Hitbox knockback growth
-        lli     t0, 0x0024              // 36
+        lli     t0, 0x0020              // 32
         sw      t0, 0x0130(a0)          // save
 
         // Hit FGM
