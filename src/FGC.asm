@@ -873,7 +873,7 @@ scope FGC {
 
         lli    t0, Ryu.Action.DTILT_L
         beq    t1, t0, _fgc_multiplyier_continue
-        lui    at, 0x3ff3 // 1.9
+        lui    at, 0x4000 // 2.0
 
         lli   t0, Ryu.Action.JAB_L
         beq   t1, t0, _fgc_multiplyier_continue
@@ -942,7 +942,7 @@ scope FGC {
 
         lli   t0, Ryu.Action.DTILT_L
         beq   t1, t0, _fgc_multiplyier_defender_continue
-        lui   at, 0x3ff3 // 1.9
+        lui   at, 0x4000 // 2.0
 
         lli   t0, Ryu.Action.JAB_L
         beq   t1, t0, _fgc_multiplyier_defender_continue
