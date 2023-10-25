@@ -64,12 +64,12 @@ scope FGC {
         bc1tl   goto_fcg_tap_hold_end_    // skip if frame < 0
         nop
 
-        lw t1, 0x0B24(a2) // load cancel window
+        lw t1, 0x0B28(a2) // load cancel window
         blez t1, thingie // if cancel window <= 0, skip
         nop
 
         subi t1, 0x1
-        sw t1, 0x0B24(a2)
+        sw t1, 0x0B28(a2)
 
         lw t2,  0x4(a2)                     // t2 = fighter object
 
@@ -238,7 +238,7 @@ scope FGC {
         lw      a0, 0x4(a2)                 // a0 = player object
         sw      r0, 0x0010(sp)              // argument 4 = 0
         lli     a1, 0xE9
-        or      a2, r0, r0                  // a2 = float: 0.0
+        lui     a2, 0x3F80
         jal     0x800E6F24                  // change action
         lui     a3, 0x3F80                  // a3 = float: 1.0
         nop
@@ -250,7 +250,7 @@ scope FGC {
         lw      a0, 0x4(a2)                 // a0 = player object
         sw      r0, 0x0010(sp)              // argument 4 = 0
         lli     a1, 0xE5
-        or      a2, r0, r0                  // a2 = float: 0.0
+        lui     a2, 0x3F80
         jal     0x800E6F24                  // change action
         lui     a3, 0x3F80                  // a3 = float: 1.0
         nop
@@ -289,7 +289,7 @@ scope FGC {
         lw      a0, 0x4(a2)                 // a0 = player object
         sw      r0, 0x0010(sp)              // argument 4 = 0
         lli     a1, 0xE6
-        or      a2, r0, r0                  // a2 = float: 0.0
+        lui     a2, 0x3F80
         jal     0x800E6F24                  // change action
         lui     a3, 0x3F80                  // a3 = float: 1.0
         nop
@@ -301,7 +301,7 @@ scope FGC {
         lw      a0, 0x4(a2)                 // a0 = player object
         sw      r0, 0x0010(sp)              // argument 4 = 0
         lli     a1, 0xE4
-        or      a2, r0, r0                  // a2 = float: 0.0
+        lui     a2, 0x3F80
         jal     0x800E6F24                  // change action
         lui     a3, 0x3F80                  // a3 = float: 1.0
         nop
@@ -317,7 +317,7 @@ scope FGC {
         lw      a3, 0x0010(sp)              // restore a2
         addiu   sp, sp, 0x0030              // deallocate stack space
 
-        sw r0, 0x0B24(a2)
+        sw r0, 0x0B28(a2)
 
         j goto_fcg_tap_hold_end_
         nop
@@ -480,7 +480,7 @@ scope FGC {
         addiu   s0, a2, 0
         sw      r0, 0x0010(sp)              // argument 4 = 0
         addiu   a1, t3, 0
-        or      a2, r0, r0                  // a2 = float: 0.0
+        lui     a2, 0x3F80
         jal     0x800E6F24                  // change action
         lui     a3, 0x3F80                  // a3 = float: 1.0
         jal     0x800E0830                  // unknown common subroutine
@@ -746,7 +746,7 @@ scope FGC {
         }
 
         fgc_target_check:
-        sw r0, 0x0B24(a2)
+        //sw r0, 0x0B28(a2)
 
         lw      t0, 0x0024(a2) // t0 = current action
         subi    at, t0, Action.Jab1              // at = 1 if action id < JAB1, else at = 0
@@ -834,7 +834,7 @@ scope FGC {
 
         set_cancel_window:
         lli t0, 0xA
-        sw t0, 0x0B24(a2)
+        sw t0, 0x0B28(a2)
     
         goto_hitlag_step_end:
         lbu t6, 0x0192(a2) // original line 1
@@ -904,7 +904,7 @@ scope FGC {
         swc1 f18,0x7a4(s1) // save new hitlag multiplier value
 
         lli t0, 0xA
-        sw t0, 0x0B24(s1)
+        sw t0, 0x0B28(s1)
 
         goto_hitlag_attacker_fgc_multiply_end_:
         lw t3, 0x0010(s2) // original line 1

@@ -113,7 +113,7 @@ scope Ken {
     Character.edit_action_parameters(KEN,   Action.Tech,            -1,                         TECHSTAND,                  -1)
     Character.edit_action_parameters(KEN,   Action.CliffAttackQuick2, -1,                       EDGEATTACKF,                -1)
     Character.edit_action_parameters(KEN,   Action.CliffAttackSlow2, -1,                        EDGEATTACKS,                -1)
-    Character.edit_action_parameters(KEN,   Action.Taunt,           File.GND_TAUNT,             TAUNT,                      -1)
+    Character.edit_action_parameters(KEN,   Action.Taunt,           File.KEN_TAUNT,             TAUNT,                      -1)
     Character.edit_action_parameters(KEN,   Action.ShieldBreak,     -1,                         SHIELD_BREAK,               -1)
     Character.edit_action_parameters(KEN,   Action.Stun,             -1,                        STUN,                       -1)
     Character.edit_action_parameters(KEN,   Action.Jab1,            File.KEN_FAR_JAB,           JAB_FAR,                 0x40000000)
@@ -151,8 +151,12 @@ scope Ken {
     
     Character.edit_action_parameters(KEN,   Action.RunBrake,        File.RYU_DASH,      -1,                         -1)
 
+    Character.edit_action_parameters(KEN,   Action.DamageMid1,       File.RYU_DAMAGE_M1,          -1,                         -1)
+    Character.edit_action_parameters(KEN,   Action.DamageMid2,       File.RYU_DAMAGE_M2,          -1,                         -1)
+    Character.edit_action_parameters(KEN,   Action.DamageMid3,       File.RYU_DAMAGE_M3,          -1,                         -1)
+
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
-    Character.edit_action(KEN,  0xE4,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                RyuNSP.air_collision_)
+    Character.edit_action(KEN,  0xE4,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                -1)
 	Character.edit_action(KEN,  0xE5,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                RyuNSP.air_collision_)
     Character.edit_action(KEN, 0xE6,               -1,             RyuDSP.main_,                  RyuDSP.ground_subroutine_,      RyuNSP.physics_,              RyuDSP.air_collision_)
     Character.edit_action(KEN, 0xE9,               -1,             RyuDSP.main_,                  RyuDSP.air_subroutine_,         RyuDSP.air_physics_,            RyuDSP.air_collision_)
@@ -195,7 +199,8 @@ scope Ken {
     Character.add_new_action(KEN,    COMMAND_KICK,            -1,     ActionParams.COMMAND_KICK,    0x11,            0x800D94C4,                     0,                                  0x800D8C14,                     0x800DDF44)
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
-    Character.edit_menu_action_parameters(KEN,   0x1,               -1,                         VICTORY_POSE_1,             -1)
+    Character.edit_menu_action_parameters(KEN,   0x0,               File.RYU_IDLE,              -1,                         -1)
+    Character.edit_menu_action_parameters(KEN,   0x1,               File.RYU_WIN_1,             VICTORY_POSE_1,             -1)
     Character.edit_menu_action_parameters(KEN,   0x2,               File.GND_SELECT,            VICTORY_POSE_2,             -1)
     Character.edit_menu_action_parameters(KEN,   0x3,               File.GND_VICTORY1,          VICTORY_POSE_3,             -1)
     Character.edit_menu_action_parameters(KEN,   0x4,               File.GND_VICTORY1,          VICTORY_POSE_3,             -1)

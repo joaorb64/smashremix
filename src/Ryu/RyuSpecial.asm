@@ -491,6 +491,8 @@ scope RyuNSP {
         nop
 
         fsmash_b_ken_change_action:
+        sw      r0, 0x0048(v0)  // set zero x speed
+
         // Ken changes action to roundhouse instead
         OS.save_registers()
         lli     a1, Ken.Action.ROUNDHOUSE   // a1 = Action.USPG
@@ -1497,6 +1499,15 @@ scope RyuDSP {
 
         lui     t1, X_SPEED                 // t1 = X_SPEED
         sw		t1, 0x0060(a2)	            // ground x velocity = X_SPEED
+
+        // lui		at, 0x4230					// at = 6.0
+		// mtc1    at, f6                      // ~
+        // c.le.s  f8, f6                      // f8 == f6 (current frame == 1) ?
+        // nop
+        // bc1tl   _end           // skip if frame isn't greater than 6
+        // nop
+
+        // sw		r0, 0x0060(a2)	            // ground x velocity = 0
         
         _end:
         OS.restore_registers()
@@ -1786,6 +1797,11 @@ scope RyuDSP {
         sw      t6, 0x0014(sp)              // store LANDING_FSM
         lw      ra, 0x0024(sp)              // restore ra
 
+        lw      t0, 0x014C(a0)              // t0 = kinetic state
+        bnez    t0, _continue           // branch if kinetic state !grounded
+        nop
+        sw		r0, 0x0060(v0)	            // if grounded, ground x velocity = 0
+
         _continue:
         lw      v0, 0x0084(a0)                      // loads player struct
 
@@ -1832,6 +1848,9 @@ scope RyuDSP {
 
         fsmash_b_ken_change_action:
         // Ken changes action to roundhouse instead
+
+        sw      r0, 0x0048(v0)  // set zero x speed
+
         OS.save_registers()
         lli     a1, Ken.Action.COMMAND_KICK   // a1 = Action.USPG
         lw      r0, 0x0078(a0)              // a2(starting frame) = 0
