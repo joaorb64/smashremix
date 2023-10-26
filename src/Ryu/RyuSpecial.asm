@@ -185,11 +185,6 @@ scope RyuUSP {
         _end:
         addiu   sp, sp, 0x0028              // deallocate stack space
 
-        OS.save_registers()
-        jal RyuDSP.check_ledge_grab_        // cliff catch routine
-        nop
-        OS.restore_registers()
-
         jr      ra                          // return
         nop
     }
@@ -396,6 +391,11 @@ scope RyuUSP {
     // Copy of subroutine 0x80156358, which is the collision subroutine for Mario's up special.
     // Loads the appropriate landing fsm value for Ryu.
     scope collision_: {
+        OS.save_registers()
+        jal RyuDSP.check_ledge_grab_        // cliff catch routine
+        nop
+        OS.restore_registers()
+        
         // Copy the first 30 lines of subroutine 0x80156358
         OS.copy_segment(0xD0D98, 0x78)
         // Replace original line which loads the landing fsm
