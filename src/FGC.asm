@@ -480,7 +480,7 @@ scope FGC {
         addiu   s0, a2, 0
         sw      r0, 0x0010(sp)              // argument 4 = 0
         addiu   a1, t3, 0
-        lui     a2, 0x3F80
+        lui     a2, 0
         jal     0x800E6F24                  // change action
         lui     a3, 0x3F80                  // a3 = float: 1.0
         jal     0x800E0830                  // unknown common subroutine
