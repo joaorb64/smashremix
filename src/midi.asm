@@ -271,6 +271,7 @@ scope MIDI {
     add_game(sbk, "Snowboard Kids")
     add_game(sbk2, "Snowboard Kids 2")
     add_game(2hu6, "Touhou 6: Embodiment of Scarlet Devil")
+    add_game(sf2t, "Street Fighter II: Turbo")
     OS.align(4)
 
     // insert custom midi files
@@ -539,6 +540,9 @@ scope MIDI {
     insert_extra_midi(PLAY_A_MINIGAME)
     insert_midi(CREDITS_BRAWL, OS.TRUE, OS.TRUE, "Credits (Brawl)", ssb)
 
+    insert_midi(RYU_STAGE, OS.TRUE, OS.TRUE, "Ryu Stage", sf2t)
+    insert_midi(KEN_STAGE, OS.TRUE, OS.TRUE, "Ken Stage", sf2t)
+    insert_victory_midi(RYU_VICTORY)
     pushvar origin, base
 
     // Extend Sound Test Music numbers so we can test in game easier

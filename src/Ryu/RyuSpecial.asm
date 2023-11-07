@@ -681,13 +681,23 @@ scope RyuNSP {
         // Hit angle
         sw   r0, 0x012C(v1)
 
-        // // Hitbox base knockback
-        lli     at, 0x0008              // at = 16
+        // Hitbox base knockback
+        lli     at, 0x000E              // at = 14
         sw      at, 0x0138(v1)          // save
 
         // Hit FGM
         lli     at, 0x0504               // at = RYU_HIT_M
         sh      at, 0x0146(v1)          // save
+
+        // Check if B is held, add more knockback to the strong version
+        lhu     t0, 0x01BC(v0)              // load button press buffer
+        andi    t1, t0, 0x4000           // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, _projectile_branch_continue // skip if (!B_PRESSED)
+        nop
+
+        // Hitbox base knockback
+        lli     at, 0x0018              // at = 24
+        sw      at, 0x0138(v1)          // save
         
         // ==============
         // END EDIT HITBOX
@@ -716,12 +726,22 @@ scope RyuNSP {
         sw   r0, 0x012C(v1)
 
         // // Hitbox base knockback
-        lli     at, 0x0008              // at = 16
+        lli     at, 0x000E              // at = 14
         sw      at, 0x0138(v1)          // save
 
         // Hit FGM
         lli     at, 0x0504               // at = RYU_HIT_M
         sh      at, 0x0146(v1)          // save
+
+        // Check if B is held, add more knockback to the strong version
+        lhu     t0, 0x01BC(v0)              // load button press buffer
+        andi    t1, t0, 0x4000           // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, _projectile_branch_continue // skip if (!B_PRESSED)
+        nop
+
+        // Hitbox base knockback
+        lli     at, 0x0018              // at = 24
+        sw      at, 0x0138(v1)          // save
         
         // ==============
         // END EDIT HITBOX
@@ -930,7 +950,7 @@ scope RyuNSP {
         sw      t0, 0x0104(a0)          // save
 
         // Hit angle
-        lli  t1, 0x0037 // 55
+        lli  t1, 0x0037 // 60
         sw   t1, 0x012C(a0)
 
         // Hitbox base knockback
@@ -1115,15 +1135,15 @@ scope RyuNSP {
         OS.copy_segment(0x103904, 0x0C) // empty 
 
         _blaster_shakunetsu_struct:
-        dw 78                          // 0x0000 - duration (int)
-        float32 16                     // 0x0004 - max speed
-        float32 16                      // 0x0008 - min speed
+        dw 84                          // 0x0000 - duration (int)
+        float32 20                     // 0x0004 - max speed
+        float32 20                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 16                      // 0x0020   initial speed
+        float32 20                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 1                       // 0x002C   palette index (0 = mario, 1 = luigi)
@@ -1131,14 +1151,14 @@ scope RyuNSP {
 		
 		_blaster_fireball_struct:
         dw 84                          // 0x0000 - duration (int)
-        float32 18                     // 0x0004 - max speed
-        float32 18                      // 0x0008 - min speed
+        float32 20                     // 0x0004 - max speed
+        float32 20                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 18                      // 0x0020   initial speed
+        float32 20                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)
@@ -1146,29 +1166,29 @@ scope RyuNSP {
 
         _blaster_shakunetsu_heavy_struct:
         dw 54                          // 0x0000 - duration (int)
-        float32 44                     // 0x0004 - max speed
-        float32 44                      // 0x0008 - min speed
+        float32 48                     // 0x0004 - max speed
+        float32 48                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 44                      // 0x0020   initial speed
+        float32 48                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 1                       // 0x002C   palette index (0 = mario, 1 = luigi)
         OS.copy_segment(0x1038A0, 0x30)
 
         _blaster_fireball_heavy_struct:
-        dw 49                          // 0x0000 - duration (int)
-        float32 40                     // 0x0004 - max speed
-        float32 40                      // 0x0008 - min speed
+        dw 54                          // 0x0000 - duration (int)
+        float32 48                     // 0x0004 - max speed
+        float32 48                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 40                      // 0x0020   initial speed
+        float32 48                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)
@@ -1191,14 +1211,14 @@ scope RyuNSP {
         
         _blaster_fireball_ken_heavy_struct:
         dw 52                          // 0x0000 - duration (int)
-        float32 34                     // 0x0004 - max speed
-        float32 34                      // 0x0008 - min speed
+        float32 38                     // 0x0004 - max speed
+        float32 38                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 34                      // 0x0020   initial speed
+        float32 38                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)

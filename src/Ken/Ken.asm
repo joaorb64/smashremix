@@ -12,8 +12,8 @@ scope Ken {
     // Insert Moveset files
     insert IDLE,"moveset/IDLE.bin"
     insert RUN,"moveset/RUN.bin"; Moveset.GO_TO(RUN)            // loops
-    insert JUMP2, "moveset/JUMP2.bin"
-    insert JUMPB, "moveset/JUMPB.bin"
+    insert JUMP2, "moveset/IDLE.bin"
+    insert JUMPB, "moveset/IDLE.bin"
     insert TECHSTAND, "moveset/TECHSTAND.bin"
     insert TECHROLL, "moveset/TECHFROLL.bin"
     insert EDGEATTACKF, "moveset/EDGEATTACKF.bin"
@@ -249,7 +249,7 @@ scope Ken {
 
     // Set Kirby hat_id
     Character.table_patch_start(kirby_inhale_struct, 0x2, Character.id.KEN, 0xC)
-    dh 0x11
+    dh 0x26
     OS.patch_end()
 
     // Set CPU behaviour
