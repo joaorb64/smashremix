@@ -118,7 +118,7 @@ scope RyuUSP {
         nop
 
         light_to_hard:
-        // if not in light ups, skip
+        // if not in light usp, skip
         lw     t7, 0x0024(a2)              // t7 = current action
         lli    t2, Ryu.Action.USP_L
         bne    t7, t2, _main_normal
@@ -147,7 +147,7 @@ scope RyuUSP {
 
         lw      v0, 0x0034(a2)              // v0 = player struct
 
-        lli     a1, Ryu.Action.USP_H      // a1 = Action.USPG
+        lli     a1, Ryu.Action.USP_H        // a1 = Action.USPG
         lw      a2, 0x0078(a0)              // a2(starting frame) = current animation frame
         lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
         sw      r0, 0x0010(sp)              // argument 4 = 0
@@ -164,6 +164,38 @@ scope RyuUSP {
         addiu   sp, sp, 0x0038              // deallocate stack space
         lw      a0, 0x4(a1)                 // restore a0 = player object
 
+        // FIRE EFFECT
+        lw      t0, 0x0008(a2)              // t0 = character id
+        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
+        bne     t0, t1, light_to_hard_end    // if character id != KEN, skip fire effect
+        nop
+        
+        OS.save_registers()
+
+        or a0, r0, a1 // argument = player object
+
+        OS.copy_segment(0x7D6D8, 0x40)
+        lw      t6,0x928(v1) // put graphic in hand instead
+        OS.copy_segment(0x7D720, 0x5C)
+
+        lui     at,0x42B4
+        mtc1    at,f0
+
+        swc1    f0,0x34(a2)
+        swc1    f0,0x38(a2)
+
+        lbu     t7,0x18f(v1)
+        ori     t8,t7,0x10
+        sb      t8,0x18f(v1)
+
+        or      t7, t0, r0
+        jal     Size.falcon.kick.update_routine_._apply_scale
+        or      a0, v0, r0 // a0 = gfx object
+
+        OS.restore_registers()
+        // END FIRE EFFECT
+
+        light_to_hard_end:
         jr      ra                          // return
         nop
         
@@ -171,6 +203,32 @@ scope RyuUSP {
         nop
 
         _main_normal:
+        // OS.save_registers()
+
+        // addiu   sp, sp, -0x0038              // allocate stack space
+
+        // // unchanged
+        // lw      a3,0x20(a1)
+        // lw      a2,0x1c(a1)
+        // swc1    f0,0x10(sp)
+        // lwc1    f4,0x20(s0)
+
+        // swc1    f4,0x14(sp)
+        // lwc1    f6,0x24(s0)
+        // sw      a1,0x34(sp)
+        // swc1    f0,0x1c(sp)
+
+        // // certain
+        // li      a0,8
+        // li      a1,2
+
+        // jal     0x800CE8C0
+        // swc1    f6,0x18(sp)
+
+        // addiu   sp, sp, 0x0038              // deallocate stack space
+
+        // OS.restore_registers()
+
         // Copy the first 8 lines of subroutine 0x8015C750
         OS.copy_segment(0xD7190, 0x20)
         bc1fl   _end                        // skip if animation end has not been reached
