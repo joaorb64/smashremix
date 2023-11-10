@@ -146,8 +146,12 @@ scope Ryu {
     Character.edit_action_parameters(RYU,   Action.CrouchIdle,      File.RYU_CROUCH_IDLE,         -1,                         -1)
     Character.edit_action_parameters(RYU,   Action.CrouchEnd,       File.RYU_CROUCH_END,          -1,                         -1)
     
-    Character.edit_action_parameters(RYU,   Action.RunBrake,        File.RYU_DASH,      -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.Run,             File.RYU_RUN,      -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.RunBrake,        File.RYU_RUN_BRAKE,      -1,                         -1)
 
+    Character.edit_action_parameters(RYU,   Action.DamageHigh1,       File.RYU_DAMAGE_H1,          -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.DamageHigh2,       File.RYU_DAMAGE_H2,          -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.DamageHigh3,       File.RYU_DAMAGE_H3,          -1,                         -1)
     Character.edit_action_parameters(RYU,   Action.DamageMid1,       File.RYU_DAMAGE_M1,          -1,                         -1)
     Character.edit_action_parameters(RYU,   Action.DamageMid2,       File.RYU_DAMAGE_M2,          -1,                         -1)
     Character.edit_action_parameters(RYU,   Action.DamageMid3,       File.RYU_DAMAGE_M3,          -1,                         -1)
