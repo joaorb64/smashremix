@@ -781,8 +781,8 @@ scope FGC {
         lw t6, 0x0B18(a0) //
         lw t7, 0x0B1C(a0) // save player struct variables
 
-        sw      r0, 0x0B18(a0)              // target = NULL
-        sw      r0, 0x0B1C(a0)              // X_DIFF = 0
+        sw      r0, 0x0B18(a2)              // target = NULL
+        sw      r0, 0x0B1C(a2)              // X_DIFF = 0
 
         jal     check_for_targets_          // check_for_targets_
         lw      a0, 0x4(a2)                 // a0 = player object
@@ -794,10 +794,30 @@ scope FGC {
         sw t7, 0x0B1C(a0) // restore player struct variables
         or a0, r0, t5
 
-        beq     t0, r0, button_check          // branch if no target was found
+        beq     v0, r0, button_check          // branch if no target was found
         nop
 
         // if check_target_ returned a new valid target
+        // auto turnaround
+        // if we're here, stick_x is opposite the facing direction, so turn the character around
+        mtc1    v1, f0                      // f0 = xdiff
+        mtc1    r0, f2                      // f2 = 0
+        c.le.s  f2, f0
+        bc1t    after_turnaround
+
+        lw      t7, 0x0044(a2)              // t7 = DIRECTION
+        subu    t7, r0, t7                  // ~
+        sw      t7, 0x0044(a2)              // reverse and update DIRECTION
+
+        mtc1    t7, f6                      // ~
+        cvt.s.w f6, f6                      // f6 = direction
+        lui     at, 0x8013                  // ~
+        lwc1    f8, 0xFE90(at)              // at = rotation constant
+        mul.s   f8, f8, f6                  // f8 = rotation constant * direction
+        lw      t7, 0x08E8(a2)              // t6 = character control joint struct
+        swc1    f8, 0x0034(t7)              // update character rotation to match direction
+
+        after_turnaround:
         lw t1, 0x0024(a2) // t0 = current action
 
         // we'll use t3 to define the action to switch to
