@@ -17,7 +17,7 @@ scope FGC {
     constant B_PRESSED(0x4000)                // bitmask for b press
     constant A_PRESSED(0x8000)                // bitmask for b press
 
-    constant MAX_X_RANGE_FORWARD(0x4396)            // current setting - float: 300.0
+    constant MAX_X_RANGE_FORWARD(0x43C8)            // current setting - float: 400.0
     constant MAX_X_RANGE_BACK(0x4370)            // current setting - float: 240.0
     constant MAX_Y_RANGE_UP(0x447A)            // current setting - float: 1000.0
     constant MAX_Y_RANGE_DOWN(0x4348)            // current setting - float: 200.0

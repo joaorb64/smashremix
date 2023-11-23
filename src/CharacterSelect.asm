@@ -220,8 +220,8 @@ scope CharacterSelect {
     dw  0x3500 + 0x200                      // 0x44 - METAL LUIGI
     dw  0xCEE0 + 0x200                      // 0x45 - EBISUMARU
     dw  0x58D0 + 0x200                      // 0x46 - DRAGONKING
-    dw  0xCF50 + 0x200                     // 0x44 - RYU
-    dw  0x23658 + 0x200                     // 0x45 - KEN
+    dw  0xB8B0 + 0x200                     // 0x47 - RYU
+    dw  0x23658 + 0x200                     // 0x48 - KEN
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS

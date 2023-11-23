@@ -3275,7 +3275,7 @@ scope Stages {
     dw OS.NULL                              // Banjo BTP
     dw function.CLONE                       // Pokefloats
     dw function.CLONE                       // Big Snowman
-    dw OS.NULL                              // Suzaku Castle
+    dw function.CLONE                       // Suzaku Castle
 
     // @ Description
     // Offsets to image footer struct for stage icons sorted by stage id
@@ -4143,7 +4143,7 @@ scope Stages {
     dw header.BTP_BANJO,              type.BTP
     dw header.POKEFLOATS,             type.CLONE
     dw header.BIG_SNOWMAN,            type.CLONE
-    dw header.SUZAKU_CASTLE,          type.SECTOR_Z
+    dw header.SUZAKU_CASTLE,          type.CLONE
 
     class_table:
     constant class_table_origin(origin())
@@ -5008,7 +5008,7 @@ scope Stages {
     add_bg_animation(SMASHVILLE_REMIX)
     add_stage(pokefloats, "Poke Floats", {MIDI.id.POKEFLOATS}, {MIDI.id.BATTLE_GOLD_SILVER}, {MIDI.id.GOLDENROD_CITY}, OS.FALSE, HAZARDS_ON_MOVEMENT_ON, OS.TRUE, OS.TRUE, class.BATTLE, -1, -1, -1, -1, -1, 0x05, 0x05, 0x05, default_blue_shell_rate, default_lightning_rate, default_item_rate, default_item_rate, POKEMON, Hazards.type.MOVEMENT)
     add_stage(big_snowman, "Big Snowman", {MIDI.id.BIG_SNOWMAN}, {MIDI.id.WENDYS_HOUSE}, {MIDI.id.SILVER_MOUNTAIN}, OS.FALSE, HAZARDS_ON_MOVEMENT_ON, OS.TRUE, OS.TRUE, class.BATTLE, -1, -1, -1, -1, -1, 0x05, 0x05, 0x05, default_blue_shell_rate, default_lightning_rate, default_item_rate, default_item_rate, SNOWBOARDKIDS, Hazards.type.MOVEMENT)
-    add_stage(suzaku_castle, "Suzaku Castle", -1, {MIDI.id.RYU_STAGE}, {MIDI.id.KEN_STAGE}, OS.FALSE, HAZARDS_ON_MOVEMENT_ON, OS.FALSE, OS.TRUE, class.BATTLE, -1, -1, -1, id.DREAM_LAND, variant_type.OMEGA, 0x05, 0x05, 0x05, default_blue_shell_rate, default_lightning_rate, default_item_rate, default_item_rate,  KIRBY, Hazards.type.NONE)
+    add_stage(suzaku_castle, "Suzaku Castle", {MIDI.id.RYU_STAGE}, {MIDI.id.KEN_STAGE}, {MIDI.id.KEN_STAGE}, OS.TRUE, HAZARDS_ON_MOVEMENT_ON, OS.TRUE, OS.TRUE, class.BATTLE, -1, -1, -1, -1, -1, 0x05, 0x05, 0x05, default_blue_shell_rate, default_lightning_rate, default_item_rate, default_item_rate, KIRBY, Hazards.type.NONE)
 
     map 0, 0, 256 // restore string mappings
 

@@ -4,10 +4,10 @@
 
 scope Ryu {
 
-	scope FACE: {
-		constant NORMAL(0xAC000000)
-		constant SHOCK(0xAC000006)
-	}
+	// scope FACE: {
+	// 	constant NORMAL(0xAC000000)
+	// 	constant SHOCK(0xAC000006)
+	// }
 
     // Insert Moveset files
     insert IDLE,"moveset/IDLE.bin"
@@ -71,12 +71,12 @@ scope Ryu {
     insert THROWB_DATA, "moveset/THROWB_DATA.bin"
     THROWB:; Moveset.THROW_DATA(THROWB_DATA); insert "moveset/THROWB.bin"
 
-    TEETER:
-    dw FACE.SHOCK; dw 0;
+    // TEETER:
+    // dw FACE.SHOCK; dw 0;
 
-	DOWN_BOUNCE:
-	dw FACE.SHOCK
-	Moveset.GO_TO(Moveset.shared.DOWN_BOUNCE)
+	// DOWN_BOUNCE:
+	// dw FACE.SHOCK
+	// Moveset.GO_TO(Moveset.shared.DOWN_BOUNCE)
 
     // Insert AI attack options
     constant CPU_ATTACKS_ORIGIN(origin())
@@ -101,8 +101,8 @@ scope Ryu {
     Character.edit_action_parameters(RYU,   Action.ThrowB,          File.RYU_THROWB,            THROWB,                     0x50000000)
     Character.edit_action_parameters(RYU,   Action.JumpAerialF,     File.RYU_AIRJUMPF,          JUMP2,                      -1)
     Character.edit_action_parameters(RYU,   Action.JumpAerialB,     File.RYU_AIRJUMPB,          JUMP2,                      -1)
-    Character.edit_action_parameters(RYU,   Action.DownBounceD,     -1,                         DOWN_BOUNCE,                -1)
-    Character.edit_action_parameters(RYU,   Action.DownBounceU,     -1,                         DOWN_BOUNCE,                -1)
+    //Character.edit_action_parameters(RYU,   Action.DownBounceD,     -1,                         DOWN_BOUNCE,                -1)
+    //Character.edit_action_parameters(RYU,   Action.DownBounceU,     -1,                         DOWN_BOUNCE,                -1)
     Character.edit_action_parameters(RYU,   Action.DownStandD,      -1,                         DOWN_STAND,                 -1)
     Character.edit_action_parameters(RYU,   Action.DownStandU,      -1,                         DOWN_STAND,                 -1)
     Character.edit_action_parameters(RYU,   Action.TechF,           -1,                         TECHROLL,                   -1)
@@ -199,7 +199,7 @@ scope Ryu {
     Character.edit_menu_action_parameters(RYU,   0x3,               File.GND_VICTORY1,          VICTORY_POSE_3,             -1)
     Character.edit_menu_action_parameters(RYU,   0x4,               File.GND_VICTORY1,          VICTORY_POSE_3,             -1)
     Character.edit_menu_action_parameters(RYU,   0xE,               File.GND_1P_CPU,            ONEP,                       -1)
-    Character.edit_menu_action_parameters(RYU,   0xD,               File.GND_POSE_1P,           ONEP,                       -1)
+    Character.edit_menu_action_parameters(RYU,   0xD,               File.RYU_1P_POSE,           ONEP,                       -1)
 
     Character.table_patch_start(variants, Character.id.RYU, 0x4)
     db      Character.id.NONE   // set as SPECIAL variant for RYU
@@ -231,10 +231,10 @@ scope Ryu {
     OS.patch_end()
 
     // Set default costumes
-    Character.set_default_costumes(Character.id.RYU, 0, 1, 2, 3, 5, 1, 4)
+    Character.set_default_costumes(Character.id.RYU, 0, 2, 4, 5, 1, 2, 3)
 
     // Shield colors for costume matching
-    Character.set_costume_shield_colors(RYU, BROWN, BLUE, AZURE, PURPLE, GREEN, RED, NA, NA)
+    Character.set_costume_shield_colors(RYU, RED, MAGENTA, BLUE, GREEN, PURPLE, YELLOW, NA, NA)
 
     // Set Kirby star damage
     Character.table_patch_start(kirby_inhale_struct, 0x8, Character.id.RYU, 0xC)

@@ -209,7 +209,7 @@ scope Ken {
     Character.edit_menu_action_parameters(KEN,   0x3,               File.GND_VICTORY1,          VICTORY_POSE_3,             -1)
     Character.edit_menu_action_parameters(KEN,   0x4,               File.GND_VICTORY1,          VICTORY_POSE_3,             -1)
     Character.edit_menu_action_parameters(KEN,   0xE,               File.GND_1P_CPU,            ONEP,                       -1)
-    Character.edit_menu_action_parameters(KEN,   0xD,               File.GND_POSE_1P,           ONEP,                       -1)
+    Character.edit_menu_action_parameters(KEN,   0xD,               File.KEN_1P_POSE,           ONEP,                       -1)
 
     Character.table_patch_start(variants, Character.id.KEN, 0x4)
     db      Character.id.NONE   // set as SPECIAL variant for RYU

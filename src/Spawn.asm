@@ -1526,10 +1526,10 @@ scope Spawn {
     float32  0568,  0514
 
     // BC - Suzaku Castle
-    float32 -1767,  0832
-    float32  1767,  0832
-    float32 -0568,  1421
-    float32  0568,  1421
+    float32 -2500,  0000
+    float32  2500,  0000
+    float32 -1000,  0000
+    float32  1000,  0000
 
     // BC - Meta Crystal Remix
     float32 -1047,  0006
@@ -2809,10 +2809,10 @@ scope Spawn {
     float32  2210,  0645
     
     // BC - Suzaku Castle
-    float32 -1767,  0514
-    float32  1767,  0514
-    float32 -0568,  0514
-    float32  0568,  0514
+    float32 -2500,  0000
+    float32  2500,  0000
+    float32 -1000,  0000
+    float32  1000,  0000
 
 }
 

@@ -1194,14 +1194,14 @@ scope RyuNSP {
 
         _blaster_shakunetsu_struct:
         dw 84                          // 0x0000 - duration (int)
-        float32 20                     // 0x0004 - max speed
-        float32 20                      // 0x0008 - min speed
+        float32 19                     // 0x0004 - max speed
+        float32 19                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 20                      // 0x0020   initial speed
+        float32 19                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 1                       // 0x002C   palette index (0 = mario, 1 = luigi)
@@ -1209,14 +1209,14 @@ scope RyuNSP {
 		
 		_blaster_fireball_struct:
         dw 84                          // 0x0000 - duration (int)
-        float32 20                     // 0x0004 - max speed
-        float32 20                      // 0x0008 - min speed
+        float32 19                     // 0x0004 - max speed
+        float32 19                      // 0x0008 - min speed
         float32 0                       // 0x000C - gravity
         float32 0                       // 0x0010 - bounce multiplier
         float32 0                       // 0x0014 - rotation angle
         float32 0                       // 0x0018 - initial angle (ground)
         float32 0                       // 0x001C   initial angle (air)
-        float32 20                      // 0x0020   initial speed
+        float32 19                      // 0x0020   initial speed
         dw Character.RYU_file_6_ptr    // 0x0024   projectile data pointer
         dw 0                            // 0x0028   unknown (default 0)
         float32 0                       // 0x002C   palette index (0 = mario, 1 = luigi)
