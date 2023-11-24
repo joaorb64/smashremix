@@ -17,6 +17,8 @@ scope FGC {
     constant B_PRESSED(0x4000)                // bitmask for b press
     constant A_PRESSED(0x8000)                // bitmask for b press
 
+    constant TURNAROUND_X_RANGE_BACK(0x44C8)            // current setting - float: 1600.0
+
     constant MAX_X_RANGE_FORWARD(0x43C8)            // current setting - float: 400.0
     constant MAX_X_RANGE_BACK(0x4370)            // current setting - float: 240.0
     constant MAX_Y_RANGE_UP(0x447A)            // current setting - float: 1000.0
@@ -712,7 +714,7 @@ scope FGC {
             nop                                 // ~
             bc1fl   _end                        // end if MAX_X_RANGE =< X_DIFF
             or      v0, r0, r0                  // and return 0
-            lui     at, MAX_X_RANGE_BACK     // at = MAX_X_RANGE_BACK
+            lui     at, TURNAROUND_X_RANGE_BACK     // at = MAX_X_RANGE_BACK
             mtc1    at, f8                      // f8 = MAX_X_RANGE_BACK
             neg.s   f8, f8                      // f8 = -MAX_X_RANGE_BACK
             c.le.s  f8, f10                      // ~
@@ -772,6 +774,39 @@ scope FGC {
         beq    t0, at, fgc_target_check_continue
         nop
 
+        lli    at, Ryu.Action.DTILT_L
+        beq    t0, at, fgc_target_check_continue
+        nop
+
+        lli    at, Action.DTilt
+        beq    t0, at, fgc_target_check_continue
+        nop
+
+        lli    at, Action.UTilt
+        beq    t0, at, fgc_target_check_continue
+        nop
+
+        lli    at, Ryu.Action.UTILT_L
+        beq    t0, at, fgc_target_check_continue
+        nop
+
+        lli    at, Action.DSmash
+        beq    t0, at, fgc_target_check_continue
+        nop
+
+        lli    at, Action.USmash
+        beq    t0, at, fgc_target_check_continue
+        nop
+
+        lw      t2, 0x0008(a2)              // t0 = character id
+        ori     t1, r0, Character.id.KEN    // t1 = id.KEN
+        bne     t2, t1, button_check        // If character is not Ken, we stop here
+        nop
+
+        lli    at, Ken.Action.COMMAND_KICK
+        beq    t0, at, fgc_target_check_continue
+        nop
+
         b button_check
         nop
 
@@ -818,6 +853,16 @@ scope FGC {
         swc1    f8, 0x0034(t7)              // update character rotation to match direction
 
         after_turnaround:
+        mtc1    v1, f8 // f8 = X_DIFF
+
+        lui     at, MAX_X_RANGE_BACK        // at = MAX_X_RANGE_BACK
+        mtc1    at, f6                      // f6 = MAX_X_RANGE_BACK
+        neg.s   f8, f8                      // f6 = -MAX_X_RANGE_BACK
+        c.le.s  f8, f6                     // ~
+        nop                                 // ~
+        bc1fl   button_check                // skip if X_DIFF =< MAX_X_RANGE_BACK
+        nop
+
         lw t1, 0x0024(a2) // t0 = current action
 
         // we'll use t3 to define the action to switch to
