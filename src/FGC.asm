@@ -355,7 +355,7 @@ scope FGC {
         // If we're Ken doing the roundhouse command move,
         // go to its logic block
         lw      t0, 0x0008(a2)              // t0 = character id
-        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
+        ori     t1, r0, Character.id.KEN    // t1 = id.KEN
         bne     t0, t1, button_check
         nop
 

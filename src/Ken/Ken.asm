@@ -171,8 +171,8 @@ scope Ken {
     // Add Action Parameters                // Action Name      // Base Action  // Animation                    // Moveset Data             // Flags
     Character.add_new_action_params(KEN,    USP_L,             -1,             File.RYU_SHORYUKEN_L,            USP_L,                        0x40000000)
     Character.add_new_action_params(KEN,    JAB_L,             -1,             File.RYU_JAB_1,                 JAB_1,                       -1)
-    Character.add_new_action_params(KEN,    JAB_L2,             -1,            File.RYU_JAB_2,                 JAB_2,                       -1)
-    Character.add_new_action_params(KEN,    JAB_L3,             -1,            File.RYU_JAB_3,                 JAB_3,                       -1)
+    Character.add_new_action_params(KEN,    JAB_L2,             -1,            File.RYU_JAB_2,                 JAB_2,                       0x40000000)
+    Character.add_new_action_params(KEN,    JAB_L3,             -1,            File.RYU_JAB_3,                 JAB_3,                       0x40000000)
     Character.add_new_action_params(KEN,    DTILT_L,           -1,             File.RYU_DTILT_L,               DTILT_L,                      0x00000000)
     Character.add_new_action_params(KEN,    UTILT_L,           -1,             File.RYU_UTILT_L,               UTILT_L,                      0x00000000)
     Character.add_new_action_params(KEN,    FTILT_L,           -1,             File.RYU_FTILT_L,               FTILT_L,                      0x00000000)
@@ -187,8 +187,8 @@ scope Ken {
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
     Character.add_new_action(KEN,    USP_L,              -1,             ActionParams.USP_L,            -1,           RyuUSP.main_,                   RyuUSP.change_direction_,          RyuUSP.physics_,                 RyuUSP.collision_)
     Character.add_new_action(KEN,    JAB_L,              -1,             ActionParams.JAB_L,            -1,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
-    Character.add_new_action(KEN,    JAB_L2,              -1,            ActionParams.JAB_L2,           -1,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
-    Character.add_new_action(KEN,    JAB_L3,              -1,            ActionParams.JAB_L3,           -1,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
+    Character.add_new_action(KEN,    JAB_L2,              -1,            ActionParams.JAB_L2,           -1,           0x800D94C4,                     0,                                  0x800D8C14,                     0x800DDF44)
+    Character.add_new_action(KEN,    JAB_L3,              -1,            ActionParams.JAB_L3,           -1,           0x800D94C4,                     0,                                  0x800D8C14,                     0x800DDF44)
     Character.add_new_action(KEN,    DTILT_L,            -1,             ActionParams.DTILT_L,          -1,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
     Character.add_new_action(KEN,    UTILT_L,            -1,             ActionParams.UTILT_L,          -1,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
     Character.add_new_action(KEN,    FTILT_L,            -1,             ActionParams.FTILT_L,          -1,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
@@ -238,6 +238,11 @@ scope Ken {
 	// Set crowd chant FGM.
     Character.table_patch_start(crowd_chant_fgm, Character.id.KEN, 0x2)
     dh  0x02EA
+    OS.patch_end()
+
+    // Set down bound FGM.
+    Character.table_patch_start(down_bound_fgm, Character.id.KEN, 0x2)
+    dh  0x0517
     OS.patch_end()
 
     // Set default costumes
