@@ -155,6 +155,7 @@ scope Ryu {
     Character.edit_action_parameters(RYU,   Action.DamageMid1,       File.RYU_DAMAGE_M1,          -1,                         -1)
     Character.edit_action_parameters(RYU,   Action.DamageMid2,       File.RYU_DAMAGE_M2,          -1,                         -1)
     Character.edit_action_parameters(RYU,   Action.DamageMid3,       File.RYU_DAMAGE_M3,          -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.DamageFlyHigh,    File.RYU_DAMAGE_FLY_HI,        -1,                        -1)
 
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
     Character.edit_action(RYU,  0xE4,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                -1)

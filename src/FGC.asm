@@ -832,9 +832,14 @@ scope FGC {
         beq     v0, r0, button_check          // branch if no target was found
         nop
 
-        // if check_target_ returned a new valid target
+        // skip auto turnaround for ftilt
+        lw t1, 0x0024(a2) // t1 = current action
+
+        lli    at, Ryu.Action.FTILT_L
+        beq    t1, at, after_turnaround
+        nop
+
         // auto turnaround
-        // if we're here, stick_x is opposite the facing direction, so turn the character around
         mtc1    v1, f0                      // f0 = xdiff
         mtc1    r0, f2                      // f2 = 0
         c.le.s  f2, f0

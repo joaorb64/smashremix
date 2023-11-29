@@ -158,6 +158,7 @@ scope Ken {
     Character.edit_action_parameters(KEN,   Action.DamageMid1,       File.RYU_DAMAGE_M1,          -1,                         -1)
     Character.edit_action_parameters(KEN,   Action.DamageMid2,       File.RYU_DAMAGE_M2,          -1,                         -1)
     Character.edit_action_parameters(KEN,   Action.DamageMid3,       File.RYU_DAMAGE_M3,          -1,                         -1)
+    Character.edit_action_parameters(RYU,   Action.DamageFlyHigh,    File.RYU_DAMAGE_FLY_HI,        -1,                        -1)
 
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
     Character.edit_action(KEN,  0xE4,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                -1)
@@ -212,10 +213,7 @@ scope Ken {
     Character.edit_menu_action_parameters(KEN,   0xD,               File.KEN_1P_POSE,           ONEP,                       -1)
 
     Character.table_patch_start(variants, Character.id.KEN, 0x4)
-    db      Character.id.NONE   // set as SPECIAL variant for RYU
-    db      Character.id.NONE
-    db      Character.id.NONE
-    db      Character.id.NONE
+    db      Character.id.NONE   // set as SPECIAL variant for RYUCharacter.edit_action_parameters(RYU,   Action.DamageFlyHigh,    File.RYU_DAMAGE_FLY_HI,        -1,                        -1)
     OS.patch_end()
 
     Character.table_patch_start(air_usp, Character.id.KEN, 0x4)

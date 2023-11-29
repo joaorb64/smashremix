@@ -2439,6 +2439,7 @@ scope File {
     constant RYU_RUN_BRAKE(0x11D0)
     constant RYU_1P_POSE(0x11D1)
     constant KEN_1P_POSE(0x11D2)
+    constant RYU_DAMAGE_FLY_HI(0x11D3)
     constant META_REMIX_STAGE(0x1186)
     constant META_REMIX_HEADER(0x1187)
     constant DARK_SAMUS_IDLE(0x1188)
