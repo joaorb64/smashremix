@@ -162,11 +162,11 @@ scope RyuUSP {
         lw      a3, 0x0014(sp)              // restore a2
         lw      v0, 0x0018(sp)              // restore a2
         addiu   sp, sp, 0x0038              // deallocate stack space
-        lw      a0, 0x4(a1)                 // restore a0 = player object
+        or      a1, a0, r0                 // restore a0 = player object
 
         // FIRE EFFECT
         lw      t0, 0x0008(a2)              // t0 = character id
-        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
+        ori     t1, r0, Character.id.KEN    // t1 = id.KEN
         bne     t0, t1, light_to_hard_end    // if character id != KEN, skip fire effect
         nop
         
