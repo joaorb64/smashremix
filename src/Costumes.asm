@@ -989,8 +989,8 @@ scope Costumes {
         db 0x05                             // Metal Luigi
         db 0x06                             // Ebisumaru
         db 0x05                             // Dragon King
-        db 0x05                             // Ryu
-        db 0x05                             // Ken
+        db 0x07                             // Ryu
+        db 0x07                             // Ken
 
         // Polygons
         db 0x05                             // Polygon Wario

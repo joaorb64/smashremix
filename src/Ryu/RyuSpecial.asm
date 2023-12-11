@@ -726,7 +726,7 @@ scope RyuNSP {
         // ==============
 
         // Hitbox size
-        lui     at, 0x4302              // at = 130.0 (fp)
+        lui     at, 0x430C              // at = 140.0 (fp)
         sw      at, 0x0128(v1)          // save
 
         // Hitbox damage
@@ -770,7 +770,7 @@ scope RyuNSP {
         // ==============
 
         // Hitbox size
-        lui     at, 0x4302              // at = 130.0 (fp)
+        lui     at, 0x430C              // at = 140.0 (fp)
         sw      at, 0x0128(v1)          // save
 
         // Hitbox damage
@@ -814,7 +814,7 @@ scope RyuNSP {
         // ==============
 
         // Hitbox size
-        lui     at, 0x4302              // at = 130.0 (fp)
+        lui     at, 0x430C              // at = 140.0 (fp)
         sw      at, 0x0128(v1)          // save
 
         // Hitbox damage
@@ -906,7 +906,7 @@ scope RyuNSP {
         lw      v1, 0x0074(t1)
         or      v0, r0, r0
 
-        lui at, 0x3FA0 // 1.25
+        lui at, 0x3FA6 // at = 1.3
         mtc1    at, f6
 
         swc1    f6, 0x0040(v1)      // store x size multiplier to projectile joint
@@ -1024,8 +1024,7 @@ scope RyuNSP {
         sh      t0, 0x0146(a0)          // save
 
         _continue_shakunetsu2:
-
-        lui at, 0x3FA0 // 1.25
+        lui at, 0x3FA6 // at = 1.3
         mtc1    at, f6
 
         swc1    f6, 0x0040(v1)      // store x size multiplier to projectile joint
@@ -1136,7 +1135,7 @@ scope RyuNSP {
             lli     t0, 0xB
             sw      t0, 0x0268(v0)              // set duration to 8
 
-            lui     t0, 0x435c              // 220.0 (fp)
+            lui     t0, 0x4370              // 240.0 (fp)
             sw      t0, 0x0128(v0)          // save new hitbox size
             
             shakunetsu_collision_end:
