@@ -2393,9 +2393,9 @@ scope Character {
         // update fgm_ids for J sounds
         pushvar base, origin
         origin  TABLE_SF_ORIGIN
-        dh      0x518            // Punch S
-        dh      0x519            // Punch M
-        dh      0x51A            // Punch L
+        dh      0x517            // Punch S
+        dh      0x518            // Punch M
+        dh      0x519            // Punch L
         dh      0x503             // Kick S
         dh      0x504             // Kick M
         dh      0x505             // Kick L

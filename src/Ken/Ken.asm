@@ -240,7 +240,7 @@ scope Ken {
 
     // Set down bound FGM.
     Character.table_patch_start(down_bound_fgm, Character.id.KEN, 0x2)
-    dh  0x0517
+    dh  0x0516
     OS.patch_end()
 
     // Set default costumes

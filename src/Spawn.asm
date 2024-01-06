@@ -1603,6 +1603,18 @@ scope Spawn {
     float32 -2090,  1745
     float32  2210,  0645
 
+    // BD - Training Stage
+    float32 -2500,  0000
+    float32  2500,  0000
+    float32 -1000,  0000
+    float32  1000,  0000
+
+    // BE - Battle Harbor
+    float32 -2500,  0000
+    float32  2500,  0000
+    float32 -1000,  0000
+    float32  1000,  0000
+
     neutral_table:
     // 00 - Peach's Castle
     float32 -1613,  1554
@@ -2809,6 +2821,18 @@ scope Spawn {
     float32  2210,  0645
     
     // BC - Suzaku Castle
+    float32 -2500,  0000
+    float32  2500,  0000
+    float32 -1000,  0000
+    float32  1000,  0000
+
+    // BD - Training Stage
+    float32 -2500,  0000
+    float32  2500,  0000
+    float32 -1000,  0000
+    float32  1000,  0000
+
+    // BE - Battle Harbor
     float32 -2500,  0000
     float32  2500,  0000
     float32 -1000,  0000

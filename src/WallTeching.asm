@@ -10,7 +10,51 @@ scope WallTeching {
         addiu   a1, r0, 0x0038          // original line 2
         _return:
         OS.patch_end()
+
+        // Ken stage wall mechanic start
+        li      at, Global.match_info
+        lw      at, 0x0000(at)                      // t7 = match info
+        lbu     at, 0x0001(at)                      // t7 = current stage ID
+        lli     t5, Stages.id.BATTLE_HARBOR         // t0 = Stages.id.BATTLE_HARBOR
+        bne     t5, at, wall_tech_continue          // if current stage is SMBBF, then skip pirahna and platforms
+        nop
+
+        lui     at, 0x42c8                  // ~
+        mtc1    at, f6                      // f6 = 100.0
+        lwc1    f8, 0x0054(s0)              // f8 = x kb velocity
+        abs.s   f8, f8
+        nop
+
+        c.le.s  f6, f8                      // xspeed > threshold?
+        nop
+        bc1fl   wall_tech_continue                   // speed too low
+        nop
+
+        lw      a0, 0x0048(sp)
+
+        lw      t5, 0x0044(s0)              // load facing direction
+        addiu   at, r0, 0x0001              // at = 1 (facing left)
+        bne     t5, at, ko_left        // if facing left, use left
+        nop
+        b ko_right
+        nop
+
+        ko_left:
+        jal     0x8013C454 // KO left
+        nop
+        j ken_stage_end
+
+        ko_right:
+        jal     0x8013C30C // KO right
+        nop
+        j ken_stage_end
+
+        ken_stage_end:
+        j       0x80141C28              // return
+        nop
+        // Ken stage wall mechanic end
         
+        wall_tech_continue:
         Toggles.read(entry_wall_teching, at) // at = toggle
         beqz    at, _end
         lw      t6, 0x0160(s0)          // t6 = frames since z pressed

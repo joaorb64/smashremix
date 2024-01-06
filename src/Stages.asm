@@ -224,8 +224,10 @@ scope Stages {
         constant POKEFLOATS(0xC6)
         constant BIG_SNOWMAN(0xC7)
         constant SUZAKU_CASTLE(0xC8)
+        constant TRAINING_STAGE(0xC9)
+        constant BATTLE_HARBOR(0xCA)
 
-        constant MAX_STAGE_ID(0xC8)
+        constant MAX_STAGE_ID(0xCA)
 
         // not an actual id, some arbitary number Sakurai picked(?)
         constant RANDOM(0xDE)
@@ -464,6 +466,8 @@ scope Stages {
         constant POKEFLOATS(0x1279)
         constant BIG_SNOWMAN(0x12AC)
         constant SUZAKU_CASTLE(0x11C9)
+        constant TRAINING_STAGE(0x11D4)
+        constant BATTLE_HARBOR(0x11D7)
     }
 
     scope function {
@@ -3276,6 +3280,8 @@ scope Stages {
     dw function.CLONE                       // Pokefloats
     dw function.CLONE                       // Big Snowman
     dw function.CLONE                       // Suzaku Castle
+    dw function.CLONE                       // Training Stage
+    dw function.CLONE                       // Battle Harbor
 
     // @ Description
     // Offsets to image footer struct for stage icons sorted by stage id
@@ -3482,6 +3488,8 @@ scope Stages {
     dw 0x00039C30                           // Big Snowman
 
     dw 0x00035828                           // Suzaku Castle
+    dw 0x00035828                           // Training Stage
+    dw 0x00035828                           // Battle Harbor
 
     icon_offset_random:
     dw 0x00009BB8                           // Random
@@ -3729,6 +3737,8 @@ scope Stages {
     float32 0.6                         // Pokefloats
     float32 0.5                         // Big Snowman
     float32 0.5                         // Suzaku Castle
+    float32 0.5                         // Training Stage
+    float32 0.5                         // Battle Harbor
 
     // @ Description
     // This holds pointers to position arrays for positioning stage previews.
@@ -3939,6 +3949,8 @@ scope Stages {
     db id.PEACHS_CASTLE                 // Pokefloats
     db id.PEACHS_CASTLE                 // Big Snowman
     db id.SECTOR_Z                      // Suzaku Castle
+    db id.SECTOR_Z                      // Training Stage
+    db id.SECTOR_Z                      // Battle Harbor
     OS.align(4)
 
     stage_file_table:
@@ -4144,6 +4156,8 @@ scope Stages {
     dw header.POKEFLOATS,             type.CLONE
     dw header.BIG_SNOWMAN,            type.CLONE
     dw header.SUZAKU_CASTLE,          type.CLONE
+    dw header.TRAINING_STAGE,         type.CLONE
+    dw header.BATTLE_HARBOR,          type.CLONE
 
     class_table:
     constant class_table_origin(origin())
@@ -5008,7 +5022,9 @@ scope Stages {
     add_bg_animation(SMASHVILLE_REMIX)
     add_stage(pokefloats, "Poke Floats", {MIDI.id.POKEFLOATS}, {MIDI.id.BATTLE_GOLD_SILVER}, {MIDI.id.GOLDENROD_CITY}, OS.FALSE, HAZARDS_ON_MOVEMENT_ON, OS.TRUE, OS.TRUE, class.BATTLE, -1, -1, -1, -1, -1, 0x05, 0x05, 0x05, default_blue_shell_rate, default_lightning_rate, default_item_rate, default_item_rate, POKEMON, Hazards.type.MOVEMENT)
     add_stage(big_snowman, "Big Snowman", {MIDI.id.BIG_SNOWMAN}, {MIDI.id.WENDYS_HOUSE}, {MIDI.id.SILVER_MOUNTAIN}, OS.FALSE, HAZARDS_ON_MOVEMENT_ON, OS.TRUE, OS.TRUE, class.BATTLE, -1, -1, -1, -1, -1, 0x05, 0x05, 0x05, default_blue_shell_rate, default_lightning_rate, default_item_rate, default_item_rate, SNOWBOARDKIDS, Hazards.type.MOVEMENT)
-    add_stage(suzaku_castle, "Suzaku Castle", {MIDI.id.RYU_STAGE}, {MIDI.id.KEN_STAGE}, {MIDI.id.KEN_STAGE}, OS.TRUE, HAZARDS_ON_MOVEMENT_ON, OS.TRUE, OS.TRUE, class.BATTLE, -1, -1, -1, -1, -1, 0x05, 0x05, 0x05, default_blue_shell_rate, default_lightning_rate, default_item_rate, default_item_rate, KIRBY, Hazards.type.NONE)
+    add_stage(suzaku_castle, "Suzaku Castle", {MIDI.id.SNESRYU}, {MIDI.id.SSF2TRYU}, {MIDI.id.SSF2TAKUMA}, OS.TRUE, HAZARDS_ON_MOVEMENT_ON, OS.TRUE, OS.TRUE, class.BATTLE, -1, -1, -1, -1, -1, 0x05, 0x05, 0x05, default_blue_shell_rate, default_lightning_rate, default_item_rate, default_item_rate, KIRBY, Hazards.type.NONE)
+    add_stage(training_stage, "Training Stage", {MIDI.id.BATTLEFIELD}, {MIDI.id.BATTLEFIELD}, {MIDI.id.BATTLEFIELD}, OS.TRUE, HAZARDS_ON_MOVEMENT_ON, OS.TRUE, OS.TRUE, class.BATTLE, -1, -1, -1, -1, -1, 0x05, 0x05, 0x05, default_blue_shell_rate, default_lightning_rate, default_item_rate, default_item_rate, KIRBY, Hazards.type.NONE)
+    add_stage(battle_harbor, "Battle Harbor", {MIDI.id.SNESKEN}, {MIDI.id.SSF2TKEN}, {MIDI.id.SNESGUILE}, OS.TRUE, HAZARDS_ON_MOVEMENT_ON, OS.TRUE, OS.TRUE, class.BATTLE, -1, -1, -1, -1, -1, 0x05, 0x05, 0x05, default_blue_shell_rate, default_lightning_rate, default_item_rate, default_item_rate, KIRBY, Hazards.type.NONE)
 
     map 0, 0, 256 // restore string mappings
 

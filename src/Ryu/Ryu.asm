@@ -196,9 +196,9 @@ scope Ryu {
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(RYU,   0x0,               File.RYU_IDLE,              -1,                         -1)
     Character.edit_menu_action_parameters(RYU,   0x1,               File.RYU_WIN_1,             VICTORY_POSE_1,             -1)
-    Character.edit_menu_action_parameters(RYU,   0x2,               File.GND_SELECT,            VICTORY_POSE_2,             -1)
-    Character.edit_menu_action_parameters(RYU,   0x3,               File.GND_VICTORY1,          VICTORY_POSE_3,             -1)
-    Character.edit_menu_action_parameters(RYU,   0x4,               File.GND_VICTORY1,          VICTORY_POSE_3,             -1)
+    Character.edit_menu_action_parameters(RYU,   0x2,               File.RYU_WIN_1,             VICTORY_POSE_1,             -1)
+    Character.edit_menu_action_parameters(RYU,   0x3,               File.RYU_WIN_1,             VICTORY_POSE_1,             -1)
+    Character.edit_menu_action_parameters(RYU,   0x4,               File.RYU_WIN_1,             VICTORY_POSE_1,             -1)
     Character.edit_menu_action_parameters(RYU,   0xE,               File.GND_1P_CPU,            ONEP,                       -1)
     Character.edit_menu_action_parameters(RYU,   0xD,               File.RYU_1P_POSE,           ONEP,                       -1)
 
@@ -233,7 +233,7 @@ scope Ryu {
 
     // Set down bound FGM.
     Character.table_patch_start(down_bound_fgm, Character.id.RYU, 0x2)
-    dh  0x0517
+    dh  0x0516
     OS.patch_end()
 
     // Set default costumes

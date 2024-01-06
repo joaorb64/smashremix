@@ -86,6 +86,10 @@ scope Camera {
         beq     at, v0, mkingdom_camera
         addiu   at, r0, Stages.id.SUZAKU_CASTLE
         beq     at, v0, mkingdom_camera
+        addiu   at, r0, Stages.id.TRAINING_STAGE
+        beq     at, v0, mkingdom_camera
+        addiu   at, r0, Stages.id.BATTLE_HARBOR
+        beq     at, v0, mkingdom_camera
         addiu   at, r0, Stages.id.TOADSTURNPIKE
         bnel    at, v0, _end
 		addiu   t0, r0, 0                           // if here, use default camera index (0)
