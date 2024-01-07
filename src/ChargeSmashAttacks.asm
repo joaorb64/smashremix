@@ -376,6 +376,18 @@
         db 4        // down
         db 0        // unused
 
+        entry_ryu:
+        db 4        // forward
+        db 3        // up
+        db 3        // down
+        db 0        // unused
+
+        entry_ken:
+        db 4        // forward
+        db 3        // up
+        db 3        // down
+        db 0        // unused
+
         frame_table:
         // vanilla fighters
         dw entry_mario  // mario
@@ -453,6 +465,8 @@
         dw entry_mario      // METAL LUIGI
         dw entry_ebisumaru  // EBI
         dw entry_dragonking // DRAGON KING
+        dw entry_ryu // RYU
+        dw entry_ken // KEN
 
         // remix polygons
         dw entry_wario

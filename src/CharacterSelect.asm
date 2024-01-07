@@ -220,8 +220,8 @@ scope CharacterSelect {
     dw  0x3500 + 0x200                      // 0x44 - METAL LUIGI
     dw  0xCEE0 + 0x200                      // 0x45 - EBISUMARU
     dw  0x58D0 + 0x200                      // 0x46 - DRAGONKING
-    dw  0xB8B0 + 0x200                      // 0x47 - RYU
-    dw  0x23658 + 0x200                     // 0x48 - KEN
+    dw  0xB8B0 + 0x200                      // 0x48 - RYU
+    dw  0xD648 + 0x200                     // 0x49 - KEN
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS
@@ -2740,61 +2740,64 @@ scope CharacterSelect {
     // add space for new characters
     fill (name_texture_table + (Character.NUM_CHARACTERS * 0x4)) - pc()
 
-    constant START_X(14)
-    constant START_Y(29)
+    constant START_X(5.5)
+    constant START_Y(35)
     constant START_VISUAL(10)
     constant NUM_ROWS(3)
-    constant NUM_COLUMNS(11)
+    constant NUM_COLUMNS(12)
     constant NUM_PORTRAITS(NUM_ROWS * NUM_COLUMNS)
     constant PORTRAIT_WIDTH_FILE(32)
     constant PORTRAIT_HEIGHT_FILE(32)
-    constant PORTRAIT_SCALE(0x3F70)     // float 0.9375
-    constant PORTRAIT_WIDTH(27)         // screen pixels
-    constant PORTRAIT_HEIGHT(27)        // screen pixels
+    constant PORTRAIT_SCALE(0x3F54)     // float 0.9375
+    constant PORTRAIT_WIDTH(24)         // screen pixels
+    constant PORTRAIT_HEIGHT(24)        // screen pixels
 
 
     // @ Description
     // CHARACTER SELECT SCREEN LAYOUT
-    constant NUM_SLOTS(32)
+    constant NUM_SLOTS(36)
     scope layout {
         // row 1
-        define slot_1(MARINA)
-        define slot_2(DRM)
-        define slot_3(LUIGI)
-        define slot_4(MARIO)
-        define slot_5(DONKEY)
-        define slot_6(LINK)
-        define slot_7(SAMUS)
-        define slot_8(CAPTAIN)
-        define slot_9(GND)
-        define slot_10(SONIC)
+        define slot_1(NONE)
+        define slot_2(MARINA)
+        define slot_3(DRM)
+        define slot_4(LUIGI)
+        define slot_5(MARIO)
+        define slot_6(DONKEY)
+        define slot_7(LINK)
+        define slot_8(SAMUS)
+        define slot_9(CAPTAIN)
+        define slot_10(GND)
+        define slot_11(SONIC)
+        define slot_12(RYU)
 
         // row 2
-        define slot_11(DEDEDE)
-        define slot_12(YLINK)
-        define slot_13(NESS)
-        define slot_14(YOSHI)
-        define slot_15(KIRBY)
-        define slot_16(FOX)
-        define slot_17(PIKACHU)
-        define slot_18(JIGGLYPUFF)
-        define slot_19(FALCO)
-        define slot_20(SHEIK)
+        define slot_13(NONE)
+        define slot_14(DEDEDE)
+        define slot_15(YLINK)
+        define slot_16(NESS)
+        define slot_17(YOSHI)
+        define slot_18(KIRBY)
+        define slot_19(FOX)
+        define slot_20(PIKACHU)
+        define slot_21(JIGGLYPUFF)
+        define slot_22(FALCO)
+        define slot_23(SHEIK)
+        define slot_24(KEN)
 
-        // row 3
-        define slot_21(GOEMON)
-        define slot_22(DSAMUS)
-        define slot_23(WARIO)
-        define slot_24(LUCAS)
-        define slot_25(BOWSER)
-        define slot_26(WOLF)
-        define slot_27(CONKER)
-        define slot_28(MTWO)
-        define slot_29(MARTH)
-        define slot_30(BANJO)
-
-        define slot_31(RYU)
-        define slot_32(KEN)
+        //row 3
+        define slot_25(NONE)
+        define slot_26(GOEMON)
+        define slot_27(DSAMUS)
+        define slot_28(WARIO)
+        define slot_29(LUCAS)
+        define slot_30(BOWSER)
+        define slot_31(WOLF)
+        define slot_32(CONKER)
+        define slot_33(MTWO)
+        define slot_34(MARTH)
+        define slot_35(BANJO)
+        define slot_36(NONE)
     }
 
     // @ Description
@@ -3020,16 +3023,18 @@ scope CharacterSelect {
     // This could just be based on column, but it is set for each portrait to permit finer control
     // The custom characters' portraits slide in slower then the original cast's portraits
     portrait_velocity:
-    float32 1.9                               // column 1
-    float32 3.9                               // column 2
-    float32 7.8                               // column 3
-    float32 11.8                              // column 4
-    float32 13.8                              // column 5
-    float32 -11.8                             // column 6
-    float32 -7.8                              // column 7
-    float32 -3.8                              // column 8
-    float32 -1.8                              // column 9
-    float32 -0.9                              // column 10
+    float32 0.9                               // column 1
+    float32 1.9                               // column 2
+    float32 3.9                               // column 3
+    float32 7.8                               // column 4
+    float32 11.8                              // column 5
+    float32 13.8                              // column 6
+    float32 -13.8                             // column 7
+    float32 -11.8                             // column 8
+    float32 -7.8                              // column 9
+    float32 -3.8                              // column 10
+    float32 -1.8                              // column 11
+    float32 -0.9                              // column 12
 
     // @ Description
     // Pointer to id_table
@@ -5572,8 +5577,8 @@ scope CharacterSelect {
     add_to_css(Character.id.MLUIGI, FGM.announcer.names.MLUIGI,         1.50,         0x00010001, MARIO_BROS,   name_texture.MLUIGI,         portrait_offsets.METALLUIGI,      2)
     add_to_css(Character.id.EBI,    FGM.announcer.names.EBI,            1.50,         0x00010001, GOEMON,       name_texture.EBI,            portrait_offsets.EBI,            20)
     add_to_css(Character.id.DRAGONKING, FGM.announcer.names.DRAGONKING, 1.50,         0x00010002, SMASH,        name_texture.DRAGONKING,     portrait_offsets.DRAGONKING,      7)
-    add_to_css(Character.id.RYU,    FGM.announcer.names.MARIO,          1.50,         0x00010001, SMASH,        name_texture.MARIO,          portrait_offsets.MARIO,          -1)
-    add_to_css(Character.id.KEN,    FGM.announcer.names.LUIGI,          1.50,         0x00010001, SMASH,        name_texture.LUIGI,          portrait_offsets.LUIGI,          -1)
+    add_to_css(Character.id.RYU,    FGM.announcer.names.MARIO,          1.50,         0x00010001, SMASH,        name_texture.RYU,          portrait_offsets.RYU,          -1)
+    add_to_css(Character.id.KEN,    FGM.announcer.names.LUIGI,          1.50,         0x00010001, SMASH,        name_texture.KEN,          portrait_offsets.KEN,          -1)
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS
