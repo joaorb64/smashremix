@@ -245,6 +245,7 @@ scope Ken {
 
     // Set default costumes
     Character.set_default_costumes(Character.id.KEN, 0, 1, 2, 3, 5, 1, 4)
+    Teams.add_team_costume(YELLOW, RYU, 4)
 
     // Shield colors for costume matching
     Character.set_costume_shield_colors(KEN, BROWN, BLUE, AZURE, PURPLE, GREEN, RED, NA, NA)

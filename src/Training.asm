@@ -2722,7 +2722,7 @@ scope Training {
 
         // Increment JMARIO after adding more characters above
         // j characters
-        constant JMARIO(0x1F)
+        constant JMARIO(0x20)
         constant JFOX(JMARIO + 0x01)
         constant JDK(JMARIO + 0x02)
         constant JSAMUS(JMARIO + 0x03)

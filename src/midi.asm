@@ -542,7 +542,7 @@ scope MIDI {
     insert_extra_midi(PLAY_A_MINIGAME)
     insert_midi(CREDITS_BRAWL, OS.TRUE, OS.TRUE, "Credits (Brawl)", ssb)
 
-	insert_victory_midi(SF2_VICTORY)
+	insert_extra_midi(SF2_VICTORY)
 	insert_midi(SNESRYU, OS.TRUE, OS.TRUE, "Japan - Ryu Stage", sf2snes)
 	insert_midi(SSF2TRYU, OS.TRUE, OS.TRUE, "Japan - Ryu Stage (CPS2)", ssf2t)
 	insert_midi(SNESKEN, OS.TRUE, OS.TRUE, "USA - Ken Stage", sf2snes)

@@ -1525,12 +1525,6 @@ scope Spawn {
     float32 -0568,  0514
     float32  0568,  0514
 
-    // BC - Suzaku Castle
-    float32 -2500,  0000
-    float32  2500,  0000
-    float32 -1000,  0000
-    float32  1000,  0000
-
     // BC - Meta Crystal Remix
     float32 -1047,  0006
     float32  1047,  0006
@@ -1603,13 +1597,19 @@ scope Spawn {
     float32 -2090,  1745
     float32  2210,  0645
 
-    // BD - Training Stage
+    // C8 - Suzaku Castle
     float32 -2500,  0000
     float32  2500,  0000
     float32 -1000,  0000
     float32  1000,  0000
 
-    // BE - Battle Harbor
+    // C9 - Training Stage
+    float32 -2500,  0000
+    float32  2500,  0000
+    float32 -1000,  0000
+    float32  1000,  0000
+
+    // CA - Battle Harbor
     float32 -2500,  0000
     float32  2500,  0000
     float32 -1000,  0000
@@ -2820,19 +2820,19 @@ scope Spawn {
     float32 -2090,  1745
     float32  2210,  0645
     
-    // BC - Suzaku Castle
+    // C8 - Suzaku Castle
     float32 -2500,  0000
     float32  2500,  0000
     float32 -1000,  0000
     float32  1000,  0000
 
-    // BD - Training Stage
+    // C9 - Training Stage
     float32 -2500,  0000
     float32  2500,  0000
     float32 -1000,  0000
     float32  1000,  0000
 
-    // BE - Battle Harbor
+    // CA - Battle Harbor
     float32 -2500,  0000
     float32  2500,  0000
     float32 -1000,  0000

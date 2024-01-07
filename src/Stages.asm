@@ -465,9 +465,9 @@ scope Stages {
         constant BTP_BANJO(0x1266)
         constant POKEFLOATS(0x1279)
         constant BIG_SNOWMAN(0x12AC)
-        constant SUZAKU_CASTLE(0x11C9)
-        constant TRAINING_STAGE(0x11D4)
-        constant BATTLE_HARBOR(0x11D7)
+        constant SUZAKU_CASTLE(0x12AD)
+        constant TRAINING_STAGE(0x12AE)
+        constant BATTLE_HARBOR(0x12AF)
     }
 
     scope function {

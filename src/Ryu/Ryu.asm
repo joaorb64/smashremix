@@ -238,6 +238,7 @@ scope Ryu {
 
     // Set default costumes
     Character.set_default_costumes(Character.id.RYU, 0, 2, 4, 5, 1, 2, 3)
+    Teams.add_team_costume(YELLOW, RYU, 4)
 
     // Shield colors for costume matching
     Character.set_costume_shield_colors(RYU, RED, MAGENTA, BLUE, GREEN, PURPLE, YELLOW, NA, NA)

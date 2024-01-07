@@ -12,7 +12,7 @@ include "OS.asm"
 include "String.asm"
 
 scope FGC {
-    constant FGC_PROJECTILE_ID(0x1008)
+    constant FGC_PROJECTILE_ID(0x100A)
 
     constant B_PRESSED(0x4000)                // bitmask for b press
     constant A_PRESSED(0x8000)                // bitmask for b press

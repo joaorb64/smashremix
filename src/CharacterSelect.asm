@@ -2682,6 +2682,8 @@ scope CharacterSelect {
         constant MLUIGI(0x00021358)
         constant DRAGONKING(0x00023A28 + 0x10)
         constant EPUFF(0x00024CE0 + 0x10)
+        constant RYU(0x00021CF8 + 0x10)
+        constant KEN(0x00021CF8 + 0x10)
         // POLYGONS
         constant NWARIO(0x0001CB28)
         constant NLUCAS(0x0001D008)
@@ -2775,8 +2777,8 @@ scope CharacterSelect {
         define slot_15(KIRBY)
         define slot_16(FOX)
         define slot_17(PIKACHU)
-        define slot_18(KEN) // JIGGLYPUFF
-        define slot_19(FALCO)
+        define slot_18(RYU) // JIGGLYPUFF
+        define slot_19(KEN) // FALCO
         define slot_20(SHEIK)
 
         // row 3
