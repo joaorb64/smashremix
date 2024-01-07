@@ -22,7 +22,7 @@ scope Character {
     constant SHARED_ACTION_ARRAY(0xA45D8)
 
     // total number of character slots (note 0x1B and 0x1C will be unused)
-    constant NUM_CHARACTERS(28 + 2 + ADD_CHARACTERS)
+    constant NUM_CHARACTERS(27 + 2 + ADD_CHARACTERS)
 	variable NUM_REMIX_FIGHTERS(0)	// Will be updated by define_character
 	variable NUM_POLYGONS(0)	    // ~
     ///////////////////////////////////////////////////////////////////////////////////////////////

@@ -220,7 +220,7 @@ scope CharacterSelect {
     dw  0x3500 + 0x200                      // 0x44 - METAL LUIGI
     dw  0xCEE0 + 0x200                      // 0x45 - EBISUMARU
     dw  0x58D0 + 0x200                      // 0x46 - DRAGONKING
-    dw  0xB8B0 + 0x200                     // 0x47 - RYU
+    dw  0xB8B0 + 0x200                      // 0x47 - RYU
     dw  0x23658 + 0x200                     // 0x48 - KEN
     // ADD NEW CHARACTERS HERE
 
@@ -2682,8 +2682,8 @@ scope CharacterSelect {
         constant MLUIGI(0x00021358)
         constant DRAGONKING(0x00023A28 + 0x10)
         constant EPUFF(0x00024CE0 + 0x10)
-        constant RYU(0x00021CF8 + 0x10)
-        constant KEN(0x00021CF8 + 0x10)
+        constant RYU(0x00001838)
+        constant KEN(0x00001B18)
         // POLYGONS
         constant NWARIO(0x0001CB28)
         constant NLUCAS(0x0001D008)
@@ -2744,7 +2744,7 @@ scope CharacterSelect {
     constant START_Y(29)
     constant START_VISUAL(10)
     constant NUM_ROWS(3)
-    constant NUM_COLUMNS(10)
+    constant NUM_COLUMNS(11)
     constant NUM_PORTRAITS(NUM_ROWS * NUM_COLUMNS)
     constant PORTRAIT_WIDTH_FILE(32)
     constant PORTRAIT_HEIGHT_FILE(32)
@@ -2755,7 +2755,7 @@ scope CharacterSelect {
 
     // @ Description
     // CHARACTER SELECT SCREEN LAYOUT
-    constant NUM_SLOTS(30)
+    constant NUM_SLOTS(32)
     scope layout {
         // row 1
         define slot_1(MARINA)
@@ -2777,8 +2777,8 @@ scope CharacterSelect {
         define slot_15(KIRBY)
         define slot_16(FOX)
         define slot_17(PIKACHU)
-        define slot_18(RYU) // JIGGLYPUFF
-        define slot_19(KEN) // FALCO
+        define slot_18(JIGGLYPUFF)
+        define slot_19(FALCO)
         define slot_20(SHEIK)
 
         // row 3
@@ -2792,6 +2792,9 @@ scope CharacterSelect {
         define slot_28(MTWO)
         define slot_29(MARTH)
         define slot_30(BANJO)
+
+        define slot_31(RYU)
+        define slot_32(KEN)
     }
 
     // @ Description
@@ -5569,8 +5572,8 @@ scope CharacterSelect {
     add_to_css(Character.id.MLUIGI, FGM.announcer.names.MLUIGI,         1.50,         0x00010001, MARIO_BROS,   name_texture.MLUIGI,         portrait_offsets.METALLUIGI,      2)
     add_to_css(Character.id.EBI,    FGM.announcer.names.EBI,            1.50,         0x00010001, GOEMON,       name_texture.EBI,            portrait_offsets.EBI,            20)
     add_to_css(Character.id.DRAGONKING, FGM.announcer.names.DRAGONKING, 1.50,         0x00010002, SMASH,        name_texture.DRAGONKING,     portrait_offsets.DRAGONKING,      7)
-    add_to_css(Character.id.RYU,    FGM.announcer.names.MARIO,          1.50,         0x00010001, ZELDA,        name_texture.MARIO,          portrait_offsets.MARIO,          -1)
-    add_to_css(Character.id.KEN,    FGM.announcer.names.LUIGI,          1.50,         0x00010001, ZELDA,        name_texture.LUIGI,          portrait_offsets.LUIGI,          -1)
+    add_to_css(Character.id.RYU,    FGM.announcer.names.MARIO,          1.50,         0x00010001, SMASH,        name_texture.MARIO,          portrait_offsets.MARIO,          -1)
+    add_to_css(Character.id.KEN,    FGM.announcer.names.LUIGI,          1.50,         0x00010001, SMASH,        name_texture.LUIGI,          portrait_offsets.LUIGI,          -1)
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS

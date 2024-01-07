@@ -4,10 +4,10 @@
 
 scope Ken {
 
-	scope FACE: {
-		constant NORMAL(0xAC000000)
-		constant SHOCK(0xAC000006)
-	}
+	// scope FACE: {
+	// 	constant NORMAL(0xAC000000)
+	// 	constant SHOCK(0xAC000006)
+	// }
 
     // Insert Moveset files
     insert IDLE,"moveset/IDLE.bin"
@@ -74,12 +74,12 @@ scope Ken {
     insert THROWB_DATA, "moveset/THROWB_DATA.bin"
     THROWB:; Moveset.THROW_DATA(THROWB_DATA); insert "moveset/THROWB.bin"
 
-    TEETER:
-    dw FACE.SHOCK; dw 0;
+    // TEETER:
+    // dw FACE.SHOCK; dw 0;
 
-	DOWN_BOUNCE:
-	dw FACE.SHOCK
-	Moveset.GO_TO(Moveset.shared.DOWN_BOUNCE)
+	// DOWN_BOUNCE:
+	// dw FACE.SHOCK
+	// Moveset.GO_TO(Moveset.shared.DOWN_BOUNCE)
 
     // Insert AI attack options
     constant CPU_ATTACKS_ORIGIN(origin())
@@ -104,8 +104,8 @@ scope Ken {
     Character.edit_action_parameters(KEN,   Action.ThrowB,          File.KEN_THROWB,            THROWB,                     0x50000000)
     Character.edit_action_parameters(KEN,   Action.JumpAerialF,     File.RYU_AIRJUMPF,          JUMP2,                      -1)
     Character.edit_action_parameters(KEN,   Action.JumpAerialB,     File.RYU_AIRJUMPB,          JUMP2,                      -1)
-    Character.edit_action_parameters(KEN,   Action.DownBounceD,     -1,                         DOWN_BOUNCE,                -1)
-    Character.edit_action_parameters(KEN,   Action.DownBounceU,     -1,                         DOWN_BOUNCE,                -1)
+    // Character.edit_action_parameters(KEN,   Action.DownBounceD,     -1,                         DOWN_BOUNCE,                -1)
+    // Character.edit_action_parameters(KEN,   Action.DownBounceU,     -1,                         DOWN_BOUNCE,                -1)
     Character.edit_action_parameters(KEN,   Action.DownStandD,      -1,                         DOWN_STAND,                 -1)
     Character.edit_action_parameters(KEN,   Action.DownStandU,      -1,                         DOWN_STAND,                 -1)
     Character.edit_action_parameters(KEN,   Action.TechF,           -1,                         TECHROLL,                   -1)
@@ -158,7 +158,7 @@ scope Ken {
     Character.edit_action_parameters(KEN,   Action.DamageMid1,       File.RYU_DAMAGE_M1,          -1,                         -1)
     Character.edit_action_parameters(KEN,   Action.DamageMid2,       File.RYU_DAMAGE_M2,          -1,                         -1)
     Character.edit_action_parameters(KEN,   Action.DamageMid3,       File.RYU_DAMAGE_M3,          -1,                         -1)
-    Character.edit_action_parameters(RYU,   Action.DamageFlyHigh,    File.RYU_DAMAGE_FLY_HI,        -1,                        -1)
+    Character.edit_action_parameters(KEN,   Action.DamageFlyHigh,    File.RYU_DAMAGE_FLY_HI,        -1,                        -1)
 
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
     Character.edit_action(KEN,  0xE4,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                -1)
@@ -206,14 +206,17 @@ scope Ken {
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(KEN,   0x0,               File.RYU_IDLE,              -1,                         -1)
     Character.edit_menu_action_parameters(KEN,   0x1,               File.RYU_WIN_1,             VICTORY_POSE_1,             -1)
-    Character.edit_menu_action_parameters(KEN,   0x2,               File.GND_SELECT,            VICTORY_POSE_2,             -1)
-    Character.edit_menu_action_parameters(KEN,   0x3,               File.GND_VICTORY1,          VICTORY_POSE_3,             -1)
-    Character.edit_menu_action_parameters(KEN,   0x4,               File.GND_VICTORY1,          VICTORY_POSE_3,             -1)
+    Character.edit_menu_action_parameters(KEN,   0x2,               File.RYU_WIN_1,             VICTORY_POSE_1,             -1)
+    Character.edit_menu_action_parameters(KEN,   0x3,               File.RYU_WIN_1,             VICTORY_POSE_1,             -1)
+    Character.edit_menu_action_parameters(KEN,   0x4,               File.RYU_WIN_1,             VICTORY_POSE_1,             -1)
     Character.edit_menu_action_parameters(KEN,   0xE,               File.GND_1P_CPU,            ONEP,                       -1)
     Character.edit_menu_action_parameters(KEN,   0xD,               File.KEN_1P_POSE,           ONEP,                       -1)
 
     Character.table_patch_start(variants, Character.id.KEN, 0x4)
-    db      Character.id.NONE   // set as SPECIAL variant for RYUCharacter.edit_action_parameters(RYU,   Action.DamageFlyHigh,    File.RYU_DAMAGE_FLY_HI,        -1,                        -1)
+    db      Character.id.NONE   // set as SPECIAL variant for KEN
+    db      Character.id.NONE
+    db      Character.id.NONE
+    db      Character.id.NONE
     OS.patch_end()
 
     Character.table_patch_start(air_usp, Character.id.KEN, 0x4)
@@ -245,10 +248,10 @@ scope Ken {
 
     // Set default costumes
     Character.set_default_costumes(Character.id.KEN, 0, 1, 2, 3, 5, 1, 4)
-    Teams.add_team_costume(YELLOW, RYU, 4)
+    Teams.add_team_costume(YELLOW, KEN, 4)
 
     // Shield colors for costume matching
-    Character.set_costume_shield_colors(KEN, BROWN, BLUE, AZURE, PURPLE, GREEN, RED, NA, NA)
+    Character.set_costume_shield_colors(KEN, BROWN, BLUE, AZURE, PURPLE, GREEN, RED, YELLOW, NA)
 
     // Set Kirby star damage
     Character.table_patch_start(kirby_inhale_struct, 0x8, Character.id.KEN, 0xC)
@@ -257,7 +260,7 @@ scope Ken {
 
     // Set Kirby hat_id
     Character.table_patch_start(kirby_inhale_struct, 0x2, Character.id.KEN, 0xC)
-    dh 0x26
+    dh 0x11
     OS.patch_end()
 
     // Set CPU behaviour

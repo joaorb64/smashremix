@@ -241,7 +241,7 @@ scope Ryu {
     Teams.add_team_costume(YELLOW, RYU, 4)
 
     // Shield colors for costume matching
-    Character.set_costume_shield_colors(RYU, RED, MAGENTA, BLUE, GREEN, PURPLE, YELLOW, NA, NA)
+    Character.set_costume_shield_colors(RYU, BROWN, BLUE, AZURE, PURPLE, GREEN, RED, YELLOW, NA)
 
     // Set Kirby star damage
     Character.table_patch_start(kirby_inhale_struct, 0x8, Character.id.RYU, 0xC)
@@ -250,7 +250,7 @@ scope Ryu {
 
     // Set Kirby hat_id
     Character.table_patch_start(kirby_inhale_struct, 0x2, Character.id.RYU, 0xC)
-    dh 0x25
+    dh 0x11
     OS.patch_end()
 
     // Set CPU behaviour
