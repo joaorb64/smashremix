@@ -744,7 +744,7 @@ scope RyuNSP {
         sw      at, 0x0138(v1)          // save
 
         // Hit FGM
-        lli     at, 0x519               // at = RYU_HIT_M
+        lli     at, 0x57C               // at = RYU_HIT_M
         sh      at, 0x0146(v1)          // save
 
         // Check if B is held, add more knockback to the strong version
@@ -788,7 +788,7 @@ scope RyuNSP {
         sw      at, 0x0138(v1)          // save
 
         // Hit FGM
-        lli     at, 0x519               // at = RYU_HIT_M
+        lli     at, 0x57C               // at = RYU_HIT_M
         sh      at, 0x0146(v1)          // save
 
         // Check if B is held, add more knockback to the strong version

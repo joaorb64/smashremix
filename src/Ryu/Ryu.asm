@@ -233,7 +233,7 @@ scope Ryu {
 
     // Set down bound FGM.
     Character.table_patch_start(down_bound_fgm, Character.id.RYU, 0x2)
-    dh  0x0516
+    dh  0x058E
     OS.patch_end()
 
     // Set default costumes

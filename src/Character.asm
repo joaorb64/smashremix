@@ -2393,12 +2393,12 @@ scope Character {
         // update fgm_ids for J sounds
         pushvar base, origin
         origin  TABLE_SF_ORIGIN
-        dh      0x517            // Punch S
-        dh      0x518            // Punch M
-        dh      0x519            // Punch L
-        dh      0x503             // Kick S
-        dh      0x504             // Kick M
-        dh      0x505             // Kick L
+        dh      0x58F            // Punch S
+        dh      0x590            // Punch M
+        dh      0x591            // Punch L
+        dh      0x57B             // Kick S
+        dh      0x57C             // Kick M
+        dh      0x57D             // Kick L
         pullvar origin, base
 
         scope apply_sound_type_: {
