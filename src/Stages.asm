@@ -465,9 +465,9 @@ scope Stages {
         constant BTP_BANJO(0x1266)
         constant POKEFLOATS(0x1279)
         constant BIG_SNOWMAN(0x12AC)
-        constant SUZAKU_CASTLE(0x12AD)
-        constant TRAINING_STAGE(0x12AE)
-        constant BATTLE_HARBOR(0x12AF)
+        constant SUZAKU_CASTLE(0x130F)
+        constant TRAINING_STAGE(0x131A)
+        constant BATTLE_HARBOR(0x131D)
     }
 
     scope function {
@@ -512,7 +512,7 @@ scope Stages {
     constant NUM_ROWS(3)
     constant NUM_COLUMNS(6)
     constant NUM_ICONS(NUM_ROWS * NUM_COLUMNS)
-    constant NUM_PAGES(0x05)
+    constant NUM_PAGES(0x06)
 
     // list of instructions that read from the stage id (A press on versus stage select screen)
     // they're in order (you're welcome)
@@ -2939,6 +2939,26 @@ scope Stages {
     db id.SPAWNED_FEAR                      // 57
     db id.POKEFLOATS                        // 58
     db id.BIG_SNOWMAN                       // 59
+    db id.RANDOM                            // 60
+
+    // page 6 (extra stages)
+    db id.SUZAKU_CASTLE                            // 49
+    db id.BATTLE_HARBOR                            // 4A
+    db id.TRAINING_STAGE                            // 4B
+    db id.RANDOM                          // 4C
+    db id.RANDOM                       // 4D
+    db id.RANDOM                     // 4E
+    db id.RANDOM                   // 4F
+    db id.RANDOM                         // 50
+    db id.RANDOM                               // 51
+    db id.RANDOM                     // 52
+    db id.RANDOM                           // 53
+    db id.RANDOM                      // 54
+    db id.RANDOM                    // 55
+    db id.RANDOM               // 56
+    db id.RANDOM                      // 57
+    db id.RANDOM                        // 58
+    db id.RANDOM                       // 59
     db id.RANDOM                            // 60
 
     OS.align(16)
