@@ -1475,6 +1475,7 @@ scope RyuNSP {
 scope RyuDSP {
     constant X_SPEED(0x4220)                // current setting - float:40.0
     constant X_SPEED_AIR(0x41F0)            // current setting - float:30.0
+    constant MAX_UP_SPEED(0x41D0)            // current setting - float:26.0
     constant X_SPEED_END_AIR(0x4220)        // current setting - float:40.0
     constant X_SPEED_END_GROUND(0x4270)     // current setting - float:60.0
     constant Y_SPEED_INITIAL(0x4248)        // current setting - float:50.0
@@ -1636,7 +1637,7 @@ scope RyuDSP {
         bc1tl   _set_zero_airspeed           // skip if speed isn't negative
         nop
 
-        lui     t0, X_SPEED_AIR             // ~
+        lui     t0, MAX_UP_SPEED             // ~
         mtc1    t0, f0                      // f0 = 0.0
 
         c.le.s  f2, f0                      // air x speed < current speed
@@ -1654,7 +1655,7 @@ scope RyuDSP {
         nop
 
         _set_max_airspeed:
-        lui t1, X_SPEED_AIR // speed up = horizontal speed
+        lui t1, MAX_UP_SPEED // speed up = horizontal speed
         sw t1, 0x004C(a2)
         b _move
         nop

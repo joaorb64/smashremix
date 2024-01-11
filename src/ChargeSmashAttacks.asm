@@ -378,14 +378,14 @@
 
         entry_ryu:
         db 4        // forward
-        db 3        // up
-        db 3        // down
+        db 5        // up
+        db 2        // down
         db 0        // unused
 
         entry_ken:
         db 4        // forward
-        db 3        // up
-        db 3        // down
+        db 5        // up
+        db 2        // down
         db 0        // unused
 
         frame_table:
