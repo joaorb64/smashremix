@@ -747,7 +747,7 @@ scope RyuNSP {
         lli     at, 0x57C               // at = RYU_HIT_M
         sh      at, 0x0146(v1)          // save
 
-        // Check if B is held, add more knockback to the strong version
+        // Check if B is held, add more damage and knockback to the strong version
         lhu     t0, 0x01BC(v0)              // load button press buffer
         andi    t1, t0, 0x4000           // t1 = 0x40 if (B_PRESSED); else t1 = 0
         beq     t1, r0, _projectile_branch_continue // skip if (!B_PRESSED)
@@ -756,6 +756,10 @@ scope RyuNSP {
         // Hitbox base knockback
         lli     at, 0x0018              // at = 24
         sw      at, 0x0138(v1)          // save
+
+        // Hitbox damage
+        lli     at, 0x0007              // 7
+        sw      at, 0x0104(v1)          // save
         
         // ==============
         // END EDIT HITBOX
@@ -791,7 +795,7 @@ scope RyuNSP {
         lli     at, 0x57C               // at = RYU_HIT_M
         sh      at, 0x0146(v1)          // save
 
-        // Check if B is held, add more knockback to the strong version
+        // Check if B is held, add more damage and knockback to the strong version
         lhu     t0, 0x01BC(v0)              // load button press buffer
         andi    t1, t0, 0x4000           // t1 = 0x40 if (B_PRESSED); else t1 = 0
         beq     t1, r0, _projectile_branch_continue // skip if (!B_PRESSED)
@@ -800,6 +804,10 @@ scope RyuNSP {
         // Hitbox base knockback
         lli     at, 0x0018              // at = 24
         sw      at, 0x0138(v1)          // save
+
+        // Hitbox damage
+        lli     at, 0x000C              // 12
+        sw      at, 0x0104(v1)          // save
         
         // ==============
         // END EDIT HITBOX
@@ -1004,7 +1012,7 @@ scope RyuNSP {
 
         // Set last hit properties
         // Hitbox damage
-        lli     t0, 0x000A              // 10
+        lli     t0, 0x000D              // 13
         sw      t0, 0x0104(a0)          // save
 
         // Hit angle
