@@ -273,6 +273,9 @@ include "src/Ryu/Ryu.asm"
 // KEN
 include "src/Ken/KenSpecial.asm"
 include "src/Ken/Ken.asm"
+// CLOUD
+include "src/Cloud/CloudSpecial.asm"
+include "src/Cloud/Cloud.asm"
 
 // KIRBY
 include "src/Kirby/Kirby.asm"
