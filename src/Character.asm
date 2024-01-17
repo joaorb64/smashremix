@@ -12,7 +12,7 @@ include "OS.asm"
 
 scope Character {
     // number of character slots to add
-    constant ADD_CHARACTERS(63)
+    constant ADD_CHARACTERS(64)
     // start and end offset for the main character struct table (RAM 0x80116E10)
     constant STRUCT_TABLE(0x92610)
     variable STRUCT_TABLE_END(STRUCT_TABLE + 0x6C)
@@ -3330,7 +3330,8 @@ scope Character {
     define_character(RYU, CAPTAIN, File.RYU_MAIN, 0x0EB, 0, File.RYU_CHARACTER, 0x14E, File.RYU_PROJECTILE_HITBOX, 0x15E, 0x14D, File.RYU_PROJECTILE_GRAPHIC, 0x3F0, 30, OS.TRUE, OS.TRUE, Stages.id.BTT_GND, Stages.id.BTP_GND, Stages.id.BTT_FALCON, Stages.id.BTP_YOSHI, sound_type.SF, variant_type.NA)
     // 0x49 - KEN
     define_character(KEN, CAPTAIN, File.KEN_MAIN, 0x0EB, 0, File.KEN_CHARACTER, 0x14E, File.KEN_PROJECTILE_HITBOX, 0x15E, 0x14D, File.KEN_PROJECTILE_GRAPHIC, 0x488, 30, OS.TRUE, OS.TRUE, Stages.id.BTT_GND, Stages.id.BTP_GND, Stages.id.BTT_FALCON, Stages.id.BTP_YOSHI, sound_type.SF, variant_type.NA)
-
+    // 0x4A - CLOUD
+    define_character(CLOUD, LINK, File.CLOUD_MAIN, 0x0E0, 0, File.CLOUD_CHARACTER, 0x147, 0x0E2, 0x161, 0x145, 0, 0x708, 10, OS.TRUE, OS.TRUE, Stages.id.BTT_LINK, Stages.id.BTP_LINK, Stages.id.BTT_YL, Stages.id.BTP_YL, sound_type.U, variant_type.NA)
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS

@@ -388,6 +388,12 @@
         db 2        // down
         db 0        // unused
 
+        entry_cloud:
+        db 4        // forward
+        db 5        // up
+        db 2        // down
+        db 0        // unused
+
         frame_table:
         // vanilla fighters
         dw entry_mario  // mario
@@ -467,6 +473,7 @@
         dw entry_dragonking // DRAGON KING
         dw entry_ryu // RYU
         dw entry_ken // KEN
+        dw entry_cloud // CLOUD
 
         // remix polygons
         dw entry_wario

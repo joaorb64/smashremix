@@ -115,6 +115,8 @@ scope SwordTrail {
     add_sword_trail(falco_trail, Character.id.FALCO, 0x0, AXIS_Y, 0x00FFFF00, 0x00FFFF00, -150, 250)
     add_sword_trail(falco_trail2, Character.id.FALCO, 0x1, AXIS_Y, 0x00FFFF00, 0x00FFFF00, -150, 250)
     add_sword_trail(kirby_falco_trail, Character.id.KIRBY, 0x0, AXIS_Y, 0x00FFFF00, 0x00FFFF00, -140, 240)
+    add_sword_trail(cloud_default_trail, Character.id.CLOUD, 0xF, AXIS_X, 0x00FF0000, 0xFFFFFF00, 32, 400)
+    add_sword_trail(cloud_pink_trail, Character.id.CLOUD, 0xF, AXIS_X, 0xFE50B200, 0xFFFFFF00, 32, 400)
     // write sword trails to ROM
     write_sword_trails()
 
