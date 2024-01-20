@@ -7,7 +7,7 @@ scope CloudUSP {
     constant AIR_Y_SPEED(0x0)            // current setting - float32 92
     constant GROUND_Y_SPEED(0x0)         // current setting - float32 98
     constant X_SPEED(0x4120)                // current setting - float32 10
-    constant AIR_ACCELERATION(0x3C88)       // current setting - float32 0.0166
+    constant AIR_ACCELERATION(0x3E4C)       // current setting - float32 0.2
     constant AIR_SPEED(0x41B0)              // current setting - float32 22
     constant LANDING_FSM(0x3EC0)            // current setting - float32 0.375
     // temp variable 3 constants for movement states
@@ -106,9 +106,9 @@ scope CloudUSP {
     constant MOVE_SPEED_X(0x3F30)   // float 0.6875
     constant MOVE_SPEED_Y(0x4310)   // float 144
     constant GRAVITY(0x4040)        // float 3
-    constant GRAVITY_PEAK(0x3e4c)   // float 0.2
-    constant GRAVITY_FALLING(0x4040) // float 3
-    constant MAX_FALLING(0x42f0)    // float 120
+    constant GRAVITY_PEAK(0x4000)   // float -2.0
+    constant GRAVITY_FALLING(0x4320) // float 20.0
+    constant MAX_FALLING(0x4320)    // float 120
     constant B_PRESSED(0x40)                // bitmask for b press
 
     // @ Description
@@ -123,9 +123,18 @@ scope CloudUSP {
         or             a0, s0, r0           // place player struct in a0
         lw             v0, 0x09c8 (s0)      // load attribute pointer
         addiu          t5, r0, 0x0001
-        lui            at, GRAVITY_FALLING
 
-        _branch_1:
+        lw      at, 0x0020(sp)              // at = player object
+        lw      t0, 0x0078(at)              // load current frame to t0
+
+        lui		at, 0x0					    // at = last animation frame
+		beq     t0, at, _apply_speed
+        lui     at, MAX_FALLING         // apply fast fall speed
+
+        b _apply_speed
+        lui     at, GRAVITY_PEAK         // apply fast fall speed
+
+        _apply_speed:
         mtc1           at, f6
         lwc1           f4, 0x0058 (v0)      // load player gravity
         mul.s          f0, f4, f6           // multiply player gravity by aerial boost multiplier
@@ -133,6 +142,8 @@ scope CloudUSP {
         mfc1           a1, f0               // move gravity to a1
         jal            0x800d8d68           // determine vertical lift amount, a1=gravity, a2=max falling speed
         lui            a2, MAX_FALLING      // load max falling speed
+
+        _move:
         or             a0, s0, r0           // player struct moved to a0
         jal            0x800d8fa8
         lw             a1, 0x09c8 (s0)      // loads attribute pointer
@@ -161,8 +172,8 @@ scope CloudUSP {
         lhu            v0, 0x00d2 (a1)      // load collision clipping flag
         andi           t6, v0, Surface.GROUND // check if colliding with a floor
 
-        beqz           t6, _end     // branch not colliding with a wall
-        lw             a1, 0x0024 (sp)      // load player struct
+        beqz           t6, _cliff_check     // branch not colliding with a wall
+        andi           t7, v0, 0x3000       // check if colliding with cliff
 
 		_ground:
         jal            0x800dee98
@@ -178,6 +189,11 @@ scope CloudUSP {
 
         b              _end_2
         lw             ra, 0x001c (sp)      // load return address
+
+        _cliff_check:
+        andi           t6, v0, Surface.CEILING // check if colliding with a ceiling
+        jal            0x80144c24           // cliff catch routine
+        lw             a0, 0x0028 (sp)      // load player object
 
         _end:
         lw             ra, 0x001c (sp)      // load return address
@@ -253,7 +269,7 @@ scope CloudUSP {
         lw      v0, 0x0034(a2)              // v0 = player struct
 
         lli     a1, Cloud.Action.USP2        // a1 = Action.USP2
-        or      a2, r0, r0                   // a2(starting frame) = 0.0
+        lui     a2, 0x3F80               // a2(starting frame) = 0.0
         lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
         sw      r0, 0x0010(sp)              // argument 4 = 0
         jal     0x800E6F24                  // change action
@@ -276,31 +292,21 @@ scope CloudUSP {
         nop
 
         _main_normal:
-        // OS.save_registers()
 
-        // addiu   sp, sp, -0x0038              // allocate stack space
+        // On frame 15, set tmp variable 1 to 1
+        // This is needed for the collision function
+        // so we transition to special landing on grounded transition
+        lui		at, 0x4170					// at = 15
+		mtc1    at, f6                      // ~
+        c.eq.s  f8, f6                      // f8 >= f6 (current frame >= 3) ?
+        nop
+        bc1fl   _change_temp1_continue      // skip if haven't reached frame 3
+        nop
 
-        // // unchanged
-        // lw      a3,0x20(a1)
-        // lw      a2,0x1c(a1)
-        // swc1    f0,0x10(sp)
-        // lwc1    f4,0x20(s0)
+        lli     t0, 0x1
+        sw      t0, 0x0180(a2)
 
-        // swc1    f4,0x14(sp)
-        // lwc1    f6,0x24(s0)
-        // sw      a1,0x34(sp)
-        // swc1    f0,0x1c(sp)
-
-        // // certain
-        // li      a0,8
-        // li      a1,2
-
-        // jal     0x800CE8C0
-        // swc1    f6,0x18(sp)
-
-        // addiu   sp, sp, 0x0038              // deallocate stack space
-
-        // OS.restore_registers()
+        _change_temp1_continue:
 
         // Copy the first 8 lines of subroutine 0x8015C750
         OS.copy_segment(0xD7190, 0x20)
@@ -335,7 +341,7 @@ scope CloudUSP {
         sw      ra, 0x000C(sp)              // store t0, t1, ra
 
         ori     t1, r0, 0x0000              // t1 = 0x0
-        sw      t1, 0x0180(a1)              // t0 = temp variable 2
+        //sw      t1, 0x0180(a1)              // t0 = temp variable 2
 
         lui		at, 0x4040					// at = 3.0
 		mtc1    at, f6                      // ~
@@ -410,9 +416,6 @@ scope CloudUSP {
         nop
 
         _aerial:
-        jal     0x800D93E4                  // grounded physics subroutine
-        nop
-        b       _end                        // end subroutine
         // OS.copy_segment(0x548F0, 0x40)      // copy from original air physics subroutine
         // bnez    v0, _check_begin            // modified original branch
         // nop
@@ -421,15 +424,49 @@ scope CloudUSP {
         // ori     t1, r0, MOVE                // t1 = MOVE
         // bne     t0, t1, _apply_air_physics  // branch if temp variable 3 != MOVE
         // nop
-        // li      t8, air_control_             // t8 = air_control_
+
+        // Check if reached min frame where air control is possible
+        lw     at, 0x4(s0)              // at = player object
+        lwc1   f8, 0x0078(at)              // f8 = current animation frame
+        lw     t7, 0x0024(s0)              // t7 = current action
+        lli    t2, Cloud.Action.USP
+        bne    t7, t2, _end        // if not performing USP(1), skip
+        nop
+
+        lui		at, 0x41C8					// at = 2.0
+		mtc1    at, f6                      // ~
+        c.lt.s  f6, f8                      // f8 >= f6 (current frame >= 2) ?
+        nop
+        bc1fl   _root_motion                // skip if haven't reached frame 2
+        nop
+
+        b _apply_air_physics
+        nop
+
+        _root_motion:
+        jal     0x800D93E4                  // grounded physics subroutine
+        nop
+
+        b _end
+        nop
 
         _apply_air_physics:
-        or      a0, s0, r0                  // a0 = player struct
-        jalr    t8                          // air control subroutine
+        lw      s0, 0x0014(sp)              // restore s0 for this one
+        lw      t0, 0x0084(a0)              // t0 = player struct
+        lw      t1, 0x0180(t0)              // t1 = temp variable 2
+        li      t8, 0x800D90E0              // t8 = physics subroutine which allows player control
+
+        jalr    t8
+        nop
+
         or      a1, s1, r0                  // a1 = attributes pointer
         or      a0, s0, r0                  // a0 = player struct
-        jal     0x800D9074                  // air friction subroutine?
-        or      a1, s1, r0                  // a1 = attributes pointer
+
+        // jal     0x800D9074                  // air friction subroutine?
+        // or      a1, s1, r0                  // a1 = attributes pointer
+
+        b       _end                        // end subroutine
+        nop
 
         _check_begin:
         lw      t0, 0x0184(s0)              // t0 = temp variable 3
