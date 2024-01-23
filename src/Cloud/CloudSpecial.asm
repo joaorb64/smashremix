@@ -941,7 +941,7 @@ scope CloudNSP {
         
 		_blaster_projectile_struct:
         dw 0x00000000                   // this has some sort of bit flag to tell it to use secondary type display list?
-		dw FGC.FGC_PROJECTILE_ID
+		dw FGC.FGC_PROJECTILE_ID+1
         dw Character.CLOUD_file_6_ptr    // pointer to file
         dw 0x00000000                   // 00000000
         dw 0x1C000000                   // rendering routine?
