@@ -625,6 +625,10 @@ scope CloudNSP {
         swc1    f0, 0x0020(sp)                      // x origin point
         swc1    f0, 0x0024(sp)                      // y origin point
         swc1    f0, 0x0028(sp)                      // z origin point
+
+        // lui    t0, 0x42C8
+        // mtc1   f0, f0
+
         lw      a0, 0x0928(v0)
         sw      a3, 0x0030(sp)
         jal     0x800EDF24                          // generic function used to determine projectile origin point
@@ -763,16 +767,43 @@ scope CloudNSP {
         lwc1    f10, 0x002C(s0)
         lw      t9, 0x0080(t8)
 
-        lui at, 0x4000 // at = 2.0
+        lui     at, 0x4000 // at = 2.0
         mtc1    at, f6
-        swc1    f6, 0x0040(t8)      // store x size multiplier to projectile joint
-        swc1    f6, 0x0044(t8)      // store y size multiplier to projectile joint
-        swc1    f6, 0x0048(t8)      // store y size multiplier to projectile joint
+        swc1    f6, 0x0040(t8)      // store scale x size multiplier to projectile joint
+        swc1    f6, 0x0044(t8)      // store scale y size multiplier to projectile joint
+        swc1    f6, 0x0048(t8)      // store scale z size multiplier to projectile joint
+
+        lui     t0, 0xc348
+        mtc1    t0, f0
+        swc1    f0, 0x6c(v1)         // Adjust coll_data.object_coll.bottom
+
+        lw      at, 0x014C(t4)      // Load player grounded state
+        sw      at, 0xfc(v1)        // Save grounded matching grounded state for projectile
+
+        lw      t1, 0xEC(t4)  // t1 = player (t4) ground_line_id
+        sw      t1, 0xA0(v1)  // save to projectile
+
+        bne     at, r0, projectile_not_grounded
+        nop
+        // ip->phys_info.ground_vel = ip->phys_info.vel.x * ip->lr
+
+        lw      t6, 0x18(v1)  // t2 = ip.phys_info
+        lwc1    f4, 0x20(v1)
+        mtc1    t6, f6
+        nop
+        cvt.s.w f18, f6
+        mul.s   f6, f4, f18
+        nop
+        swc1    f6, 0x1C(v1)  // save to projectile
+
+        projectile_not_grounded:
+
+        // or      a0, at, r0
+        lw      v0, 0x0028(sp)
         
         // This ensures the projectile faces the correct direction
         jal     0x80167FA0
         swc1    f10, 0x0088(t9)
-
 
         lw      v0, 0x0028(sp)
 
