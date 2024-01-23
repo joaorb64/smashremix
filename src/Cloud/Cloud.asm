@@ -13,6 +13,7 @@ scope Cloud {
     insert DASHATTACK,"moveset/DASHATTACK.bin"
     insert SPECIALHI,"moveset/SPECIALHI.bin"
     insert SPECIALHI2,"moveset/SPECIALHI2.bin"
+    insert NSP,"moveset/NSP.bin"
     insert SPECIALHI_LAND,"moveset/SPECIALHI_LAND.bin"
 
     // Insert AI attack options
@@ -33,14 +34,18 @@ scope Cloud {
     Character.edit_action_parameters(CLOUD,   Action.UTilt,           File.CLOUD_TILTU,           TILTU,                      -1)
     Character.edit_action_parameters(CLOUD,   Action.DashAttack,      File.CLOUD_DASH_ATTACK,     DASHATTACK,                 0x40000000)
 
-    Character.edit_action_parameters(CLOUD,   0xE2,                     File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
-    Character.edit_action_parameters(CLOUD,   0xE4,                     File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
-    Character.edit_action_parameters(CLOUD,   0xE4,                     File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
+    Character.edit_action_parameters(CLOUD,   0xE2,                   File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
+    Character.edit_action_parameters(CLOUD,   0xE4,                   File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
+    Character.edit_action_parameters(CLOUD,   0xE4,                   File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
+    Character.edit_action_parameters(CLOUD,   0xE5,                   File.CLOUD_SPECIALN,                          NSP,                        -1)
+    Character.edit_action_parameters(CLOUD,   0xE8,                   File.CLOUD_SPECIALN,                          NSP,                        -1)
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(CLOUD, 0x0,               File.CLOUD_IDLE,              -1,                         -1)
 
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
+    Character.edit_action(CLOUD,  0xE5,              -1,             CloudNSP.main,  				CloudNSP.change_direction_,                             CloudNSP.physics_,                -1)
+	Character.edit_action(CLOUD,  0xE8,              -1,             CloudNSP.main,  				CloudNSP.change_direction_,                             CloudNSP.physics_,                CloudNSP.air_collision_)
 
     // Add Action Parameters                // Action Name      // Base Action  // Animation                    // Moveset Data             // Flags
     Character.add_new_action_params(CLOUD,    USP,             -1,             File.CLOUD_SPECIALHI,            SPECIALHI,                  0x40000000)

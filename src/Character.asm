@@ -3331,7 +3331,7 @@ scope Character {
     // 0x49 - KEN
     define_character(KEN, CAPTAIN, File.KEN_MAIN, 0x0EB, 0, File.KEN_CHARACTER, 0x14E, File.KEN_PROJECTILE_HITBOX, 0x15E, 0x14D, File.KEN_PROJECTILE_GRAPHIC, 0x488, 30, OS.TRUE, OS.TRUE, Stages.id.BTT_GND, Stages.id.BTP_GND, Stages.id.BTT_FALCON, Stages.id.BTP_YOSHI, sound_type.SF, variant_type.NA)
     // 0x4A - CLOUD
-    define_character(CLOUD, LINK, File.CLOUD_MAIN, 0x0E0, 0, File.CLOUD_CHARACTER, 0x147, 0x0E2, 0x161, 0x145, 0, 0x724, 10, OS.TRUE, OS.TRUE, Stages.id.BTT_LINK, Stages.id.BTP_LINK, Stages.id.BTT_YL, Stages.id.BTP_YL, sound_type.U, variant_type.NA)
+    define_character(CLOUD, LINK, File.CLOUD_MAIN, 0x0E0, 0, File.CLOUD_CHARACTER, 0x147, File.CLOUD_PROJECTILE_HITBOX, 0x161, 0x145, 0, 0x724, 10, OS.TRUE, OS.TRUE, Stages.id.BTT_LINK, Stages.id.BTP_LINK, Stages.id.BTT_YL, Stages.id.BTP_YL, sound_type.U, variant_type.NA)
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS

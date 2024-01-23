@@ -2786,4 +2786,7 @@ scope File {
     constant CLOUD_SPECIALHI(0x132B)
     constant CLOUD_SPECIALHI2(0x132C)
     constant CLOUD_SPECIALHI_LAND(0x132D)
+    constant CLOUD_SPECIALN(0x132E)
+    constant CLOUD_PROJECTILE_GRAPHIC(0x132F)
+    constant CLOUD_PROJECTILE_HITBOX(0x1330)
  }
