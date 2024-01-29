@@ -1374,16 +1374,37 @@ scope CloudDSP {
 
         // if on first frame
         lwc1    f0, 0x0048(t0)              // current x velocity
-        lui     t4, 0x3f19                  // ~
-        mtc1    t4, f2                      // f2 = 0.6
-        mul.s   f0, f0, f2                  // f0 = x velocity * 0.6
-        swc1    f0, 0x0048(t0)              // x velocity = (x velocity * 0.6)
+        lui     t4, 0x3E80                  // ~
+        mtc1    t4, f2                      // f2 = 0.25
+        mul.s   f0, f0, f2                  // f0 = x velocity * 0.25
+        swc1    f0, 0x0048(t0)              // x velocity = (x velocity * 0.25)
 
         sw      r0, 0x004C(t0)              // y velocity = 0
 
+        // if performing DSP1, skip to subroutine
+        lw      t5, 0x0024(t0)               // t5 = current action
+        lli     t6, 0xEB                     // a1 = DSP1 (ground)
+        beq     t5, t6, _subroutine
+        lli     t6, 0xEC                     // a1 = DSP1 (air)
+        beq     t5, t6, _subroutine
+
+        // else, perform a small hop on frame 1
+        lui     t6, 0x4120                  // 10.0
+        sw      t6, 0x004C(t0)              // y velocity = 0
+
         _subroutine:
-        lui     t4, 0x4040                  // ~
-        mtc1    t4, f2                      // f2 = 3.0
+        // load default anti-gravity value
+        lui     t4, 0x4020                  // t4 = 2.5
+
+        lw      t5, 0x0024(t0)               // t5 = current action
+        lli     t6, Cloud.Action.SPECIALLW3_AIR // a1 = DSP3 (air)
+        bne     t5, t6, _subroutine_continue
+        nop
+
+        lui     t4, 0x4040                  // t4 = 3.0
+
+        _subroutine_continue:
+        mtc1    t4, f2                      // f2 = anti-gravity value
         nop
 
         lwc1    f0, 0x004C(t0)              // f0 = current y velocity
