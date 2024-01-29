@@ -15,6 +15,9 @@ scope Cloud {
     insert SPECIALHI2,"moveset/SPECIALHI2.bin"
     insert NSP,"moveset/NSP.bin"
     insert SPECIALHI_LAND,"moveset/SPECIALHI_LAND.bin"
+    insert SPECIALLW1,"moveset/DSP_1.bin"
+    insert SPECIALLW2,"moveset/DSP_2.bin"
+    insert SPECIALLW3,"moveset/DSP_3.bin"
 
     // Insert AI attack options
     // constant CPU_ATTACKS_ORIGIN(origin())
@@ -40,22 +43,39 @@ scope Cloud {
     Character.edit_action_parameters(CLOUD,   0xE5,                   File.CLOUD_SPECIALN,                          NSP,                        -1)
     Character.edit_action_parameters(CLOUD,   0xE8,                   File.CLOUD_SPECIALN,                          NSP,                        -1)
 
+    Character.edit_action_parameters(CLOUD,   0x0EB,                   File.CLOUD_SPECIALLW1,                       SPECIALLW1,                      -1)
+    Character.edit_action_parameters(CLOUD,   0x0EC,                   File.CLOUD_SPECIALLW1,                       SPECIALLW1,                      -1)
+
+
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(CLOUD, 0x0,               File.CLOUD_IDLE,              -1,                         -1)
 
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
-    Character.edit_action(CLOUD,  0xE5,              -1,             CloudNSP.main,  				CloudNSP.change_direction_,                             CloudNSP.physics_,                -1)
-	Character.edit_action(CLOUD,  0xE8,              -1,             CloudNSP.main,  				CloudNSP.change_direction_,                             CloudNSP.physics_,                CloudNSP.air_collision_)
+    Character.edit_action(CLOUD,  0xE5,              -1,             CloudNSP.main,  				CloudNSP.change_direction_,      CloudNSP.physics_,                -1)
+	Character.edit_action(CLOUD,  0xE8,              -1,             CloudNSP.main,  				CloudNSP.change_direction_,      CloudNSP.physics_,                CloudNSP.air_collision_)
+
+    Character.edit_action(CLOUD,  0xEB,              -1,             CloudDSP.main,                  0,                              0x800D8BB4,                       -1)
+    Character.edit_action(CLOUD,  0xEC,              -1,             CloudDSP.main,                  0,                              CloudDSP.physics,                CloudDSP.air_collision_)
 
     // Add Action Parameters                // Action Name      // Base Action  // Animation                    // Moveset Data             // Flags
     Character.add_new_action_params(CLOUD,    USP,             -1,             File.CLOUD_SPECIALHI,            SPECIALHI,                  0x40000000)
     Character.add_new_action_params(CLOUD,    USP2,            -1,             File.CLOUD_SPECIALHI2,           SPECIALHI2,                 0x00000000)
     Character.add_new_action_params(CLOUD,    USP_LAND,        -1,             File.CLOUD_SPECIALHI_LAND,       SPECIALHI_LAND,             0x00000000)
 
+    Character.add_new_action_params(CLOUD,    SPECIALLW2,        -1,           File.CLOUD_SPECIALLW2,       SPECIALLW2,             0x00000000)
+    Character.add_new_action_params(CLOUD,    SPECIALLW2_AIR,    -1,           File.CLOUD_SPECIALLW2,       SPECIALLW2,             0x00000000)
+    Character.add_new_action_params(CLOUD,    SPECIALLW3,        -1,           File.CLOUD_SPECIALLW3,       SPECIALLW3,             0x00000000)
+    Character.add_new_action_params(CLOUD,    SPECIALLW3_AIR,    -1,           File.CLOUD_SPECIALLW3,       SPECIALLW3,             0x00000000)
+
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
     Character.add_new_action(CLOUD,    USP,              -1,             ActionParams.USP,                -1,           CloudUSP.main_,                   CloudUSP.change_direction_,     CloudUSP.physics_,                CloudUSP.collision_)
     Character.add_new_action(CLOUD,    USP2,             -1,             ActionParams.USP2,               -1,           0x00000000,                       DededeUSP.move_cancel_,         CloudUSP.physics2_,               CloudUSP.usp2_collision_)
     Character.add_new_action(CLOUD,    USP_LAND,         -1,             ActionParams.USP_LAND,           -1,           0x800D94C4,                       0,                              0x800D8BB4,                       0x800DDF44)
+
+    Character.add_new_action(CLOUD,    SPECIALLW2,         -1,           ActionParams.SPECIALLW2,           -1,           CloudDSP.main,                  0,                              0x800D8BB4,                       -1)
+    Character.add_new_action(CLOUD,    SPECIALLW2_AIR,     -1,           ActionParams.SPECIALLW2_AIR,       -1,           CloudDSP.main,                  0,                              CloudDSP.physics,                CloudDSP.air_collision_)
+    Character.add_new_action(CLOUD,    SPECIALLW3,         -1,           ActionParams.SPECIALLW3,           -1,           CloudDSP.main,                  0,                              0x800D8BB4,                       -1)
+    Character.add_new_action(CLOUD,    SPECIALLW3_AIR,     -1,           ActionParams.SPECIALLW3_AIR,       -1,           CloudDSP.main,                  0,                              CloudDSP.physics,                CloudDSP.air_collision_)
 
     // Character.table_patch_start(variants, Character.id.CLOUD, 0x4)
     // db      Character.id.NONE   // set as SPECIAL variant for CLOUD

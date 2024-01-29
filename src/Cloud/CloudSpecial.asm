@@ -603,6 +603,19 @@ scope CloudNSP {
 		addu	a2, a0, r0
         lw      v0, 0x0084(a0)                      // loads player struct
 
+        fire_effect:
+        // FIRE EFFECT
+        // OS.save_registers()
+
+        // or a0, r0, a2 // argument = player object
+        // lw v1, 0x0084(a0) // v1 = player struct
+
+        // jal 0x80101F84
+        // nop
+
+        // OS.restore_registers()
+        // END FIRE EFFECT
+
         // Check if we're on fist frame so we can set x speed to 0
         lui t1, 0x4000 // t1=1.0
         mtc1    t1, f6 // f6=1.0
@@ -1159,5 +1172,235 @@ scope CloudNSP {
         _end:
         jr      ra                          // return
         nop
+    }
+}
+
+scope CloudDSP {
+    scope main: {
+        addiu   sp, sp, -0x0040
+        sw      ra, 0x0014(sp)
+		swc1    f6, 0x003C(sp)
+        swc1    f8, 0x0038(sp)
+        sw      a0, 0x0034(sp)
+
+        lwc1    f8, 0x0078(a0)              // load current frame
+
+        // check if we are in a state that can change to a next DSP stage
+        // save next stage to t2
+        lw     t7, 0x0024(a2)              // t7 = current action
+
+        // grounded dsp1
+        lli    t2, 0xEB
+        beq    t7, t2, state_change_continue
+        lli    t2, Cloud.Action.SPECIALLW2
+
+        // aerial dsp1
+        lli    t2, 0xEC
+        beq    t7, t2, state_change_continue
+        lli    t2, Cloud.Action.SPECIALLW2_AIR
+
+        // grounded dsp2
+        lli    t2, Cloud.Action.SPECIALLW2
+        beq    t7, t2, state_change_continue
+        lli    t2, Cloud.Action.SPECIALLW3
+
+        // aerial dsp2
+        lli    t2, Cloud.Action.SPECIALLW2_AIR
+        beq    t7, t2, state_change_continue
+        lli    t2, Cloud.Action.SPECIALLW3_AIR
+
+        b    _main_normal   // skip state change logic
+        nop
+
+        state_change_continue:
+        lui		at, 0x4140					// at = 12.0
+		mtc1    at, f6                      // ~
+        c.eq.s  f8, f6                      // f8 >= f6 (current frame >= 2) ?
+        nop
+        bc1fl   _main_normal                // skip if haven't reached frame 2
+        nop
+
+        lhu     t0, 0x01BC(a2)              // load button press buffer
+        andi    t1, t0, 0x4000              // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, _main_normal        // skip if (!B_PRESSED)
+        nop
+
+        addiu   sp, sp,-0x0038              // allocate stack space
+        sw      ra, 0x0004(sp)
+        sw      a0, 0x0008(sp)
+        sw      a1, 0x000C(sp)              // store variables
+        sw      a2, 0x0010(sp)              // store variables
+        sw      a3, 0x0014(sp)              // store variables
+        sw      v0, 0x0018(sp)              // store variables
+        addiu   sp, sp,-0x0030              // allocate stack space
+
+        lw      v0, 0x0034(a2)              // v0 = player struct
+
+        or      a1, r0, t2                  // a1 = Action.USPG
+        or      a2, r0, r0                  // a2(starting frame) = current animation frame
+        lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+        sw      r0, 0x0010(sp)              // argument 4 = 0
+        jal     0x800E6F24                  // change action
+        nop
+
+        addiu   sp, sp, 0x0030              // allocate stack space
+        lw      ra, 0x0004(sp)              // restore ra
+        lw      a0, 0x0008(sp)
+        lw      a1, 0x000C(sp)              // restore a2
+        lw      a2, 0x0010(sp)              // restore a2
+        lw      a3, 0x0014(sp)              // restore a2
+        lw      v0, 0x0018(sp)              // restore a2
+        addiu   sp, sp, 0x0038              // deallocate stack space
+        or      a1, a0, r0                 // restore a0 = player object
+
+        j       _end
+        nop
+        
+        j _main_normal
+        nop
+
+        _main_normal:
+        // checks frame counter to see if reached end of the move
+        lw      a2, 0x0034(sp)
+        mtc1    r0, f6
+        lwc1    f8, 0x0078(a2)
+        c.le.s  f8, f6
+        nop
+        bc1fl   _end
+        lw      ra, 0x0014(sp)
+        lw      a2, 0x0034(sp)
+        jal     0x800DEE54
+        or      a0, a2, r0
+
+         _end:
+		lw      a0, 0x0034(sp)
+        lwc1    f6, 0x003C(sp)
+        lwc1    f8, 0x0038(sp)
+        lw      ra, 0x0014(sp)
+        addiu   sp, sp, 0x0040
+
+        jr      ra
+        nop
+    }
+
+    // @ Description
+    // Subroutine which handles air collision for neutral special actions
+    scope air_collision_: {
+        addiu   sp, sp,-0x0018              // allocate stack space
+        sw      ra, 0x0014(sp)              // store ra
+        li      a1, air_to_ground_          // a1(transition subroutine) = air_to_ground_
+        jal     0x800DE6E4                  // common air collision subroutine (transition on landing, no ledge grab)
+        nop 
+        lw      ra, 0x0014(sp)              // load ra
+        addiu   sp, sp, 0x0018              // deallocate stack space
+        jr      ra                          // return
+        nop
+    }
+    
+    // @ Description
+    // Subroutine which handles ground to air transition for neutral special actions
+    scope air_to_ground_: {
+        addiu   sp, sp,-0x0038              // allocate stack space
+        sw      ra, 0x001C(sp)              // store ra
+        sw      a0, 0x0038(sp)              // 0x0038(sp) = player object
+        lw      a0, 0x0084(a0)              // a0 = player struct
+        jal     0x800DEE98                  // set grounded state
+        sw      a0, 0x0034(sp)              // 0x0034(sp) = player struct
+        lw      v0, 0x0034(sp)              // v0 = player struct
+        lw      a0, 0x0038(sp)              // a0 = player object
+        
+        lw      a2, 0x0008(v0)              // load character ID
+        lli     a1, Character.id.KIRBY      // a1 = id.KIRBY
+        beql    a1, a2, _change_action      // if Kirby, load alternate action ID
+        lli     a1, Kirby.Action.WOLF_NSP_Ground
+        lli     a1, Character.id.JKIRBY     // a1 = id.JKIRBY
+        beql    a1, a2, _change_action      // if J Kirby, load alternate action ID
+        lli     a1, Kirby.Action.WOLF_NSP_Ground
+        
+        // Resolve transition action id
+        lw     t7, 0x0024(v0)              // t7 = current action
+
+        // aerial dsp1
+        lli    t2, 0xEC
+        beq    t7, t2, _change_action
+        lli    a1, 0xEB // a1 = equivalent ground action for current air action
+
+        // aerial dsp2
+        lli    t2, Cloud.Action.SPECIALLW2_AIR
+        beq    t7, t2, _change_action
+        lli    a1, Cloud.Action.SPECIALLW2 // a1 = equivalent ground action for current air action
+
+        // aerial dsp2
+        lli    t2, Cloud.Action.SPECIALLW3_AIR
+        beq    t7, t2, _change_action
+        lli    a1, Cloud.Action.SPECIALLW3 // a1 = equivalent ground action for current air action
+
+        _change_action:
+        lw      a2, 0x0078(a0)              // a2(starting frame) = current animation frame
+        lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+        lli     t6, 0x0001                  // ~
+        jal     0x800E6F24                  // change action
+        sw      t6, 0x0010(sp)              // argument 4 = 1 (continue hitbox)
+        lw      ra, 0x001C(sp)              // load ra
+        addiu   sp, sp, 0x0038              // deallocate stack space
+        jr      ra                          // return
+        nop
+    }
+
+    // @ Description
+    // Subroutine which handles physics for Wario's down special.
+    // Prevents player control when temp variable 2 = 0
+    // Prevents negative Y velocity when temp variable 3 = 1 (BEGIN)
+    scope physics: {
+        // 0x180 in player struct = temp variable 2
+
+        addiu   sp, sp,-0x001C              // allocate stack space
+        sw      t0, 0x0004(sp)              // ~
+        sw      t1, 0x0008(sp)              // ~
+        sw    	ra, 0x000C(sp)              // ~
+        sw      a0, 0x0010(sp)              // store t0, t1, ra, a0
+        
+        lw      t0, 0x0084(a0)              // t0 = player struct
+        lw      t1, 0x0180(t0)              // t1 = temp variable 2
+        li      t8, 0x800D91EC              // t8 = physics subroutine which disallows player control
+
+        lw      t3, 0x4(t0)                 // t3 = player object
+        lw      t4, 0x0078(t3)              // load current frame to t4
+
+        lui      t2, 0x3F80                 // t2 = 1
+
+        bne      t2, t4, _subroutine        // if current frame is not 1, skip
+        nop
+
+        // if on first frame
+        lwc1    f0, 0x0048(t0)              // current x velocity
+        lui     t4, 0x3f19                  // ~
+        mtc1    t4, f2                      // f2 = 0.6
+        mul.s   f0, f0, f2                  // f0 = x velocity * 0.6
+        swc1    f0, 0x0048(t0)              // x velocity = (x velocity * 0.6)
+
+        sw      r0, 0x004C(t0)              // y velocity = 0
+
+        _subroutine:
+        lui     t4, 0x4040                  // ~
+        mtc1    t4, f2                      // f2 = 3.0
+        nop
+
+        lwc1    f0, 0x004C(t0)              // f0 = current y velocity
+        add.s   f0, f0, f2                  // f0 = f0 - f2 (y speed -= f2)
+        nop
+
+        swc1    f0, 0x004C(t0)              // save y velocity
+
+        jalr      t8                        // run physics subroutine
+        nop
+
+        _end:
+        lw      t0, 0x0004(sp)              // ~
+        lw      t1, 0x0008(sp)              // ~
+        lw      ra, 0x000C(sp)              // ~
+        lw      a0, 0x0010(sp)              // load t0, t1, ra, a0
+        jr      ra                          // return
+        addiu 	sp, sp, 0x001C				// deallocate stack space
     }
 }

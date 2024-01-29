@@ -92,6 +92,14 @@ scope CaptainShared {
     dw  0x00000000
     dw  0x0000021C
 
+    slash_anim_struct_CLOUD:
+    dw  0x020F0000
+    dw  Character.CLOUD_file_7_ptr
+    dw  0x501C0000
+    OS.copy_segment(0xA9AF8, 0x0008)
+    dw  Size.falcon.punch.render_routine_
+    OS.copy_segment(0xA9B04, 0x0010)
+
     entry_anim_struct_JFALCON:
     dw  0x060A0000
     dw  Character.JFALCON_file_7_ptr
@@ -201,6 +209,11 @@ scope CaptainShared {
 
         ori     t1, r0, Character.id.MTWO   // t1 = id.MTWO
         li      a0, usmash_anim_struct_MTWO // a0 = usmash_anim_struct
+        beq     t0, t1, _end                // end if character id = MTWO
+        nop
+
+        ori     t1, r0, Character.id.CLOUD   // t1 = id.MTWO
+        li      a0, slash_anim_struct_CLOUD // a0 = usmash_anim_struct
         beq     t0, t1, _end                // end if character id = MTWO
         nop
 
