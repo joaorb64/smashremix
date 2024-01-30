@@ -48,9 +48,6 @@ scope Ken {
     insert DSP_L,"moveset/DOWN_SPECIAL_L.bin"
     insert DSP_M,"moveset/DOWN_SPECIAL_M.bin"
     insert DSP_H,"moveset/DOWN_SPECIAL_H.bin"
-    insert DSP_FLIP,"moveset/DOWN_SPECIAL_FLIP.bin"
-    insert DSP_LAND,"moveset/DOWN_SPECIAL_LANDING.bin"
-    insert DSP_AIR,"moveset/DOWN_SPECIAL_AIR.bin"
     insert VICTORY_POSE_1,"moveset/VICTORY_POSE_1.bin"
     insert VICTORY_POSE_2,"moveset/VICTORY_POSE_2.bin"
     insert VICTORY_POSE_3,"moveset/VICTORY_POSE_3.bin"
@@ -142,8 +139,6 @@ scope Ken {
 	Character.edit_action_parameters(KEN,   0xE4,                   File.RYU_HADOUKEN_GND,      NSP_AIR,                 0x40000000)
     Character.edit_action_parameters(KEN,   0xE5,                   File.RYU_HADOUKEN_GND,      NSP_AIR,                 0x40000000)
     Character.edit_action_parameters(KEN,   0xE6,                   File.KEN_TATSU_L,       DSP_L,                 -1)
-    Character.edit_action_parameters(KEN,   0xE7,                   -1,                         DSP_FLIP,                   -1)
-    Character.edit_action_parameters(KEN,   0xE8,                   -1,                         DSP_LAND,                   -1)
     Character.edit_action_parameters(KEN,   0xE9,                   File.KEN_TATSU_M,       DSP_M,                 -1) // aerial dsp
     Character.edit_action_parameters(KEN,   Action.Crouch,          File.RYU_CROUCH_START,        -1,                         -1)
     Character.edit_action_parameters(KEN,   Action.CrouchIdle,      File.RYU_CROUCH_IDLE,         -1,                         -1)
