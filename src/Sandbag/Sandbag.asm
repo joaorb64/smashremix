@@ -241,19 +241,102 @@ scope Sandbag {
         addiu    t7, t6, 0xFFFF             // original line 2
     }
 
+    last_kb:
+    db 0x00 //p1
+    db 0x00 //p2
+    db 0x00 //p3
+    db 0x00 //p4
+
+    // @ Description
+    // This prevents decreasing X velocity (from knockback) for sandbag
+    // 800E9D78 + 1E0
+    scope set_kb: {
+        OS.patch_start(0x65758, 0x800E9F58)
+        jal     set_kb
+        OS.patch_end()
+
+        mul.s   f2, f10, f18      // original line 1
+        nop                     // original line 2
+
+        lui     t0, 0x41F0 // 30.0. If knockback is above this, apply speedup
+        mtc1    t0, f5
+
+        c.le.s  f2, f5
+        nop
+        bc1t    no_speedup
+        nop
+
+        lui     t0, 0x3fe6 // 1.8
+        mtc1    t0, f3
+        mul.s   f2, f2, f3
+        nop
+
+        no_speedup:
+        jr      ra
+        nop
+    }
+
     // @ Description
     // This prevents decreasing X velocity (from knockback) for sandbag
     scope preserve_sandbag_momentum_: {
         OS.patch_start(0x5D93C, 0x800E213C)
         jal     preserve_sandbag_momentum_
-        sub.s   f4, f10, f18                // original line 1 - f4 = new X velocity
+        nop
         OS.patch_end()
+
+        lui     t0, 0x40C0 // 6.0, only apply the logic if absolute knockback is above this
+        mtc1    t0, f2
+
+        abs.s   f6, f10
+
+        c.le.s  f6, f2
+        nop
+        bc1t    no_speedup
+        nop
+
+        lui     t0, 0x3d5d // 0.054 * knockback so in the end we do new_kb = kb - 0.056*kb
+        mtc1    t0, f2
+        mul.s   f18, f10, f2
+        nop
+
+        no_speedup:
+        sub.s   f4, f10, f18                // original line 1 - f4 = new X velocity
 
         // s1 = player struct
         lw      v0, 0x0008(s1)              // v0 = character ID
         lli     at, Character.id.SANDBAG
         bnel    v0, at, pc() + 8            // if not sandbag, update X velocity
         swc1    f4, 0x0000(s0)              // original line 2 - update X velocity
+
+        jr      ra
+        nop
+    }
+
+    // 800E2048 + 118
+    scope patch_y_momentum_: {
+        OS.patch_start(0x5D960, 0x800E2160)
+        jal     patch_y_momentum_
+        nop
+        OS.patch_end()
+
+        lui     t0, 0x40C0 // 6.0, only apply the logic if absolute knockback is above this
+        mtc1    t0, f1
+
+        abs.s   f9, f6
+
+        c.le.s  f9, f1
+        nop
+        bc1t    no_speedup
+        nop
+
+        lui     t0, 0x3d5d // 0.054 * knockback so in the end we do new_kb = kb - 0.056*kb
+        mtc1    t0, f1
+        mul.s   f16, f6, f1
+        nop
+
+        no_speedup:
+        sub.s   f10, f6, f16                // original line 1 - f4 = new Y velocity
+        swc1    f10, 0x0004(s0)              // original line 2 - update Y velocity
 
         jr      ra
         nop
