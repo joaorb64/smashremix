@@ -10,6 +10,7 @@ scope Cloud {
     insert AIRB,"moveset/AIRB.bin"
     insert TILTF,"moveset/TILTF.bin"
     insert TILTU,"moveset/TILTU.bin"
+    insert TILTD,"moveset/TILTD.bin"
     insert DASHATTACK,"moveset/DASHATTACK.bin"
     insert SPECIALHI,"moveset/SPECIALHI.bin"
     insert SPECIALHI2,"moveset/SPECIALHI2.bin"
@@ -35,6 +36,7 @@ scope Cloud {
     Character.edit_action_parameters(CLOUD,   Action.AttackAirB,      File.CLOUD_AIRB,            AIRB,                       -1)
     Character.edit_action_parameters(CLOUD,   Action.FTilt,           File.CLOUD_TILTF,           TILTF,                      0x40000000)
     Character.edit_action_parameters(CLOUD,   Action.UTilt,           File.CLOUD_TILTU,           TILTU,                      -1)
+    Character.edit_action_parameters(CLOUD,   Action.DTilt,           File.CLOUD_TILTD,           TILTD,                      0x40000000)
     Character.edit_action_parameters(CLOUD,   Action.DashAttack,      File.CLOUD_DASH_ATTACK,     DASHATTACK,                 0x40000000)
 
     Character.edit_action_parameters(CLOUD,   0xE2,                   File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
