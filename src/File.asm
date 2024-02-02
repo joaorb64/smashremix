@@ -2793,4 +2793,5 @@ scope File {
     constant CLOUD_SPECIALLW2(0x1332)
     constant CLOUD_SPECIALLW3(0x1333)
     constant CLOUD_TILTD(0x1334)
+    constant CLOUD_SMASHU(0x1335)
  }

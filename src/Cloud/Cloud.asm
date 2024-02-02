@@ -19,6 +19,7 @@ scope Cloud {
     insert SPECIALLW1,"moveset/DSP_1.bin"
     insert SPECIALLW2,"moveset/DSP_2.bin"
     insert SPECIALLW3,"moveset/DSP_3.bin"
+    insert SMASHU,"moveset/SMASHU.bin"
 
     // Insert AI attack options
     // constant CPU_ATTACKS_ORIGIN(origin())
@@ -38,6 +39,8 @@ scope Cloud {
     Character.edit_action_parameters(CLOUD,   Action.UTilt,           File.CLOUD_TILTU,           TILTU,                      -1)
     Character.edit_action_parameters(CLOUD,   Action.DTilt,           File.CLOUD_TILTD,           TILTD,                      0x40000000)
     Character.edit_action_parameters(CLOUD,   Action.DashAttack,      File.CLOUD_DASH_ATTACK,     DASHATTACK,                 0x40000000)
+
+    Character.edit_action_parameters(CLOUD,   Action.USmash,          File.CLOUD_SMASHU,          SMASHU,                     0x40000000)
 
     Character.edit_action_parameters(CLOUD,   0xE2,                   File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
     Character.edit_action_parameters(CLOUD,   0xE4,                   File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
