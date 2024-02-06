@@ -20,6 +20,11 @@ scope Cloud {
     insert SPECIALLW2,"moveset/DSP_2.bin"
     insert SPECIALLW3,"moveset/DSP_3.bin"
     insert SMASHU,"moveset/SMASHU.bin"
+    insert SMASHF,"moveset/SMASHF.bin"
+
+    insert JUMP1,"moveset/JUMP1.bin"
+    insert JUMP2,"moveset/JUMP2.bin"
+    insert LAND,"moveset/LAND.bin"
 
     // Insert AI attack options
     // constant CPU_ATTACKS_ORIGIN(origin())
@@ -41,6 +46,7 @@ scope Cloud {
     Character.edit_action_parameters(CLOUD,   Action.DashAttack,      File.CLOUD_DASH_ATTACK,     DASHATTACK,                 0x40000000)
 
     Character.edit_action_parameters(CLOUD,   Action.USmash,          File.CLOUD_SMASHU,          SMASHU,                     0x40000000)
+    Character.edit_action_parameters(CLOUD,   Action.FSmash,          File.CLOUD_SMASHF,          SMASHF,                     0x40000000)
 
     Character.edit_action_parameters(CLOUD,   0xE2,                   File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
     Character.edit_action_parameters(CLOUD,   0xE4,                   File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
@@ -51,6 +57,14 @@ scope Cloud {
     Character.edit_action_parameters(CLOUD,   0x0EB,                   File.CLOUD_SPECIALLW1,                       SPECIALLW1,                      -1)
     Character.edit_action_parameters(CLOUD,   0x0EC,                   File.CLOUD_SPECIALLW1,                       SPECIALLW1,                      -1)
 
+    Character.edit_action_parameters(CLOUD,    Action.JumpF,           -1,          JUMP1,                      -1)
+    Character.edit_action_parameters(CLOUD,    Action.JumpB,           -1,          JUMP1,                      -1)
+    Character.edit_action_parameters(CLOUD,    Action.JumpAerialB,     -1,          JUMP2,                      -1)
+    Character.edit_action_parameters(CLOUD,    Action.JumpAerialF,     -1,          JUMP2,                      -1)
+
+    Character.edit_action_parameters(CLOUD,    Action.LandingLight,    -1,         LAND,                         -1)
+	Character.edit_action_parameters(CLOUD,    Action.LandingHeavy,    -1,         LAND,                         -1)
+	Character.edit_action_parameters(CLOUD,    Action.LandingSpecial,  -1,         LAND,                         -1)
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(CLOUD, 0x0,               File.CLOUD_IDLE,              -1,                         -1)

@@ -747,7 +747,7 @@ scope CloudNSP {
         sw      at, 0x0130(v1)          // save
 
         // Hit FGM
-        lli     at, 0x57C               // at = RYU_HIT_M
+        lli     at, 0x5A1               // at = CLOUD_SWORD_PIERCE
         sh      at, 0x0146(v1)          // save
         
         // ==============

@@ -1605,6 +1605,17 @@ scope FGM {
 
     add_sound(Ryu/sounds/DAMAGED, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     add_sound(Ken/sounds/DAMAGED, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+
+    add_sound(Cloud/sounds/jump, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/double_jump, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/land, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/blade_beam, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/cross_slash_hit, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/sword_finisher, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/sword_pierce, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/blade_beam_slash, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/upBInitial, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/upBRise, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     
     // This is always last
     write_sounds()

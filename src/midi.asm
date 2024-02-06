@@ -551,6 +551,9 @@ scope MIDI {
 	insert_midi(X68000GUILE, OS.TRUE, OS.TRUE, "USA - Guile Stage (Arranged)", ssf2tx)
 	insert_midi(SSF2TCAMMY, OS.TRUE, OS.TRUE, "England - Cammy Stage", ssf2t)
 	insert_midi(SSF2TAKUMA, OS.TRUE, OS.TRUE, "AKUMA", ssf2t)
+
+    insert_extra_midi(CLOUD_VICTORY)
+
 	// insert_midi(PIANO4, OS.TRUE, OS.TRUE, "TEST", ssf2t) Piano Bug Test
 	// insert_midi(TGMEDLEY, OS.TRUE, OS.TRUE, "Battle! Team Galactic Medley", pokemondp)
     pushvar origin, base
