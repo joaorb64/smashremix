@@ -6,7 +6,7 @@ scope RyuUSP {
     // floating point constants for physics and fsm
     constant AIR_Y_SPEED(0x0)            // current setting - float32 92
     constant GROUND_Y_SPEED(0x0)         // current setting - float32 98
-    constant X_SPEED(0x4120)                // current setting - float32 10
+    constant X_SPEED(0x4140)                // current setting - float32 12
     constant AIR_ACCELERATION(0x3C88)       // current setting - float32 0.0166
     constant AIR_SPEED(0x41B0)              // current setting - float32 22
     constant LANDING_FSM(0x3EC0)            // current setting - float32 0.375

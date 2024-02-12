@@ -220,8 +220,8 @@ scope CharacterSelect {
     dw  0x3500 + 0x200                      // 0x44 - METAL LUIGI
     dw  0xCEE0 + 0x200                      // 0x45 - EBISUMARU
     dw  0x58D0 + 0x200                      // 0x46 - DRAGONKING
-    dw  0xB8B0 + 0x200                      // 0x48 - RYU
-    dw  0xD648 + 0x200                     // 0x49 - KEN
+    dw  0xC9F0 + 0x200                      // 0x48 - RYU
+    dw  0xD220 + 0x200                     // 0x49 - KEN
     dw  0x4E40 + 0x200                    // 0x4A - CLOUD
     // ADD NEW CHARACTERS HERE
 

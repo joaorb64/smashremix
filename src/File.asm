@@ -2795,4 +2795,11 @@ scope File {
     constant CLOUD_TILTD(0x1334)
     constant CLOUD_SMASHU(0x1335)
     constant CLOUD_SMASHF(0x1336)
+    constant CLOUD_VICTORY(0x1337)
+    constant CLOUD_FALL(0x1338)
+    constant CLOUD_FALL_SPECIAL(0x1339)
+    constant CLOUD_FALL_AERIAL(0x133A)
+    constant CLOUD_DASH(0x133B)
+    constant CLOUD_JUMPF(0x133C)
+    constant CLOUD_JUMPAERIALF(0x133D)
  }
