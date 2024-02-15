@@ -2802,4 +2802,5 @@ scope File {
     constant CLOUD_DASH(0x133B)
     constant CLOUD_JUMPF(0x133C)
     constant CLOUD_JUMPAERIALF(0x133D)
+    constant CLOUD_SMASHD(0x133E)
  }

@@ -433,7 +433,7 @@ scope CloudUSP {
         bne    t7, t2, _end        // if not performing USP(1), skip
         nop
 
-        lui		at, 0x41C8					// at = 2.0
+        lui		at, 0x41F0					// at = 2.0
 		mtc1    at, f6                      // ~
         c.lt.s  f6, f8                      // f8 >= f6 (current frame >= 2) ?
         nop

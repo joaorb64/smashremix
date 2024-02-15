@@ -21,6 +21,7 @@ scope Cloud {
     insert SPECIALLW3,"moveset/DSP_3.bin"
     insert SMASHU,"moveset/SMASHU.bin"
     insert SMASHF,"moveset/SMASHF.bin"
+    insert SMASHD,"moveset/SMASHD.bin"
 
     insert JUMP1,"moveset/JUMP1.bin"
 
@@ -53,6 +54,7 @@ scope Cloud {
 
     Character.edit_action_parameters(CLOUD,   Action.USmash,          File.CLOUD_SMASHU,          SMASHU,                     0x40000000)
     Character.edit_action_parameters(CLOUD,   Action.FSmash,          File.CLOUD_SMASHF,          SMASHF,                     0x40000000)
+    Character.edit_action_parameters(CLOUD,   Action.DSmash,          File.CLOUD_SMASHD,          SMASHD,                     0x80000000)
 
     Character.edit_action_parameters(CLOUD,   0xE2,                   File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
     Character.edit_action_parameters(CLOUD,   0xE4,                   File.CLOUD_SPECIALHI,                         -1,                 0x40000000)
