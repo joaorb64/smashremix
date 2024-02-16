@@ -40,6 +40,9 @@ scope FGC {
         fcg_tap_hold_end_:
         OS.patch_end()
 
+        jal jab_movement_fix
+        nop
+
         // a2 = fighter struct
         // t1, t2, t3, t4 = zero
 
@@ -882,6 +885,41 @@ scope FGC {
 
         b button_check
         nop
+
+        jab_movement_fix:
+        OS.save_registers()
+
+        lw      t0, 0x0024(a2)              // t0 = current action
+        lw      t1, 0x0008(a2)              // t0 = character id
+
+        ori     t2, r0, Character.id.CLOUD    // t1 = id.CLOUD
+        beq     t1, t2, jab_movement_fix_cloud
+        nop
+
+        j jab_movement_fix_end
+        nop
+
+        jab_movement_fix_cloud:
+        lli    t1, Action.Jab2
+        beq    t0, t1, apply_root_motion
+        nop
+
+        lli    t1, 0xDC
+        beq    t0, t1, apply_root_motion
+        nop
+
+        j jab_movement_fix_end
+        nop
+
+        apply_root_motion:
+        li t0, 0x800D8C14
+        sw t0, 0x9E0(a2)
+        j jab_movement_fix_end
+        nop
+
+        jab_movement_fix_end:
+        OS.restore_registers()
+        jr ra
     }
 
     // Hitlag just ended
