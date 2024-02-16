@@ -3,6 +3,10 @@
 // This file contains file inclusions, action edits, and assembly for Cloud.
 
 scope Cloud {
+    insert JAB1,"moveset/JAB1.bin"
+    insert JAB2,"moveset/JAB2.bin"
+    insert JAB3,"moveset/JAB3.bin"
+
     insert AIRN,"moveset/AIRN.bin"
     insert AIRU,"moveset/AIRU.bin"
     insert AIRD,"moveset/AIRD.bin"
@@ -42,9 +46,9 @@ scope Cloud {
     Character.edit_action_parameters(CLOUD,   Action.JumpAerialF,     File.CLOUD_JUMPAERIALF,       -1,                         0x00000000)
     Character.edit_action_parameters(CLOUD,   Action.JumpB,           -1,          JUMP1,                      -1)
 
-    Character.edit_action_parameters(CLOUD,   Action.Jab1,            File.CLOUD_JAB1,              -1,                         0x00000000)
-    Character.edit_action_parameters(CLOUD,   Action.Jab2,            File.CLOUD_JAB2,              -1,                         0x40000000)
-    Character.edit_action_parameters(CLOUD,   0xDC,                   File.CLOUD_JAB3,              -1,                         0x40000000)
+    Character.edit_action_parameters(CLOUD,   Action.Jab1,            File.CLOUD_JAB1,              JAB1,                       0x00000000)
+    Character.edit_action_parameters(CLOUD,   Action.Jab2,            File.CLOUD_JAB2,              JAB2,                       0x40000000)
+    Character.edit_action_parameters(CLOUD,   0xDC,                   File.CLOUD_JAB3,              JAB3,                       0x40000000)
 
     Character.edit_action_parameters(CLOUD,   Action.AttackAirN,      File.CLOUD_AIRN,            AIRN,                       -1)
     Character.edit_action_parameters(CLOUD,   Action.AttackAirU,      File.CLOUD_AIRU,            AIRU,                       -1)
