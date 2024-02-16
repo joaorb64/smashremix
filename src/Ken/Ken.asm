@@ -241,6 +241,11 @@ scope Ken {
     dh  0x058E
     OS.patch_end()
 
+    // Disable rapid jab
+    Character.table_patch_start(rapid_jab, Character.id.KEN, 0x4)
+    dw      Character.rapid_jab.DISABLED        // disable rapid jab
+    OS.patch_end()
+
     // Set default costumes
     Character.set_default_costumes(Character.id.KEN, 0, 1, 2, 3, 5, 1, 4)
     Teams.add_team_costume(YELLOW, KEN, 4)

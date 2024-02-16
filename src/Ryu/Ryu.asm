@@ -231,6 +231,11 @@ scope Ryu {
     dh  0x058E
     OS.patch_end()
 
+    // Disable rapid jab
+    Character.table_patch_start(rapid_jab, Character.id.RYU, 0x4)
+    dw      Character.rapid_jab.DISABLED        // disable rapid jab
+    OS.patch_end()
+
     // Set default costumes
     Character.set_default_costumes(Character.id.RYU, 0, 2, 4, 5, 1, 2, 3)
     Teams.add_team_costume(YELLOW, RYU, 4)

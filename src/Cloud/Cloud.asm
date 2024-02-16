@@ -125,6 +125,11 @@ scope Cloud {
     // // Shield colors for costume matching
     // Character.set_costume_shield_colors(CLOUD, GREEN, WHITE, RED, AZURE, PINK, BLACK, YELLOW, NA)
 
+    // Disable rapid jab
+    Character.table_patch_start(rapid_jab, Character.id.CLOUD, 0x4)
+    dw      Character.rapid_jab.DISABLED        // disable rapid jab
+    OS.patch_end()
+
     Character.table_patch_start(air_usp, Character.id.CLOUD, 0x4)
     dw      CloudUSP.air_initial_
     OS.patch_end()
