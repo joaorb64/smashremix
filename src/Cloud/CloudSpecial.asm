@@ -1178,8 +1178,8 @@ scope CloudNSP {
 
 scope CloudDSP {
     // tmp variable 1 0x017C
-    // tmp variable 2 0x0B30 -- used here to check if the move landed
-    // tmp variable 3 0x0184
+    // tmp variable 2 0x0B30 -- used to check if the move ever landed
+    // tmp variable 3 0x0184 -- used to check if B was ever pressed down during the move
 
     scope main: {
         addiu   sp, sp, -0x0040
@@ -1202,6 +1202,7 @@ scope CloudDSP {
         bc1fl   _reset_tmp_var_end          // skip if frame != 1
         nop
         sw      r0, 0x0B30(v0)              // reset tmp variable 2 = 0
+        sw      r0, 0x0184(v0)              // reset tmp variable 3 = 0
         _reset_tmp_var_end:
 
         // Here we check if something was hit during the current state
@@ -1230,20 +1231,34 @@ scope CloudDSP {
 
         // t6 = collision flags for all active hitboxes
         andi    t6, t6, 0x00F0              // t6 != 0 if hitbox collision has occured
-        beq     t6, r0, _collision_check_end // skip if no hitbox collision is detected
+        beq     t6, r0, _check_b_press      // skip if no hitbox collision is detected
         nop
 
-        // If we're here, then a hitbox collision has occured, so begin recoil
+        // If we're here, then a hitbox collision has occured, so save tmp variable 2 = 1
         _collision_success:
         lli     t0, 0x1
         sw      t0, 0x0B30(v0)              // save tmp variable 2 = 1
 
-        _collision_check_end:
-        // at this point, check if the move landed
+        _check_b_press:
+        lhu     t0, 0x01BE(a2)              // load button press buffer
+        andi    t1, t0, 0x4000              // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, _check_can_cancel        // skip if (!B_PRESSED)
+        nop
+
+        lli     t0, 0x1
+        sw      t0, 0x0184(v0)              // save tmp variable 3 = 1
+
+        _check_can_cancel:
+        // at this point, check if the move landed and if B was pressed
         // if not, skip all state change checks and logic
         lw      t0, 0x0B30(v0)              // load tmp variable 2
         lli     t1, 0x1
         bne     t0, t1, _main_normal            // if tmp variable 2 != 1, skip
+        nop
+
+        lw      t0, 0x0184(v0)              // load tmp variable 3
+        lli     t1, 0x1
+        bne     t0, t1, _main_normal            // if tmp variable 3 != 1, skip
         nop
 
         lwc1    f8, 0x0078(a0)              // load current frame
@@ -1276,16 +1291,18 @@ scope CloudDSP {
         nop
 
         state_change_continue:
-        lui		at, 0x41C8					// at = 25.0
+        lui		at, 0x4170					// at = 15.0
 		mtc1    at, f6                      // ~
-        c.le.s  f8, f6                      // f8 >= f6 (current frame >= 2) ?
+        c.le.s  f6, f8                      // f8 >= f6 (current frame >= 15.0) ?
         nop
-        bc1fl   _main_normal                // skip if haven't reached frame 2
+        bc1fl   _main_normal                // skip if haven't reached frame 15.0
         nop
 
-        lhu     t0, 0x01BE(a2)              // load button press buffer
-        andi    t1, t0, 0x4000              // t1 = 0x40 if (B_PRESSED); else t1 = 0
-        beq     t1, r0, _main_normal        // skip if (!B_PRESSED)
+        lui		at, 0x41C8					// at = 25.0
+		mtc1    at, f6                      // ~
+        c.le.s  f8, f6                      // f6 >= f8 (current frame <= 25.0) ?
+        nop
+        bc1fl   _main_normal                // skip if past frame 25.0
         nop
 
         addiu   sp, sp,-0x0038              // allocate stack space
