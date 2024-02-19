@@ -100,7 +100,7 @@ scope Cloud {
 
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
     Character.add_new_action(CLOUD,    USP,              -1,             ActionParams.USP,                -1,           CloudUSP.main_,                   CloudUSP.change_direction_,     CloudUSP.physics_,                CloudUSP.collision_)
-    Character.add_new_action(CLOUD,    USP2,             -1,             ActionParams.USP2,               -1,           0x00000000,                       DededeUSP.move_cancel_,         CloudUSP.physics2_,               CloudUSP.usp2_collision_)
+    Character.add_new_action(CLOUD,    USP2,             -1,             ActionParams.USP2,               -1,           0x00000000,                       0,                              CloudUSP.physics2_,               CloudUSP.usp2_collision_)
     Character.add_new_action(CLOUD,    USP_LAND,         -1,             ActionParams.USP_LAND,           -1,           0x800D94C4,                       0,                              0x800D8BB4,                       0x800DDF44)
 
     Character.add_new_action(CLOUD,    SPECIALLW2,         -1,           ActionParams.SPECIALLW2,           -1,           CloudDSP.main,                  0,                              0x800D8BB4,                       -1)

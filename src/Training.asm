@@ -2620,6 +2620,7 @@ scope Training {
     dw char_0x44            // BANJO
     dw char_0x48            // RYU
     dw char_0x49            // KEN
+    dw char_0x4A            // Cloud
 
     dw char_0x2A            // J MARIO
     dw char_0x29            // J FOX

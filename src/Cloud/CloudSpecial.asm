@@ -191,6 +191,7 @@ scope CloudUSP {
         lw             ra, 0x001c (sp)      // load return address
 
         _cliff_check:
+        beqzl          t7, _end   // branch if not a cliff
         andi           t6, v0, Surface.CEILING // check if colliding with a ceiling
         jal            0x80144c24           // cliff catch routine
         lw             a0, 0x0028 (sp)      // load player object
