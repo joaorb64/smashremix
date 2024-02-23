@@ -155,7 +155,7 @@ scope Ryu {
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
     Character.edit_action(RYU,  0xE4,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                -1)
 	Character.edit_action(RYU,  0xE5,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                RyuNSP.air_collision_)
-    Character.edit_action(RYU, 0xE6,               -1,             RyuDSP.main_,                  RyuDSP.ground_subroutine_,      RyuNSP.physics_,              RyuDSP.air_collision_)
+    Character.edit_action(RYU, 0xE6,               -1,             RyuDSP.main_,                  RyuDSP.ground_subroutine_,      RyuNSP.physics_,              RyuDSP.ground_collision_)
     Character.edit_action(RYU, 0xE9,               -1,             RyuDSP.main_,                  RyuDSP.air_subroutine_,         RyuDSP.air_physics_,            RyuDSP.air_collision_)
 
     Character.edit_action(RYU, 0xE0,                   -1,            0x8013DA94,                    0,                              0x8013DB2C,                    0x800DE348)   // LEFT ENTRY
@@ -172,6 +172,7 @@ scope Ryu {
     Character.add_new_action_params(RYU,    JAB_CLOSE,         -1,             File.RYU_UTILT_H,               JAB_CLOSE,                    0x40000000)
     Character.add_new_action_params(RYU,    FTILT_CLOSE,       -1,             File.RYU_FTILT_CLOSE,           FTILT_CLOSE,                  0x40000000)
     Character.add_new_action_params(RYU,    DSP_H,             0xE6,           File.RYU_TATSU_GND_H,           DSP_H,                        -1)
+    Character.add_new_action_params(RYU,    DSP_AIR_G,         0xE6,             File.RYU_TATSU_GND_M,           DSP_M,                        -1)
     Character.add_new_action_params(RYU,    USP_H,             -1,             File.RYU_SHORYUKEN_H,            USP_H,                        0x40000000)
 
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
@@ -185,7 +186,8 @@ scope Ryu {
     Character.add_new_action(RYU,    JAB_CLOSE,            -1,           ActionParams.JAB_CLOSE,        -1,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
     Character.add_new_action(RYU,    FTILT_CLOSE,            -1,         ActionParams.FTILT_CLOSE,      -1,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
 
-    Character.add_new_action(RYU,    DSP_H,              -1,             ActionParams.DSP_H,            -1,           RyuDSP.main_,                   RyuDSP.ground_subroutine_,          RyuNSP.physics_,            RyuDSP.air_collision_)
+    Character.add_new_action(RYU,    DSP_H,              -1,             ActionParams.DSP_H,            -1,           RyuDSP.main_,                   RyuDSP.ground_subroutine_,          RyuNSP.physics_,            RyuDSP.ground_collision_)
+    Character.add_new_action(RYU,    DSP_AIR_G,          -1,             ActionParams.DSP_AIR_G,        -1,           RyuDSP.main_,                   RyuDSP.ground_subroutine_,          RyuNSP.physics_,            RyuDSP.ground_collision_)
     Character.add_new_action(RYU,    USP_H,              -1,             ActionParams.USP_H,            -1,           RyuUSP.main_,                   RyuUSP.change_direction_,           RyuUSP.physics_,                RyuUSP.collision_)
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
@@ -333,7 +335,8 @@ scope Ryu {
         string_0x0FA:; String.insert("JabClose")
         string_0x0FB:; String.insert("FTiltClose")
         string_0x0FC:; String.insert("TatsumakiStrong")
-        string_0x0FD:; String.insert("ShoryukenHard")
+        string_0x0FD:; String.insert("TatsumakiAirGround")
+        string_0x0FE:; String.insert("ShoryukenHard")
 
         action_string_table:
         dw 0
@@ -367,6 +370,7 @@ scope Ryu {
         dw string_0x0FB
         dw string_0x0FC
         dw string_0x0FD
+        dw string_0x0FE
     }
 
     // Set action strings

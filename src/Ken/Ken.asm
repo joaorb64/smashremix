@@ -158,7 +158,7 @@ scope Ken {
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
     Character.edit_action(KEN,  0xE4,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                -1)
 	Character.edit_action(KEN,  0xE5,              -1,             RyuNSP.main,  				RyuNSP.change_direction_,                             RyuNSP.physics_,                RyuNSP.air_collision_)
-    Character.edit_action(KEN, 0xE6,               -1,             RyuDSP.main_,                  RyuDSP.ground_subroutine_,      RyuNSP.physics_,              RyuDSP.air_collision_)
+    Character.edit_action(KEN, 0xE6,               -1,             RyuDSP.main_,                  RyuDSP.ground_subroutine_,      RyuNSP.physics_,              RyuDSP.ground_collision_)
     Character.edit_action(KEN, 0xE9,               -1,             RyuDSP.main_,                  RyuDSP.air_subroutine_,         RyuDSP.air_physics_,            RyuDSP.air_collision_)
 
     Character.edit_action(KEN, 0xE0,                   -1,            0x8013DA94,                    0,                              0x8013DB2C,                    0x800DE348)   // LEFT ENTRY
@@ -175,6 +175,7 @@ scope Ken {
     Character.add_new_action_params(KEN,    JAB_CLOSE,         -1,             File.RYU_UTILT_H,               JAB_CLOSE,                    0x40000000)
     Character.add_new_action_params(KEN,    FTILT_CLOSE,       -1,             File.RYU_FTILT_CLOSE,           FTILT_CLOSE,                  0x40000000)
     Character.add_new_action_params(KEN,    DSP_H,             0xE6,           File.KEN_TATSU_H,           DSP_H,                        -1)
+    Character.add_new_action_params(KEN,    DSP_AIR_G,         0xE6,             File.RYU_TATSU_GND_M,           DSP_M,                        -1)
     Character.add_new_action_params(KEN,    USP_H,             -1,             File.RYU_SHORYUKEN_H,            USP_H,                        0x40000000)
     Character.add_new_action_params(KEN,    ROUNDHOUSE,             -1,        File.RYU_ROUNDHOUSE,            ROUNDHOUSE,                   0)
     Character.add_new_action_params(KEN,    COMMAND_KICK_2,             -1,    File.KEN_COMMAND_KICK_FINISHER,  COMMAND_KICK_2,                   0x40000000)
@@ -191,7 +192,8 @@ scope Ken {
     Character.add_new_action(KEN,    JAB_CLOSE,            -1,           ActionParams.JAB_CLOSE,        -1,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
     Character.add_new_action(KEN,    FTILT_CLOSE,            -1,         ActionParams.FTILT_CLOSE,      -1,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
 
-    Character.add_new_action(KEN,    DSP_H,              -1,             ActionParams.DSP_H,            -1,           RyuDSP.main_,                   RyuDSP.ground_subroutine_,          RyuNSP.physics_,            RyuDSP.air_collision_)
+    Character.add_new_action(KEN,    DSP_H,              -1,             ActionParams.DSP_H,            -1,           RyuDSP.main_,                   RyuDSP.ground_subroutine_,          RyuNSP.physics_,            RyuDSP.ground_collision_)
+    Character.add_new_action(KEN,    DSP_AIR_G,          -1,             ActionParams.DSP_AIR_G,        -1,           RyuDSP.main_,                   RyuDSP.ground_subroutine_,          RyuNSP.physics_,            RyuDSP.ground_collision_)
     Character.add_new_action(KEN,    USP_H,              -1,             ActionParams.USP_H,            -1,           RyuUSP.main_,                   RyuUSP.change_direction_,           RyuUSP.physics_,                RyuUSP.collision_)
     
     Character.add_new_action(KEN,    ROUNDHOUSE,            -1,         ActionParams.ROUNDHOUSE,        -1,           0x800D94C4,                     0,                                  0x800D8BB4,                     0x800DDF44)
@@ -343,7 +345,11 @@ scope Ken {
         string_0x0FA:; String.insert("JabClose")
         string_0x0FB:; String.insert("FTiltClose")
         string_0x0FC:; String.insert("TatsumakiStrong")
-        string_0x0FD:; String.insert("ShoryukenHard")
+        string_0x0FD:; String.insert("TatsumakiAirGround")
+        string_0x0FE:; String.insert("ShoryukenHard")
+        string_0x0FF:; String.insert("OosotoMawashiGeri")
+        string_0x100:; String.insert("InazumaKick")
+        string_0x101:; String.insert("NataOtoshiGeri")
 
         action_string_table:
         dw 0
@@ -377,6 +383,10 @@ scope Ken {
         dw string_0x0FB
         dw string_0x0FC
         dw string_0x0FD
+        dw string_0x0FE
+        dw string_0x0FF
+        dw string_0x100
+        dw string_0x101
     }
 
     // Set action strings

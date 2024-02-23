@@ -1828,7 +1828,7 @@ scope RyuDSP {
     // Subroutine which handles collision for aerial phantasm.
     // Copy of subroutine 0x80156358, which is the collision subroutine for Mario's up special.
     // Loads the appropriate landing fsm value for Falco.
-    scope air_collision_: {
+    scope ground_collision_: {
         // Copy the first 30 lines of subroutine 0x80156358
         OS.copy_segment(0xD0D98, 0x78)
         // Replace original line which loads the landing fsm
@@ -1837,34 +1837,52 @@ scope RyuDSP {
         // Copy the last 17 lines of subroutine 0x80156358
         OS.copy_segment(0xD0E14, 0x44)
     }
+
+    // @ Description
+   // Subroutine which handles air collision for neutral special actions
+    scope air_collision_: {
+        addiu   sp, sp,-0x0018              // allocate stack space
+        sw      ra, 0x0014(sp)              // store ra
+        li      a1, air_to_ground_          // a1(transition subroutine) = air_to_ground_
+        jal     0x800DE80C                  // common air collision subroutine (transition on landing, allow ledge grab)
+        nop 
+        lw      ra, 0x0014(sp)              // load ra
+        addiu   sp, sp, 0x0018              // deallocate stack space
+        jr      ra                          // return
+        nop
+    }
     
     // @ Description
-    // Modified version of a short subroutine which resets the temp variables when Fox uses his
-    // neutral special. Usually, this subroutine doesn't set the value of temp variable 3.
-    scope set_variables_: {
-        OS.patch_start(0xD66E0, 0x8015BCA0)
-        jal     set_variables_              // ground neutral special
-        OS.patch_end()
-        OS.patch_start(0xD6724, 0x8015BCE4)
-        jal     set_variables_              // air neutral special
-        OS.patch_end()
-        OS.patch_start(0xD1840, 0x80156E00)
-        jal     set_variables_              // kirby ground neutral special
-        OS.patch_end()
-        OS.patch_start(0xD1884, 0x80156E44)
-        jal     set_variables_              // kirby air neutral special
-        OS.patch_end()
+    // Subroutine which handles ground to air transition for neutral special actions
+    scope air_to_ground_: {
+        addiu   sp, sp,-0x0038              // allocate stack space
+        sw      ra, 0x001C(sp)              // store ra
+        sw      a0, 0x0038(sp)              // 0x0038(sp) = player object
+        lw      a0, 0x0084(a0)              // a0 = player struct
+        jal     0x800DEE98                  // set grounded state
+        sw      a0, 0x0034(sp)              // 0x0034(sp) = player struct
+        lw      v0, 0x0034(sp)              // v0 = player struct
+        lw      a0, 0x0038(sp)              // a0 = player object
         
-        addiu   sp, sp,-0x0008              // allocate stack space
-        sw      t0, 0x0004(sp)              // store t0
-        lw      v0, 0x0084(a0)              // v0 = player struct
-        sw      r0, 0x017C(v0)              // temp variable 1 = 0
-        sw      r0, 0x0180(v0)              // temp variable 2 = 0
-        ori     t0, r0, 0x0001              // ~
-        sw      t0, 0x0184(v0)              // temp variable 3 = 0x1(INITIAL_SETUP)
-        lw      t0, 0x0004(sp)              // load t0
-        jr      ra
-        addiu   sp, sp, 0x0008              // deallocate stack space
+        lw      a2, 0x0008(v0)              // load character ID
+        lli     a1, Character.id.KIRBY      // a1 = id.KIRBY
+        beql    a1, a2, _change_action      // if Kirby, load alternate action ID
+        lli     a1, Kirby.Action.WOLF_NSP_Ground
+        lli     a1, Character.id.JKIRBY     // a1 = id.JKIRBY
+        beql    a1, a2, _change_action      // if J Kirby, load alternate action ID
+        lli     a1, Kirby.Action.WOLF_NSP_Ground
+        
+        addiu   a1, r0, Ryu.Action.DSP_AIR_G              // a1 = equivalent ground action for current air action
+        _change_action:
+        lw      a2, 0x0078(a0)              // a2(starting frame) = current animation frame
+        lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+        lli     t6, 0x0001                  // ~
+        jal     0x800E6F24                  // change action
+        sw      t6, 0x0010(sp)              // argument 4 = 1 (continue hitbox)
+        lw      ra, 0x001C(sp)              // load ra
+        addiu   sp, sp, 0x0038              // deallocate stack space
+        jr      ra                          // return
+        nop
     }
 
     scope main_: {
