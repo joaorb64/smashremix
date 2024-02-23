@@ -417,15 +417,6 @@ scope CloudUSP {
         nop
 
         _aerial:
-        // OS.copy_segment(0x548F0, 0x40)      // copy from original air physics subroutine
-        // bnez    v0, _check_begin            // modified original branch
-        // nop
-        // li      t8, 0x800D8FA8              // t8 = subroutine which disallows air control
-        // lw      t0, 0x0184(s0)              // t0 = temp variable 3
-        // ori     t1, r0, MOVE                // t1 = MOVE
-        // bne     t0, t1, _apply_air_physics  // branch if temp variable 3 != MOVE
-        // nop
-
         // Check if reached min frame where air control is possible
         lw     at, 0x4(s0)              // at = player object
         lwc1   f8, 0x0078(at)              // f8 = current animation frame

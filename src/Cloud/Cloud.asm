@@ -44,7 +44,8 @@ scope Cloud {
     Character.edit_action_parameters(CLOUD,   Action.FallSpecial,     File.CLOUD_FALL_SPECIAL,      -1,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.JumpF,           File.CLOUD_JUMPF,          JUMP1,                         0x00000000)
     Character.edit_action_parameters(CLOUD,   Action.JumpAerialF,     File.CLOUD_JUMPAERIALF,       -1,                         0x00000000)
-    Character.edit_action_parameters(CLOUD,   Action.JumpB,           -1,          JUMP1,                      -1)
+    Character.edit_action_parameters(CLOUD,   Action.JumpB,           File.CLOUD_JUMPB,          JUMP1,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.JumpAerialB,     File.CLOUD_JUMPAERIALB,       -1,                         0x00000000)
 
     Character.edit_action_parameters(CLOUD,   Action.Jab1,            File.CLOUD_JAB1,              JAB1,                       0x00000000)
     Character.edit_action_parameters(CLOUD,   Action.Jab2,            File.CLOUD_JAB2,              JAB2,                       0x40000000)

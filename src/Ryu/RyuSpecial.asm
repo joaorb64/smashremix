@@ -7,8 +7,8 @@ scope RyuUSP {
     constant AIR_Y_SPEED(0x0)            // current setting - float32 92
     constant GROUND_Y_SPEED(0x0)         // current setting - float32 98
     constant X_SPEED(0x4140)                // current setting - float32 12
-    constant AIR_ACCELERATION(0x3C88)       // current setting - float32 0.0166
-    constant AIR_SPEED(0x41B0)              // current setting - float32 22
+    constant AIR_ACCELERATION(0x3a83)       // current setting - float32 0.0099
+    constant AIR_SPEED(0x4120)              // current setting - float32 10
     constant LANDING_FSM(0x3EC0)            // current setting - float32 0.375
     // temp variable 3 constants for movement states
     constant BEGIN(0x1)
@@ -93,27 +93,6 @@ scope RyuUSP {
     scope main_: {
         lwc1    f8, 0x0078(a0)              // load current frame
 
-        lui		at, 0x4040					// at = 3.0
-		mtc1    at, f6                      // ~
-        c.eq.s  f8, f6                      // f8 >= f6 (current frame >= 3) ?
-        nop
-        bc1tl   _change_temp2                // skip if haven't reached frame 3
-        nop
-
-        lui		at, 0x4000					// at = 2.0
-		mtc1    at, f6                      // ~
-        c.eq.s  f8, f6                      // f8 >= f6 (current frame >= 2) ?
-        nop
-        bc1tl   _change_temp2                // skip if haven't reached frame 2
-        nop
-
-        _change_temp2:
-        ori     v1, r0, 0x0002              // ~
-        sw      v1, 0x0184(a0)              // temp variable 3 = 0x2(BEGIN_MOVE)
-
-        _change_temp3:
-        ori     v1, r0, 0x0003              // ~
-        sw      v1, 0x0184(a0)              // temp variable 3 = 0x2(BEGIN_MOVE)
         j light_to_hard
         nop
 
@@ -203,6 +182,11 @@ scope RyuUSP {
         nop
 
         _main_normal:
+        // Set tmp variable 1 to 1
+        // This is needed for the collision function
+        // so we transition to special landing on grounded transition
+        lli     t0, 0x1
+        sw      t0, 0x0180(a2)
         // OS.save_registers()
 
         // addiu   sp, sp, -0x0038              // allocate stack space
@@ -262,7 +246,7 @@ scope RyuUSP {
         sw      ra, 0x000C(sp)              // store t0, t1, ra
 
         ori     t1, r0, 0x0000              // t1 = 0x0
-        sw      t1, 0x0180(a1)              // t0 = temp variable 2
+        //sw      t1, 0x0180(a1)              // t0 = temp variable 2
 
         lui		at, 0x4040					// at = 3.0
 		mtc1    at, f6                      // ~
@@ -337,26 +321,56 @@ scope RyuUSP {
         nop
 
         _aerial:
+        // Check if reached min frame where air control is possible
+        lw     at, 0x4(s0)              // at = player object
+        lwc1   f8, 0x0078(at)              // f8 = current animation frame
+
+        lui		at, 0x4218					// at = 2.0
+		mtc1    at, f6                      // ~
+        c.lt.s  f6, f8                      // f8 >= f6 (current frame >= 2) ?
+        nop
+        bc1fl   _root_motion                // skip if haven't reached frame 2
+        nop
+
+        b _apply_air_physics
+        nop
+
+        _root_motion:
         jal     0x800D93E4                  // grounded physics subroutine
         nop
-        b       _end                        // end subroutine
-        // OS.copy_segment(0x548F0, 0x40)      // copy from original air physics subroutine
-        // bnez    v0, _check_begin            // modified original branch
-        // nop
-        // li      t8, 0x800D8FA8              // t8 = subroutine which disallows air control
-        // lw      t0, 0x0184(s0)              // t0 = temp variable 3
-        // ori     t1, r0, MOVE                // t1 = MOVE
-        // bne     t0, t1, _apply_air_physics  // branch if temp variable 3 != MOVE
-        // nop
-        // li      t8, air_control_             // t8 = air_control_
+
+        b _end
+        nop
 
         _apply_air_physics:
-        or      a0, s0, r0                  // a0 = player struct
-        jalr    t8                          // air control subroutine
+        // slow x movement
+        lwc1    f0, 0x0048(s0)              // f0 = current x velocity
+        lui     t0, 0x3f4c                 // ~
+        mtc1    t0, f2                      // f2 = 0.8
+        mul.s   f0, f0, f2                  // f0 = x velocity * 0.8
+        swc1    f0, 0x0048(s0)              // x velocity = (x velocity * 0.8)
+
+        OS.save_registers()
+        jal     0x800E9C3C                  // routine that ends graphics
+        nop
+        OS.restore_registers()
+
+        lw      s0, 0x0014(sp)              // restore s0 for this one
+        lw      t0, 0x0084(a0)              // t0 = player struct
+        lw      t1, 0x0180(t0)              // t1 = temp variable 2
+        li      t8, 0x800D90E0              // t8 = physics subroutine which allows player control
+
+        jalr    t8
+        nop
+
         or      a1, s1, r0                  // a1 = attributes pointer
         or      a0, s0, r0                  // a0 = player struct
+
         jal     0x800D9074                  // air friction subroutine?
         or      a1, s1, r0                  // a1 = attributes pointer
+
+        b       _end                        // end subroutine
+        nop
 
         _check_begin:
         lw      t0, 0x0184(s0)              // t0 = temp variable 3
@@ -1507,15 +1521,6 @@ scope RyuDSP {
         
         OS.save_registers()
         lw      t0, 0x0184(a2)              // t0 = temp variable 3
-        
-        _update_buffer:
-        lbu     t1, 0x000D(a2)              // t1 = player port
-        li      t2, button_press_buffer     // ~
-        addu    t3, t2, t1                  // t3 = px button_press_buffer address
-        lbu     t1, 0x01BE(a2)              // t1 = button_pressed
-        lbu     t2, 0x0000(t3)              // t2 = button_press_buffer
-        sb      t1, 0x0000(t3)              // update button_press_buffer with current inputs
-        or      t3, t1, t2                  // t3 = button_pressed | button_press_buffer 
 
         light_to_hard:
         // if not currently doing grounded light tatsu, skip
@@ -1790,15 +1795,6 @@ scope RyuDSP {
         jr      ra                          // return
         addiu   sp, sp, 0x0030              // deallocate stack space
     }
-    
-    // @ Description
-    // Holds each player's button presses from the previous frame.
-    // Used to add a single frame input buffer to shorten.
-    button_press_buffer:
-    db 0x00 //p1
-    db 0x00 //p2
-    db 0x00 //p3
-    db 0x00 //p4
     
     // @ Description
     // Subroutine which controls the physics for aerial phantasm. Applies gravity without allowing
