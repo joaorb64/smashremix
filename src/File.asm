@@ -2810,4 +2810,6 @@ scope File {
     constant CLOUD_JUMPAERIALB(0x1343)
     constant CLOUD_GRAB(0x1344)
     constant CLOUD_GRABPULL(0x1345)
+    constant CLOUD_THROWF(0x1346)
+    constant CLOUD_THROWB(0x1347)
  }

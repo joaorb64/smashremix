@@ -252,7 +252,7 @@ scope CloudUSP {
         bc1fl   _main_normal                // skip if haven't reached frame 2
         nop
 
-        lhu     t0, 0x01BC(a2)              // load button press buffer
+        lhu     t0, 0x01BE(a2)              // load button press buffer
         andi    t1, t0, 0x4000              // t1 = 0x40 if (B_PRESSED); else t1 = 0
         beq     t1, r0, _main_normal        // skip if (!B_PRESSED)
         nop
