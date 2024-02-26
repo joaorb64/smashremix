@@ -8,6 +8,7 @@ scope Cloud {
     insert JAB3,"moveset/JAB3.bin"
 
     insert GRAB,"moveset/GRAB.bin"
+    insert GRAB,"moveset/GRABPULL.bin"
 
     insert AIRN,"moveset/AIRN.bin"
     insert AIRU,"moveset/AIRU.bin"
@@ -50,7 +51,7 @@ scope Cloud {
     Character.edit_action_parameters(CLOUD,   Action.JumpAerialB,     File.CLOUD_JUMPAERIALB,       -1,                         0x00000000)
 
     Character.edit_action_parameters(CLOUD,   Action.Grab,            File.CLOUD_GRAB,              GRAB,                       -1)
-    Character.edit_action_parameters(CLOUD,   Action.GrabPull,        File.CLOUD_GRABPULL,          -1,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.GrabPull,        File.CLOUD_GRABPULL,          GRABPULL,                   -1)
     Character.edit_action_parameters(CLOUD,   Action.ThrowF,          File.CLOUD_THROWF,            -1,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.ThrowB,          File.CLOUD_THROWB,            -1,                         -1)
 
