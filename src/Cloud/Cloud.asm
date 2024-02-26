@@ -8,7 +8,12 @@ scope Cloud {
     insert JAB3,"moveset/JAB3.bin"
 
     insert GRAB,"moveset/GRAB.bin"
-    insert GRAB,"moveset/GRABPULL.bin"
+    insert GRABPULL,"moveset/GRAB_PULL.bin"
+
+    insert THROWF_DATA, "moveset/THROWF_DATA.bin"
+    THROWF:; Moveset.THROW_DATA(THROWF_DATA); insert "moveset/THROWF.bin"
+    insert THROWB_DATA, "moveset/THROWB_DATA.bin"
+    THROWB:; Moveset.THROW_DATA(THROWB_DATA); insert "moveset/THROWB.bin"
 
     insert AIRN,"moveset/AIRN.bin"
     insert AIRU,"moveset/AIRU.bin"
@@ -52,8 +57,8 @@ scope Cloud {
 
     Character.edit_action_parameters(CLOUD,   Action.Grab,            File.CLOUD_GRAB,              GRAB,                       -1)
     Character.edit_action_parameters(CLOUD,   Action.GrabPull,        File.CLOUD_GRABPULL,          GRABPULL,                   -1)
-    Character.edit_action_parameters(CLOUD,   Action.ThrowF,          File.CLOUD_THROWF,            -1,                         -1)
-    Character.edit_action_parameters(CLOUD,   Action.ThrowB,          File.CLOUD_THROWB,            -1,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.ThrowF,          File.CLOUD_THROWF,            THROWF,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.ThrowB,          File.CLOUD_THROWB,            THROWB,                         -1)
 
     Character.edit_action_parameters(CLOUD,   Action.Jab1,            File.CLOUD_JAB1,              JAB1,                       0x00000000)
     Character.edit_action_parameters(CLOUD,   Action.Jab2,            File.CLOUD_JAB2,              JAB2,                       0x40000000)
