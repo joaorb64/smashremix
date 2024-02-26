@@ -363,11 +363,11 @@ scope RyuUSP {
         jalr    t8
         nop
 
-        or      a1, s1, r0                  // a1 = attributes pointer
-        or      a0, s0, r0                  // a0 = player struct
+        // or      a1, s1, r0                  // a1 = attributes pointer
+        // or      a0, s0, r0                  // a0 = player struct
 
-        jal     0x800D9074                  // air friction subroutine?
-        or      a1, s1, r0                  // a1 = attributes pointer
+        // jal     0x800D9074                  // air friction subroutine?
+        // or      a1, s1, r0                  // a1 = attributes pointer
 
         b       _end                        // end subroutine
         nop
@@ -568,7 +568,7 @@ scope RyuNSP {
         // Ken changes action to roundhouse instead
         OS.save_registers()
         lli     a1, Ken.Action.ROUNDHOUSE   // a1 = Action.USPG
-        lw      r0, 0x0078(a0)              // a2(starting frame) = 0
+        or      a2, r0, r0                  // a2(starting frame) = 0
         lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
         sw      r0, 0x0010(sp)              // argument 4 = 0
         jal     0x800E6F24                  // change action
