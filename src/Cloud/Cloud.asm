@@ -43,10 +43,10 @@ scope Cloud {
     // OS.align(16)
 
     // Modify Action Parameters             // Action               // Animation                // Moveset Data             // Flags
-    Character.edit_action_parameters(CLOUD,   Action.Entry,           File.CLOUD_IDLE,              -1,                         -1)
-    Character.edit_action_parameters(CLOUD,   0x006,                  File.CLOUD_IDLE,              -1,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.Entry,           File.CLOUD_IDLE,              GRABPULL,                         -1)
+    Character.edit_action_parameters(CLOUD,   0x006,                  File.CLOUD_IDLE,              GRABPULL,                         -1)
 
-    Character.edit_action_parameters(CLOUD,   Action.Idle,            File.CLOUD_IDLE,              -1,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.Idle,            File.CLOUD_IDLE,              GRABPULL,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.Walk3,           File.CLOUD_WALK3,             -1,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.Dash,            File.CLOUD_DASH,              -1,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.Run,             File.CLOUD_RUN,               -1,                         -1)
@@ -100,11 +100,23 @@ scope Cloud {
 
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
-    Character.edit_menu_action_parameters(CLOUD, 0x0,               File.CLOUD_IDLE,              -1,                       -1)
-    Character.edit_menu_action_parameters(CLOUD, 0x1,               File.CLOUD_VICTORY,           -1,                       -1)
-    Character.edit_menu_action_parameters(CLOUD, 0x2,               File.CLOUD_VICTORY,           -1,                       -1)
-    Character.edit_menu_action_parameters(CLOUD, 0x3,               File.CLOUD_VICTORY,           -1,                       -1)
-    Character.edit_menu_action_parameters(CLOUD, 0x4,               File.CLOUD_VICTORY,           -1,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x0,               File.CLOUD_IDLE,              GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x1,               File.CLOUD_VICTORY,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x2,               File.CLOUD_VICTORY,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x3,               File.CLOUD_VICTORY,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x4,               File.CLOUD_VICTORY,           GRABPULL,                       -1)
+
+    Character.edit_menu_action_parameters(CLOUD, 0x5,               File.CLOUD_IDLE,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x6,               File.CLOUD_IDLE,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x7,               File.CLOUD_IDLE,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x8,               File.CLOUD_IDLE,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x9,               File.CLOUD_IDLE,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0xA,               File.CLOUD_IDLE,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0xB,               File.CLOUD_IDLE,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0xC,               File.CLOUD_IDLE,           GRABPULL,                       -1)
+
+    Character.edit_menu_action_parameters(CLOUD, 0xD,               File.CLOUD_IDLE,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0xE,               File.CLOUD_IDLE,           GRABPULL,                       -1)
 
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
     Character.edit_action(CLOUD,  0xE5,              -1,             CloudNSP.main,  				CloudNSP.change_direction_,      CloudNSP.physics_,                -1)
@@ -141,8 +153,8 @@ scope Cloud {
     // OS.patch_end()
 
     // Set default costumes
-    Character.set_default_costumes(Character.id.CLOUD, 0, 1, 1, 1, 1, 1, 0)
-    Teams.add_team_costume(YELLOW, CLOUD, 0x1)
+    Character.set_default_costumes(Character.id.CLOUD, 0, 1, 2, 3, 1, 2, 3)
+    Teams.add_team_costume(YELLOW, CLOUD, 0x4)
 
     // Shield colors for costume matching
     Character.set_costume_shield_colors(CLOUD, GREEN, WHITE, RED, AZURE, PINK, BLACK, YELLOW, NA)

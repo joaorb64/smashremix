@@ -222,7 +222,7 @@ scope CharacterSelect {
     dw  0x58D0 + 0x200                      // 0x46 - DRAGONKING
     dw  0xC9F0 + 0x200                      // 0x48 - RYU
     dw  0xD220 + 0x200                     // 0x49 - KEN
-    dw  0x4E40 + 0x200                    // 0x4A - CLOUD
+    dw  0x11B58 + 0x200                    // 0x4A - CLOUD
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS
@@ -1666,6 +1666,17 @@ scope CharacterSelect {
         addiu   s0, s0, 0x0001              // increment index
         lli     a0, Character.id.SANDBAG    // a0 = SANDBAG
         beql    a0, s0, _loop               // if char_id = SANDBAG, skip
+        addiu   s0, s0, 0x0001              // increment index
+
+        // MAYBE THIS WILL FIX CSS CRASHES
+        lli     a0, Character.id.CLOUD      // a0 = CLOUD
+        beql    a0, s0, _loop               // if char_id = CLOUD, skip
+        addiu   s0, s0, 0x0001              // increment index
+        lli     a0, Character.id.RYU        // a0 = RYU
+        beql    a0, s0, _loop               // if char_id = RYU, skip
+        addiu   s0, s0, 0x0001              // increment index
+        lli     a0, Character.id.KEN        // a0 = KEN
+        beql    a0, s0, _loop               // if char_id = KEN, skip
         addiu   s0, s0, 0x0001              // increment index
 
 		// check variant

@@ -1620,6 +1620,10 @@ scope FGM {
     add_sound(Cloud/sounds/vc_attack_dsmash, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     add_sound(Cloud/sounds/vc_attack_usmash, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     add_sound(Cloud/sounds/vc_attack_fsmash, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/vc_die, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/vc_star_ko, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/vc_damagefly, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Cloud/sounds/vc_tech, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     
     // This is always last
     write_sounds()
