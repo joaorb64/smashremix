@@ -2812,4 +2812,11 @@ scope File {
     constant CLOUD_GRABPULL(0x1345)
     constant CLOUD_THROWF(0x1346)
     constant CLOUD_THROWB(0x1347)
+    constant CLOUD_CROUCHSTART(0x1348)
+    constant CLOUD_CROUCHWAIT(0x1349)
+    constant CLOUD_CROUCHEND(0x134A)
+    constant CLOUD_RUN(0x134B)
+    constant CLOUD_RUNBRAKE(0x134C)
+    constant CLOUD_WALK3(0x134D)
+    constant CLOUD_TAUNT(0x134E)
  }

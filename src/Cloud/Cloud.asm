@@ -45,8 +45,19 @@ scope Cloud {
     // Modify Action Parameters             // Action               // Animation                // Moveset Data             // Flags
     Character.edit_action_parameters(CLOUD,   Action.Entry,           File.CLOUD_IDLE,              -1,                         -1)
     Character.edit_action_parameters(CLOUD,   0x006,                  File.CLOUD_IDLE,              -1,                         -1)
+
     Character.edit_action_parameters(CLOUD,   Action.Idle,            File.CLOUD_IDLE,              -1,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.Walk3,           File.CLOUD_WALK3,             -1,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.Dash,            File.CLOUD_DASH,              -1,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.Run,             File.CLOUD_RUN,               -1,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.RunBrake,        File.CLOUD_RUNBRAKE,          -1,                         -1)
+
+    Character.edit_action_parameters(CLOUD,   Action.Taunt,           File.CLOUD_TAUNT,             -1,                         -1)
+
+    Character.edit_action_parameters(CLOUD,   Action.Crouch,          File.CLOUD_CROUCHSTART,       -1,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.CrouchIdle,      File.CLOUD_CROUCHWAIT,        -1,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.CrouchEnd,       File.CLOUD_CROUCHEND,         -1,                         -1)
+
     Character.edit_action_parameters(CLOUD,   Action.Fall,            File.CLOUD_FALL,              -1,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.FallAerial,      File.CLOUD_FALL_AERIAL,       -1,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.FallSpecial,     File.CLOUD_FALL_SPECIAL,      -1,                         -1)
