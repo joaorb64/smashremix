@@ -2,6 +2,163 @@
 
 // This file contains subroutines used by Ryu's special moves.
 
+scope RyuCancelItselfDtilt: {
+    constant A_PRESSED(0x8000)  // bitmask for a press
+
+    // tmp variable 3 0x0184 -- used to check if A was ever pressed down during the move
+    scope main: {
+        OS.routine_begin(0x20)
+
+        lw      v0, 0x0084(a0)  // v0 = player struct
+
+        lw      t0, 0x0078(a0)  // t0 = current animation frame
+        lui     t1, 0x4000      // t1 = 1.0F
+
+        // if frame != 1, skip
+        bne     t0, t1, main_continue
+        nop
+        
+        sw      r0, 0x0184(v0)              // reset tmp variable 3 = 0
+
+        main_continue:
+        lw      v0, 0x0084(a0)              // loads player struct into v0
+        lhu     t1, 0x01BE(v0)              // load button press buffer
+        andi    t2, t1, A_PRESSED           // t2 = 0x80 if (A_PRESSED); else t2 = 0
+        beq     t2, r0, normal            // if A is not pressed, skip
+        nop
+
+        lb      t0, 0x01C3(v0)              // t0 = stick_y
+        slti    t1, t0, -39                 // at = 1 if stick_y < -39, else at = 0
+        bnel    t1, r0, register_press      // branch if stick_y >= -40
+        nop
+
+        b       normal
+        nop
+
+        register_press:
+        lli     t0, 0x1
+        sw      t0, 0x0184(v0)
+
+        b       normal
+        nop
+
+        normal:
+        lw      t0, 0x0078(a0)  // t0 = current animation frame
+        mtc1    t0, f6
+        lui     t1, 0x40E0      // t1 = 7.0F
+        mtc1    t1, f8
+
+        c.le.s  f6, f8
+        nop
+        bc1tl   main_normal
+        nop
+
+        lw      t0, 0x0184(v0)          // was A ever pressed during the move?
+        beq     t0, r0, main_normal     // If not, main_normal
+        nop
+
+        // all conditions are met
+        b cancel_itself
+        nop
+
+        cancel_itself:
+        OS.save_registers()
+        lli     a1, Action.DTilt                // a1 = Action.Dtilt
+        or      a2, r0, r0                      // a2(starting frame) = 0.0
+        lui     a3, 0x3F80                      // a3(frame speed multiplier) = 1.0
+        sw      r0, 0x0010(sp)                  // argument 4 = 0
+        jal     0x800E6F24                      // change action
+        nop
+        OS.restore_registers()
+        OS.routine_end(0x20)
+
+        main_normal:
+        li      a1, 0x8014329C      // Argument 1 = ftCommon_SquatWait_SetStatus (set crouched state)
+        jal     0x800D9480          // ftStatus_IfAnimEnd_ProcStatus: Subroutine that waits for animation end to call argument 1
+        nop
+
+        OS.routine_end(0x20)
+    }
+}
+
+scope RyuCancelItselfUtilt: {
+    constant A_PRESSED(0x8000)  // bitmask for a press
+
+    // tmp variable 3 0x0184 -- used to check if A was ever pressed down during the move
+    scope main: {
+        OS.routine_begin(0x20)
+
+        lw      v0, 0x0084(a0)  // v0 = player struct
+
+        lw      t0, 0x0078(a0)  // t0 = current animation frame
+        lui     t1, 0x4000      // t1 = 1.0F
+
+        // if frame != 1, skip
+        bne     t0, t1, main_continue
+        nop
+        
+        sw      r0, 0x0184(v0)              // reset tmp variable 3 = 0
+
+        main_continue:
+        lw      v0, 0x0084(a0)              // loads player struct into v0
+        lhu     t1, 0x01BE(v0)              // load button press buffer
+        andi    t2, t1, A_PRESSED           // t2 = 0x80 if (A_PRESSED); else t2 = 0
+        beq     t2, r0, normal            // if A is not pressed, skip
+        nop
+
+        lb      t0, 0x01C3(v0)              // t0 = stick_y
+        slti    t1, t0, 40                             // at = 1 if stick_y < 40, else at = 0
+        beql    t1, r0, register_press      // branch if stick_y >= 40
+        nop
+
+        b       normal
+        nop
+
+        register_press:
+        lli     t0, 0x1
+        sw      t0, 0x0184(v0)
+
+        b       normal
+        nop
+
+        normal:
+        lw      t0, 0x0078(a0)  // t0 = current animation frame
+        mtc1    t0, f6
+        lui     t1, 0x40E0      // t1 = 7.0F
+        mtc1    t1, f8
+
+        c.le.s  f6, f8
+        nop
+        bc1tl   main_normal
+        nop
+
+        lw      t0, 0x0184(v0)          // was A ever pressed during the move?
+        beq     t0, r0, main_normal     // If not, main_normal
+        nop
+
+        // all conditions are met
+        b cancel_itself
+        nop
+
+        cancel_itself:
+        OS.save_registers()
+        lli     a1, Action.UTilt                // a1 = Action.Dtilt
+        or      a2, r0, r0                      // a2(starting frame) = 0.0
+        lui     a3, 0x3F80                      // a3(frame speed multiplier) = 1.0
+        sw      r0, 0x0010(sp)                  // argument 4 = 0
+        jal     0x800E6F24                      // change action
+        nop
+        OS.restore_registers()
+        OS.routine_end(0x20)
+
+        main_normal:
+        jal     0x800D94C4          // original routine
+        nop
+
+        OS.routine_end(0x20)
+    }
+}
+
 scope RyuUSP {
     // floating point constants for physics and fsm
     constant AIR_Y_SPEED(0x0)            // current setting - float32 92

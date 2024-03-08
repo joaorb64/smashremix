@@ -992,6 +992,7 @@ scope Costumes {
         db 0x07                             // Ryu
         db 0x07                             // Ken
         db 0x04                             // Cloud
+        db 0x04                             // Demon
 
         // Polygons
         db 0x05                             // Polygon Wario

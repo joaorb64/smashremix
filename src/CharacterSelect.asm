@@ -223,6 +223,7 @@ scope CharacterSelect {
     dw  0xC9F0 + 0x200                      // 0x48 - RYU
     dw  0xD220 + 0x200                     // 0x49 - KEN
     dw  0x11B58 + 0x200                    // 0x4A - CLOUD
+    dw  0xC9F0 + 0x200                      // 0x4B - KAZUYA
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS
@@ -359,6 +360,7 @@ scope CharacterSelect {
     add_alt_req_list(Character.id.RYU, req/RYU_MODEL)
     add_alt_req_list(Character.id.KEN, req/KEN_MODEL)
     add_alt_req_list(Character.id.CLOUD, req/CLOUD_MODEL)
+    add_alt_req_list(Character.id.KAZUYA, req/KAZUYA_MODEL)
 
     // POLYGONS
     add_alt_req_list(Character.id.NWARIO, req/NWARIO_MODEL)
@@ -1678,6 +1680,9 @@ scope CharacterSelect {
         lli     a0, Character.id.KEN        // a0 = KEN
         beql    a0, s0, _loop               // if char_id = KEN, skip
         addiu   s0, s0, 0x0001              // increment index
+        lli     a0, Character.id.KAZUYA      // a0 = KAZUYA
+        beql    a0, s0, _loop               // if char_id = KAZUYA, skip
+        addiu   s0, s0, 0x0001              // increment index
 
 		// check variant
         li      a0, Character.variant_type.table
@@ -2370,6 +2375,7 @@ scope CharacterSelect {
         constant RYU(0x00001078)
         constant KEN(0x00005378)
         constant CLOUD(0x00006438)
+        constant KAZUYA(0x00012D38)
         // j
         constant JMARIO(0x00001078)
         constant JFOX(0x00002138)
@@ -2699,6 +2705,7 @@ scope CharacterSelect {
         constant RYU(0x00001838)
         constant KEN(0x00001B18)
         constant CLOUD(0x00002BA0)
+        constant KAZUYA(0x000175C8)
         // POLYGONS
         constant NWARIO(0x0001CB28)
         constant NLUCAS(0x0001D008)
@@ -2773,7 +2780,7 @@ scope CharacterSelect {
     constant NUM_SLOTS(36)
     scope layout {
         // row 1
-        define slot_1(NONE)
+        define slot_1(KAZUYA)
         define slot_2(MARINA)
         define slot_3(DRM)
         define slot_4(LUIGI)
@@ -5595,6 +5602,7 @@ scope CharacterSelect {
     add_to_css(Character.id.RYU,    FGM.announcer.names.MARIO,          1.50,         0x00010001, SMASH,        name_texture.RYU,          portrait_offsets.RYU,          -1)
     add_to_css(Character.id.KEN,    FGM.announcer.names.LUIGI,          1.50,         0x00010001, SMASH,        name_texture.KEN,          portrait_offsets.KEN,          -1)
     add_to_css(Character.id.CLOUD,    FGM.announcer.names.LINK,          1.50,        0x00010001, SMASH,        name_texture.CLOUD,          portrait_offsets.CLOUD,          -1)
+    add_to_css(Character.id.KAZUYA,    FGM.announcer.names.WARIO,          1.50,         0x00010001, SMASH,      name_texture.KAZUYA,          portrait_offsets.KAZUYA,          -1)
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS

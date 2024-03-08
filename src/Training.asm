@@ -2584,6 +2584,7 @@ scope Training {
     string_ryu:; char_0x48:; db "Ryu", 0x00
     string_ken:; char_0x49:; db "Ken", 0x00
     string_cloud:; char_0x4A:; db "Cloud", 0x00
+    string_kazuya:; char_0x4B:; db "Kazuya", 0x00
     OS.align(4)
 
     string_table_char:
@@ -2620,7 +2621,8 @@ scope Training {
     dw char_0x44            // BANJO
     dw char_0x48            // RYU
     dw char_0x49            // KEN
-    dw char_0x4A            // Cloud
+    dw char_0x4A            // CLOUD
+    dw char_0x4B            // KAZUYA
 
     dw char_0x2A            // J MARIO
     dw char_0x29            // J FOX
@@ -2722,10 +2724,11 @@ scope Training {
         constant RYU(0x1E)
         constant KEN(0x1F)
         constant CLOUD(0x20)
+        constant KAZUYA(0x21)
 
         // Increment JMARIO after adding more characters above
         // j characters
-        constant JMARIO(0x21)
+        constant JMARIO(0x22)
         constant JFOX(JMARIO + 0x01)
         constant JDK(JMARIO + 0x02)
         constant JSAMUS(JMARIO + 0x03)
@@ -2822,6 +2825,7 @@ scope Training {
     db Character.id.RYU
     db Character.id.KEN
     db Character.id.CLOUD
+    db Character.id.KAZUYA
 
     db Character.id.JMARIO
     db Character.id.JFOX
@@ -2959,6 +2963,7 @@ scope Training {
     db id.RYU
     db id.KEN
     db id.CLOUD
+    db id.KAZUYA
 	// ADD NEW CHARACTERS Here
 
 	// REMIX POLYGONS

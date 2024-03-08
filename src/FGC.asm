@@ -50,18 +50,23 @@ scope FGC {
 
         lw      t1, 0x0008(a2)              // t0 = character id
         ori     t2, r0, Character.id.RYU    // t1 = id.RYU
-        beq     t1, t2, main_logic
+        beq     t1, t2, ryuken_logic
         nop
 
         lw      t1, 0x0008(a2)              // t0 = character id
         ori     t2, r0, Character.id.KEN    // t1 = id.RYU
-        beq     t1, t2, main_logic
+        beq     t1, t2, ryuken_logic
+        nop
+
+        lw      t1, 0x0008(a2)              // t0 = character id
+        ori     t2, r0, Character.id.KAZUYA    // t1 = id.KAZUYA
+        beq     t1, t2, demon_logic
         nop
 
         b goto_fcg_tap_hold_end_
         nop
 
-        main_logic:
+        ryuken_logic:
         lw t1,  0x4(a2)                     // t1 = fighter object
         lwc1    f8, 0x0078(t1)              // load current frame into f8
 
@@ -435,12 +440,12 @@ scope FGC {
 		mtc1    at, f6                      // ~
         c.le.s  f8, f6                      // f8 <= f6 (current frame < 3) ?
         nop
-        bc1fl   cancel_itself_frame_check                // skip if frame > 3
+        bc1fl   goto_fcg_tap_hold_end_      // skip if frame > 3
         nop
         
-        lhu     t1, 0x01BC(a2)              // load button press buffer
-        andi    t2, t1, A_PRESSED           // t2 = 0x80 if (A_PRESSED); else t2 = 0
-        bne     t2, r0, cancel_itself_frame_check // skip if (!A_PRESSED)
+        lhu     t1, 0x01BC(a2)                  // load button press buffer
+        andi    t2, t1, A_PRESSED               // t2 = 0x80 if (A_PRESSED); else t2 = 0
+        bne     t2, r0, goto_fcg_tap_hold_end_  // skip if A_PRESSED (wasn't released)
         nop
         // else, check action
 
@@ -485,7 +490,7 @@ scope FGC {
         beq    t1, t2, change_action
         addiu  t3, r0, Ryu.Action.FTILT_L
 
-        j cancel_itself_frame_check
+        j goto_fcg_tap_hold_end_
         nop
 
         change_action:
@@ -515,65 +520,6 @@ scope FGC {
         lw      a3, 0x0014(sp)              // restore a2
         lw      v0, 0x0018(sp)              // restore a2
         addiu   sp, sp, 0x0030              // deallocate stack space
-
-        j goto_fcg_tap_hold_end_
-        nop
-
-        cancel_itself_frame_check:
-        lui		at, 0x4040					    // at = 0.0
-		mtc1    at, f6                      // ~
-        c.le.s  f6, f8                      // f6 >= f8 (6 > current frame) ?
-        nop
-        bc1tl   cancel_itself_button_check                // skip if current frame is lower than 6
-        nop
-
-        j goto_fcg_tap_hold_end_
-        nop
-
-        cancel_itself_button_check:
-        lhu     t1, 0x01BE(a2)              // load button tap buffer
-        andi    t2, t1, A_PRESSED           // t2 = 0x80 if (A_PRESSED); else t2 = 0
-        beq     t2, r0, goto_fcg_tap_hold_end_ // skip if (!A_PRESSED)
-        nop
-        // else, check analog
-
-        cancel_itself_analog_check:
-        lb      t0, 0x01C3(a2)              // t0 = stick_y
-
-        slti    t1, t0, 40                             // at = 1 if stick_y < 40, else at = 0
-        beql    t1, r0, cancel_itself_uptilt_check      // branch if stick_y >= 40...
-        nop
-
-        slti    t1, t0, -39                                 // at = 1 if stick_y < -39, else at = 0
-        bnel    t1, r0, cancel_itself_dtilt_check          // branch if stick_y >= -40...
-        nop
-
-        // If we get to here, joystick Y is neutral
-        lw      t1, 0x0024(a2) // t0 = current action
-
-        lli    t2, Ryu.Action.UTILT_L
-        beq    t1, t2, change_action
-        addiu  t3, r0, Action.Jab1
-
-        b goto_fcg_tap_hold_end_
-        nop
-
-        cancel_itself_uptilt_check:
-        lw      t1, 0x0024(a2) // t0 = current action
-
-        lli    t2, Ryu.Action.UTILT_L
-        beq    t1, t2, change_action
-        addiu  t3, r0, Action.UTilt
-
-        j goto_fcg_tap_hold_end_
-        nop
-
-        cancel_itself_dtilt_check:
-        lw      t1, 0x0024(a2) // t0 = current action
-
-        lli    t2, Ryu.Action.DTILT_L
-        beq    t1, t2, change_action
-        addiu  t3, r0, Action.DTilt
 
         j goto_fcg_tap_hold_end_
         nop
@@ -920,6 +866,124 @@ scope FGC {
         jab_movement_fix_end:
         OS.restore_registers()
         jr ra
+
+        demon_logic:
+        lw      t0, 0x0024(a2)                   // t0 = current action
+        lw      t1,  0x4(a2)                     // t1 = fighter object
+
+        lli    t1, Action.Jab1
+        beq    t0, t1, demon_apply_root_motion
+        nop
+
+        lli    t1, Action.Jab2
+        beq    t0, t1, demon_apply_root_motion
+        nop
+
+        lli    t1, 0xDC // Jab3
+        beq    t0, t1, demon_apply_root_motion
+        nop
+
+        lli    t1, Action.DSmash
+        beq    t0, t1, demon_patch_dsmash
+        nop
+
+        lli     t1, Action.UTilt
+        beq     t0, t1, demon_patch_utilt
+        nop
+        
+        lhu     t1, 0x01BE(a2)              // load button press buffer
+        andi    t2, t1, A_PRESSED           // t2 = 0x80 if (A_PRESSED); else t2 = 0
+        beq     t2, r0, demon_wavedash_check // skip if (!A_PRESSED)
+        nop
+
+        // we're using t2 to set the action to change to
+        lli    t1, Action.CrouchEnd
+        lli    t2, Kazuya.Action.WHILE_STAND
+        beq    t0, t1, apply_jab_cancel
+        nop
+
+        lli    t1, Action.CrouchIdle
+        beq    t0, t1, demon_resolve_crouch_move
+        nop
+
+        b demon_wavedash_check
+        nop
+
+        demon_resolve_crouch_move:
+        // we're using t2 to set the action to change to
+        lb      t2, 0x01C2(a2)                          // t0 = stick_x
+        mtc1    t2, f6                                  // f6 = stick_x
+        abs.s   f6, f6                                  // f6 = abs(stick_x)
+        mfc1    t2, f6                                  // t0 = abs(stick_x)
+
+        slti    t1, t2, 40                             // t1 = 1 if abs(stick_x) < 40
+        lli     t2, Kazuya.Action.CROUCH_TILT
+        beq     t1, r0, apply_jab_cancel
+        nop
+        
+        // else, crouch jab
+        lli    t2, Kazuya.Action.CROUCH_JAB
+        b      apply_jab_cancel
+        nop
+
+        demon_apply_root_motion:
+        li t0, 0x800D8C14
+        sw t0, 0x9E0(a2)
+        
+        b goto_fcg_tap_hold_end_
+        nop
+
+        demon_patch_dsmash:
+        // apply root motion
+        li t0, 0x800D8C14
+        sw t0, 0x9E0(a2)
+
+        // At the end of Kazuya's down smash, we want him to be laying down
+        // aka DownWait state
+        lw  t1, 0x4(a2)                 // t1 = fighter object
+        lw  at, 0x0078(t1)              // load current frame into f8
+
+        bgtz    at, goto_fcg_tap_hold_end_
+        nop
+
+        jal 0x80144294 // ftCommon_DownWait_SetStatus
+        nop
+        
+        b goto_fcg_tap_hold_end_
+        nop
+
+        demon_patch_utilt:
+        // Change the main function used for utilt
+        li t0, KazuyaSpecial.UTILT.main
+        sw t0, 0x9D4(a2)
+
+        b goto_fcg_tap_hold_end_
+        nop
+
+        demon_wavedash_check:
+        lw      t0, 0x0024(a2)                   // t0 = current action
+
+        lli    t1, Action.Dash
+
+        bne     t0, t1, goto_fcg_tap_hold_end_
+        nop
+
+        lb      t0, 0x01C3(a2)                          // t0 = stick_y
+        slti    t1, t0, -39                             // at = 1 if stick_y < -39, else at = 0
+        bnel    t1, r0, apply_wavedash                  // branch if stick_y >= -40...
+        nop
+
+        b goto_fcg_tap_hold_end_
+        nop
+
+        apply_wavedash:
+        // we're using t2 to set the action to change to
+        lli    t2, Kazuya.Action.WAVEDASH
+        b      apply_jab_cancel
+        nop
+
+        b goto_fcg_tap_hold_end_
+        nop
     }
 
     // Hitlag just ended
@@ -970,6 +1034,7 @@ scope FGC {
         nop
     }
 
+    // 800E3EBC
     scope hitlag_attacker_fgc_multiply: {
         OS.patch_start(0x5FCA0, 0x800E44A0)
         j       hitlag_attacker_fgc_multiply
@@ -983,8 +1048,13 @@ scope FGC {
         nop
 
         lw      t0, 0x0008(s1)              // t0 = character id
-        ori     t1, r0, Character.id.KEN    // t1 = id.RYU
-        beq     t0, t1, _fgc_multiplyier    // if character id = RYU, jump to _fgc_multiplyier
+        ori     t1, r0, Character.id.KEN    // t1 = id.KEN
+        beq     t0, t1, _fgc_multiplyier    // if character id = KEN, jump to _fgc_multiplyier
+        nop
+
+        lw      t0, 0x0008(s1)              // t0 = character id
+        ori     t1, r0, Character.id.KAZUYA    // t1 = id.KAZUYA
+        beq     t0, t1, _fgc_multiplyier_defender_demon    // if character id = KAZUYA, jump to _fgc_multiplyier_defender_demon
         nop
 
         j goto_hitlag_attacker_fgc_multiply_end_
@@ -1023,6 +1093,18 @@ scope FGC {
 
         // default is 1.5
         lui   at, 0x3fc0 // 1.5
+
+        b _fgc_multiplyier_continue
+        nop
+
+        _fgc_multiplyier_defender_demon:
+        lwc1 f18,0x7a4(s5) // load hitbox hitlag value into f18
+
+        // default is 0.4
+        lui   at, 0x3ecc // 0.4
+
+        b _fgc_multiplyier_continue
+        nop
         
         _fgc_multiplyier_continue:
         mtc1 at, f0 // load at into f0
@@ -1038,10 +1120,22 @@ scope FGC {
         goto_hitlag_attacker_fgc_multiply_end_:
         lw t3, 0x0010(s2) // original line 1
         lw v0, 0x07F8(s5) // original line 2
+
+        // If we're Kazuya, ignore extra hitlag for electric moves
+        lw      t0, 0x0008(s1)                      // t0 = character id
+        ori     t1, r0, Character.id.KAZUYA         // t1 = id.KAZUYA
+        beq     t0, t1, kazuya_skip_electric_hitlag // if character id = KAZUYA, jump to _fgc_multiplyier_defender_demon
+        nop
+
         j hitlag_attacker_fgc_multiply_end_
+        nop
+
+        kazuya_skip_electric_hitlag:
+        j 0x800E481C // 800E3EBC + 960
         nop
     }
 
+    // 800E3EBC + 960
     scope hitlag_defender_fgc_multiply: {
         OS.patch_start(0x6001C, 0x800E481C)
         j       hitlag_defender_fgc_multiply
@@ -1057,6 +1151,11 @@ scope FGC {
         lw      t0, 0x0008(s1)              // t0 = character id
         ori     t1, r0, Character.id.KEN    // t1 = id.RYU
         beq     t0, t1, _fgc_multiplyier_defender    // if character id = RYU, jump to _fgc_multiplyier_defender
+        nop
+
+        lw      t0, 0x0008(s1)              // t0 = character id
+        ori     t1, r0, Character.id.KAZUYA    // t1 = id.KAZUYA
+        beq     t0, t1, _fgc_multiplyier_defender_demon    // if character id = KAZUYA, jump to _fgc_multiplyier_defender_demon
         nop
 
         j goto_hitlag_defender_fgc_multiply_end_
@@ -1095,6 +1194,30 @@ scope FGC {
 
         // default is 1.5
         lui   at, 0x3fc0 // 1.5
+
+        b _fgc_multiplyier_defender_continue
+        nop
+
+        _fgc_multiplyier_defender_demon:
+        lwc1 f18,0x7a4(s5) // load hitbox hitlag value into f18
+
+        // branches for moves with specific hitlag
+        // save hitlag to at then jump
+        lw t1, 0x0024(s1) // t0 = current action
+
+        lli   t0, Kazuya.Action.GODFIST
+        beq   t1, t0, _fgc_multiplyier_defender_continue
+        lui   at, 0x4000 // 2.0
+
+        lli   t0, Kazuya.Action.WHILE_STAND
+        beq   t1, t0, _fgc_multiplyier_defender_continue
+        lui   at, 0x4020 // 2.5
+
+        // default is 0.4
+        lui   at, 0x3ecc // 0.4
+
+        b _fgc_multiplyier_defender_continue
+        nop
         
         _fgc_multiplyier_defender_continue:
         mtc1 at, f0 // load at into f0
@@ -1103,14 +1226,20 @@ scope FGC {
 
         goto_hitlag_defender_fgc_multiply_end_:
         lwc1 f16, 0x00A0(sp) // original line 1
-        li at, 2 // original line 2
+        li at, 2             // original line 2
+        
+        // If we're Kazuya, ignore extra hitlag for electric moves
+        lw      t0, 0x0008(s1)                      // t0 = character id
+        ori     t1, r0, Character.id.KAZUYA         // t1 = id.KAZUYA
+        beq     t0, t1, kazuya_skip_electric_hitlag_mul // if character id = KAZUYA, jump to _fgc_multiplyier_defender_demon
         nop
+
         j hitlag_defender_fgc_multiply_end_
         nop
 
-        _redirect_jump:
-        j 0x800E483C
-        nop
+        kazuya_skip_electric_hitlag_mul:
+        j       0x800E483C // 800E3EBC + 980
+        swc1    f16, 0x7E0(s5) // save final hitlag value
 
         j hitlag_defender_fgc_multiply_end_
         nop
