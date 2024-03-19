@@ -890,6 +890,14 @@ scope FGC {
         lli     t1, Action.UTilt
         beq     t0, t1, demon_patch_utilt
         nop
+
+        lli     t1, Action.FTiltMidLow
+        beq     t0, t1, demon_patch_tsunami
+        nop
+
+        lli     t1, Action.FTiltLow
+        beq     t0, t1, demon_patch_tsunami
+        nop
         
         lhu     t1, 0x01BE(a2)              // load button press buffer
         andi    t2, t1, A_PRESSED           // t2 = 0x80 if (A_PRESSED); else t2 = 0
@@ -955,6 +963,14 @@ scope FGC {
         demon_patch_utilt:
         // Change the main function used for utilt
         li t0, KazuyaSpecial.UTILT.main
+        sw t0, 0x9D4(a2)
+
+        b goto_fcg_tap_hold_end_
+        nop
+
+        demon_patch_tsunami:
+        // Change the main function used for utilt
+        li t0, KazuyaSpecial.TSUNAMI.main
         sw t0, 0x9D4(a2)
 
         b goto_fcg_tap_hold_end_

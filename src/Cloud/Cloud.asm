@@ -115,8 +115,7 @@ scope Cloud {
     Character.edit_menu_action_parameters(CLOUD, 0xB,               File.CLOUD_IDLE,           GRABPULL,                       -1)
     Character.edit_menu_action_parameters(CLOUD, 0xC,               File.CLOUD_IDLE,           GRABPULL,                       -1)
 
-    Character.edit_menu_action_parameters(CLOUD, 0xD,               File.CLOUD_IDLE,           GRABPULL,                       -1)
-    Character.edit_menu_action_parameters(CLOUD, 0xE,               File.CLOUD_IDLE,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0xD,               File.CLOUD_1P_POSE,        GRABPULL,                       -1)
 
     // Modify Actions            // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
     Character.edit_action(CLOUD,  0xE5,              -1,             CloudNSP.main,  				CloudNSP.change_direction_,      CloudNSP.physics_,                -1)

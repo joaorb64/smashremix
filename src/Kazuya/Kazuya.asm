@@ -19,16 +19,25 @@ scope Kazuya {
     insert TILTF, "moveset/TILTF.bin"
     insert TILTD, "moveset/TILTD.bin"
 
+    insert TSUNAMI1, "moveset/TSUNAMI1.bin"
+    insert TSUNAMI2, "moveset/TSUNAMI2.bin"
+
     insert CROUCH_JAB, "moveset/CROUCH_JAB.bin"
     insert CROUCH_TILT, "moveset/CROUCH_TILT.bin"
 
     insert AIRF, "moveset/AIRF.bin"
     insert AIRU, "moveset/AIRU.bin"
+    insert AIRD, "moveset/AIRD.bin"
+    insert AIRN, "moveset/AIRN.bin"
+    insert AIRB, "moveset/AIRB.bin"
 
     insert SMASHD, "moveset/SMASHD.bin"
     insert SMASHU, "moveset/SMASHU.bin"
 
     insert NSP, "moveset/NSP.bin"
+    insert DSP, "moveset/DSP.bin"
+    insert USP, "moveset/USP.bin"
+    insert USP_LAND, "moveset/USP_LAND.bin"
 
     // Insert AI attack options
     constant CPU_ATTACKS_ORIGIN(origin())
@@ -43,8 +52,22 @@ scope Kazuya {
     Character.edit_action_parameters(KAZUYA,   Action.Jab2,         File.KAZUYA_JAB2,           JAB2,                         0x40000000)
     Character.edit_action_parameters(KAZUYA,   0xDC,                File.KAZUYA_JAB3,           JAB3,                         0x40000000)
 
+    Character.edit_action_parameters(KAZUYA,   Action.Crouch,          File.KAZUYA_CROUCHSTART,       -1,                         -1)
+    Character.edit_action_parameters(KAZUYA,   Action.CrouchIdle,      File.KAZUYA_CROUCHWAIT,        -1,                         -1)
+    Character.edit_action_parameters(KAZUYA,   Action.CrouchEnd,       File.KAZUYA_CROUCHEND,         -1,                         -1)
+
+    Character.edit_action_parameters(KAZUYA,   Action.JumpF,           File.KAZUYA_JUMP,        -1,                         0x00000000)
+    Character.edit_action_parameters(KAZUYA,   Action.JumpB,           File.KAZUYA_JUMP,        -1,                         0x00000000)
+    Character.edit_action_parameters(KAZUYA,   Action.JumpAerialF,     File.KAZUYA_JUMP,        -1,                         0x00000000)
+    Character.edit_action_parameters(KAZUYA,   Action.JumpAerialB,     File.KAZUYA_JUMP,        -1,                         0x00000000)
+
     Character.edit_action_parameters(KAZUYA,   Action.UTilt,        File.KAZUYA_TILTU1,         TILTU1,                       0x40000000)
+
     Character.edit_action_parameters(KAZUYA,   Action.FTilt,        File.KAZUYA_TILTF,          TILTF,                        0x40000000)
+
+    Character.edit_action_parameters(KAZUYA,   Action.FTiltMidLow,   File.KAZUYA_TSUNAMI_1,   TSUNAMI1,                   0x40000000)
+    Character.edit_action_parameters(KAZUYA,   Action.FTiltLow,      File.KAZUYA_TSUNAMI_1,   TSUNAMI1,                   0x40000000)
+
     Character.edit_action_parameters(KAZUYA,   Action.DTilt,        File.KAZUYA_TILTD,          TILTD,                        0x40000000)
 
     Character.edit_action_parameters(KAZUYA,   Action.DSmash,       File.KAZUYA_SMASHD,         SMASHD,                       0x40000000)
@@ -52,13 +75,20 @@ scope Kazuya {
 
     Character.edit_action_parameters(KAZUYA,   Action.AttackAirF,   File.KAZUYA_AIRF,           AIRF,                         -1)
     Character.edit_action_parameters(KAZUYA,   Action.AttackAirU,   File.KAZUYA_AIRU,           AIRU,                         -1)
+    Character.edit_action_parameters(KAZUYA,   Action.AttackAirN,   File.KAZUYA_AIRN,           AIRN,                         -1)
+    Character.edit_action_parameters(KAZUYA,   Action.AttackAirD,   File.KAZUYA_AIRD,           AIRD,                         -1)
+    Character.edit_action_parameters(KAZUYA,   Action.AttackAirB,   File.KAZUYA_AIRB,           AIRB,                         -1)
 
     Character.edit_action_parameters(KAZUYA,   0xE4,                File.KAZUYA_UPPERCUT,       NSP,                          0x40000000)
     Character.edit_action_parameters(KAZUYA,   0xE5,                File.KAZUYA_UPPERCUT,       NSP,                          0x40000000)
+    Character.edit_action_parameters(KAZUYA,   0xE6,                File.KAZUYA_SPECIALD,       DSP,                          0x40000000)
+    Character.edit_action_parameters(KAZUYA,   0xE9,                File.KAZUYA_SPECIALD,       DSP,                          0x40000000) // aerial dsp
 
     // Modify Actions               // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
     Character.edit_action(KAZUYA,   0xE4,              -1,             KazuyaSpecial.NSP.main,     -1,                             -1,                             -1)
-	// Character.edit_action(KAZUYA,   0xE5,              -1,             KazuyaSpecial.NSP.main,     -1,                             -1,                             -1)
+	Character.edit_action(KAZUYA,   0xE5,              -1,             KazuyaSpecial.NSP.main,     -1,                             -1,                             -1)
+    Character.edit_action(KAZUYA,   0xE6,              -1,             0x800D94C4,                  0,                      0x800D8CCC,                             0x800DDEE8)
+	Character.edit_action(KAZUYA,   0xE9,              -1,             0x800D94E8,                  0,                      0x800D91EC,                             0x800DE99C)
 
     // Add Action Parameters                // Action Name      // Base Action  // Animation                    // Moveset Data             // Flags
     Character.add_new_action_params(KAZUYA,    WHILE_STAND,          -1,        File.KAZUYA_WHILE_STAND,        WHILE_STAND,                0x40000000)
@@ -68,7 +98,10 @@ scope Kazuya {
     Character.add_new_action_params(KAZUYA,    SWEEP1,               -1,        File.KAZUYA_SWEEP1,             SWEEP1,                     0x40000000)
     Character.add_new_action_params(KAZUYA,    SWEEP2,               -1,        File.KAZUYA_SWEEP2,             SWEEP2,                     0x40000000)
     Character.add_new_action_params(KAZUYA,    TILTU2,               -1,        File.KAZUYA_TILTU2,             TILTU2,                     0x40000000)
-    Character.add_new_action_params(KAZUYA,    CROUCH_TILT,           -1,       File.KAZUYA_CROUCH_TILT,        CROUCH_TILT,                0x40000000)
+    Character.add_new_action_params(KAZUYA,    CROUCH_TILT,          -1,        File.KAZUYA_CROUCH_TILT,        CROUCH_TILT,                0x40000000)
+    Character.add_new_action_params(KAZUYA,    USP,                  -1,        File.KAZUYA_USP,                USP,                        0x00000000)
+    Character.add_new_action_params(KAZUYA,    USP_LAND,             -1,        File.KAZUYA_USP_LAND,           USP_LAND,                   0x00000000)
+    Character.add_new_action_params(KAZUYA,    TSUNAMI2,             -1,        File.KAZUYA_TSUNAMI_2,          TSUNAMI2,                   0x40000000)
 
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
     Character.add_new_action(KAZUYA,    WHILE_STAND,    -1,             ActionParams.WHILE_STAND,       -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)
@@ -79,6 +112,9 @@ scope Kazuya {
     Character.add_new_action(KAZUYA,    SWEEP2,         -1,             ActionParams.SWEEP2,            -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)
     Character.add_new_action(KAZUYA,    TILTU2,         -1,             ActionParams.TILTU2,            -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)
     Character.add_new_action(KAZUYA,    CROUCH_TILT,    Action.DTilt,   ActionParams.CROUCH_TILT,       -1,             KazuyaSpecial.CROUCH_JAB.main,  0,                              0x800D8C14,                         0x800DDF44)
+    Character.add_new_action(KAZUYA,    USP,            -1,             ActionParams.USP,               -1,             0x0,                            KazuyaUSP.change_direction_,    KazuyaSpecial.USP.main,             KazuyaSpecial.USP.collision)
+    Character.add_new_action(KAZUYA,    USP_LAND,       -1,             ActionParams.USP_LAND,          -1,             0x800D94C4,                     0,                              0x800D8BB4,                         0x800DDF44)
+    Character.add_new_action(KAZUYA,    TSUNAMI2,       -1,             ActionParams.TSUNAMI2,          -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(KAZUYA,   0x0,            File.KAZUYA_IDLE,              -1,                         -1)
@@ -108,6 +144,13 @@ scope Kazuya {
     // Disable rapid jab
     Character.table_patch_start(rapid_jab, Character.id.KAZUYA, 0x4)
     dw      Character.rapid_jab.DISABLED        // disable rapid jab
+    OS.patch_end()
+
+    Character.table_patch_start(air_usp, Character.id.KAZUYA, 0x4)
+    dw      KazuyaUSP.air_initial_
+    OS.patch_end()
+    Character.table_patch_start(ground_usp, Character.id.KAZUYA, 0x4)
+    dw      KazuyaUSP.ground_initial_
     OS.patch_end()
 
     // Set default costumes
