@@ -244,13 +244,13 @@ scope Kazuya {
         string_0x0F4:; String.insert("Wavedash")
         string_0x0F5:; String.insert("GodFist")
         string_0x0F6:; String.insert("CrouchJab")
-        string_0x0F7:; String.insert("SWEEP1")
-        string_0x0F8:; String.insert("SWEEP2")
+        string_0x0F7:; String.insert("Sweep1")
+        string_0x0F8:; String.insert("Sweep2")
         string_0x0F9:; String.insert("UpTilt2")
         string_0x0FA:; String.insert("CrouchTilt")
-        string_0x0FB:; String.insert("FTiltClose")
-        string_0x0FC:; String.insert("TatsumakiStrong")
-        string_0x0FD:; String.insert("TatsumakiAirGround")
+        string_0x0FB:; String.insert("Usp")
+        string_0x0FC:; String.insert("UspLand")
+        string_0x0FD:; String.insert("TsunamiKick")
         string_0x0FE:; String.insert("ShoryukenHard")
 
         action_string_table:
