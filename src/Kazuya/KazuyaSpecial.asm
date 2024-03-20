@@ -117,7 +117,7 @@ scope KazuyaSpecial {
             cancel_a:
             OS.save_registers()
             lli     a1, Kazuya.Action.GODFIST   // a1 = Action.GODFIST
-            or      a2, r0, r0                  // a2(starting frame) = 0.0
+            lui     a2, 0x3F80                  // a2(starting frame) = 1.0
             lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
             sw      r0, 0x0010(sp)              // argument 4 = 0
             jal     0x800E6F24                  // change action
@@ -129,7 +129,7 @@ scope KazuyaSpecial {
             cancel_b:
             OS.save_registers()
             lli     a1, Kazuya.Action.SWEEP1    // a1 = Action.SWEEP1
-            or      a2, r0, r0                  // a2(starting frame) = 0.0
+            lui     a2, 0x3F80                  // a2(starting frame) = 1.0
             lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
             sw      r0, 0x0010(sp)              // argument 4 = 0
             jal     0x800E6F24                  // change action
@@ -293,6 +293,124 @@ scope KazuyaSpecial {
             cancel_utilt_2:
             OS.save_registers()
             lli     a1, Kazuya.Action.TILTU2    // a1 = Action.SWEEP1
+            or      a2, r0, r0                  // a2(starting frame) = 0.0
+            lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+            lli     t6, 0x0003                  // ~
+            sw      t6, 0x0010(sp)              // argument 4 = 0x0003 keep hitboxes
+            jal     0x800E6F24                  // change action
+            nop
+            OS.restore_registers()
+            OS.routine_end(0x20)
+
+            main_normal:
+            jal     0x800D94C4          // original routine
+            nop
+            OS.routine_end(0x20)
+        }
+    }
+
+    scope DASH: {
+        // tmp variable 3 0x0184 -- used to keep track of the wavedash input
+        // in the first frame, we set it to 0
+        // check for neutral stick to set it to 1
+        // then check for a diagonal (down-forward) input to trigger an action change
+
+        scope main: {
+            OS.routine_begin(0x20)
+
+            lw      v0, 0x0084(a0)  // v0 = player struct
+
+            lw      t0, 0x0078(a0)  // t0 = current animation frame
+            lui     t1, 0x4000      // t1 = 1.0F
+
+            // if frame != 1, skip
+            bne     t0, t1, main_continue
+            nop
+            
+            sw      r0, 0x0184(v0)              // reset tmp variable 3 = 0
+
+            main_continue:
+            sw      a0, 0x0010(sp)
+            
+            lw      t0, 0x0184(v0)
+
+            lli    t1, 0x0
+            beq    t0, t1, check_neutral
+            nop
+
+            lli    t1, 0x1
+            beq    t0, t1, check_diagonal
+            nop
+
+            b   main_normal
+            nop
+
+            check_neutral:
+            lb      t2, 0x01C2(a2)                          // t0 = stick_x
+            mtc1    t2, f6                                  // f6 = stick_x
+            abs.s   f6, f6                                  // f6 = abs(stick_x)
+            mfc1    t2, f6                                  // t0 = abs(stick_x)
+
+            slti    t1, t2, 70                             // t1 = 1 if abs(stick_x) < 70
+            beq     t1, r0, main_normal                         // stick must be neutral in X
+            nop
+
+            lb      t2, 0x01C3(a2)                          // t0 = stick_y
+            mtc1    t2, f6                                  // f6 = stick_y
+            abs.s   f6, f6                                  // f6 = abs(stick_y)
+            mfc1    t2, f6                                  // t0 = abs(stick_y)
+
+            slti    t1, t2, 70                             // t1 = 1 if abs(stick_y) < 70
+            beq     t1, r0, main_normal                         // stick must be neutral in Y
+            nop
+
+            lli     t0, 0x1                             // ~
+            sw      t0, 0x0184(v0)                      // X and Y are neutral, set tmp var to 1
+
+            b main_normal
+            nop
+
+            check_diagonal:
+
+            // Check Y
+            lb      t0, 0x01C3(v0)              // t0 = stick_y
+            slti    t1, t0, -39                 // at = 1 if stick_y < -39, else at = 0
+            beql    t1, r0, main_normal              // branch if stick_y >= -40
+            nop
+
+            // Check X
+            lb      t0, 0x01C2(a2)                          // t0 = stick_x
+            lli     t1, 40                                  // t1 = stick range
+            lw      t2, 0x0044(v0)                          // t2 = facing direction (1 = right, -1 = left)
+
+            slti    t3, t2, 0
+            beq     t3, r0, facing_right
+            nop
+
+            facing_left:
+            slti    t1, t0, -10                 // t1 = 1 if stick_x < -39, else at = 0
+            beql    t1, r0, main_normal              // branch if stick_x >= -40
+            nop
+
+            b check_diagonal_success // check ok
+            nop
+
+            facing_right:
+            slti    t1, t0, 10                 // t1 = 1 if stick_y < -39, else at = 0
+            bnel    t1, r0, main_normal              // branch if stick_x >= -40
+            nop
+
+            b check_diagonal_success // check ok
+            nop
+
+            check_diagonal_success:
+            // all conditions are met
+            b cancel_wavedash
+            nop
+
+            cancel_wavedash:
+            OS.save_registers()
+            lli     a1, Kazuya.Action.WAVEDASH    // a1 = Action.SWEEP1
             or      a2, r0, r0                  // a2(starting frame) = 0.0
             lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
             lli     t6, 0x0003                  // ~

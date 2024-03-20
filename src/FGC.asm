@@ -891,6 +891,10 @@ scope FGC {
         beq     t0, t1, demon_patch_utilt
         nop
 
+        lli     t1, Action.Dash
+        beq     t0, t1, demon_patch_dash
+        nop
+
         lli     t1, Action.FTiltMidLow
         beq     t0, t1, demon_patch_tsunami
         nop
@@ -963,6 +967,14 @@ scope FGC {
         demon_patch_utilt:
         // Change the main function used for utilt
         li t0, KazuyaSpecial.UTILT.main
+        sw t0, 0x9D4(a2)
+
+        b goto_fcg_tap_hold_end_
+        nop
+
+        demon_patch_dash:
+        // Change the main function used for utilt
+        li t0, KazuyaSpecial.DASH.main
         sw t0, 0x9D4(a2)
 
         b goto_fcg_tap_hold_end_
