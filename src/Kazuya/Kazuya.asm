@@ -10,6 +10,8 @@ scope Kazuya {
     insert SWEEP1, "moveset/SWEEP1.bin"
     insert SWEEP2, "moveset/SWEEP2.bin"
 
+    insert DASHATTACK, "moveset/DASHATTACK.bin"
+
     insert JAB1, "moveset/JAB1.bin"
     insert JAB2, "moveset/JAB2.bin"
     insert JAB3, "moveset/JAB3.bin"
@@ -31,6 +33,7 @@ scope Kazuya {
     insert AIRN, "moveset/AIRN.bin"
     insert AIRB, "moveset/AIRB.bin"
 
+    insert SMASHF, "moveset/SMASHF.bin"
     insert SMASHD, "moveset/SMASHD.bin"
     insert SMASHU, "moveset/SMASHU.bin"
 
@@ -52,6 +55,8 @@ scope Kazuya {
     Character.edit_action_parameters(KAZUYA,   Action.Jab2,         File.KAZUYA_JAB2,           JAB2,                         0x40000000)
     Character.edit_action_parameters(KAZUYA,   0xDC,                File.KAZUYA_JAB3,           JAB3,                         0x40000000)
 
+    Character.edit_action_parameters(KAZUYA,   Action.DashAttack,   File.KAZUYA_DASHATTACK,     DASHATTACK,                   0x40000000)
+
     Character.edit_action_parameters(KAZUYA,   Action.Crouch,          File.KAZUYA_CROUCHSTART,       -1,                         -1)
     Character.edit_action_parameters(KAZUYA,   Action.CrouchIdle,      File.KAZUYA_CROUCHWAIT,        -1,                         -1)
     Character.edit_action_parameters(KAZUYA,   Action.CrouchEnd,       File.KAZUYA_CROUCHEND,         -1,                         -1)
@@ -70,6 +75,9 @@ scope Kazuya {
 
     Character.edit_action_parameters(KAZUYA,   Action.DTilt,        File.KAZUYA_TILTD,          TILTD,                        0x40000000)
 
+    Character.edit_action_parameters(KAZUYA,   Action.FSmash,       File.KAZUYA_SMASHF,         SMASHF,                       0x40000000)
+    Character.edit_action_parameters(KAZUYA,   Action.FSmashHigh,   File.KAZUYA_SMASHF,         SMASHF,                       0x40000000)
+    Character.edit_action_parameters(KAZUYA,   Action.FSmashLow,    File.KAZUYA_SMASHF,         SMASHF,                       0x40000000)
     Character.edit_action_parameters(KAZUYA,   Action.DSmash,       File.KAZUYA_SMASHD,         SMASHD,                       0x40000000)
     Character.edit_action_parameters(KAZUYA,   Action.USmash,       File.KAZUYA_SMASHU,         SMASHU,                       0x00000000)
 

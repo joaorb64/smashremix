@@ -2854,4 +2854,6 @@ scope File {
     constant KAZUYA_JUMP(0x136F)
     constant KAZUYA_TSUNAMI_1(0x1370)
     constant KAZUYA_TSUNAMI_2(0x1371)
+    constant KAZUYA_SMASHF(0x1372)
+    constant KAZUYA_DASHATTACK(0x1373)
  }
