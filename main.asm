@@ -295,7 +295,7 @@ fill MIDI.largest_midi  // Allocate as much space as we need!
 
 OS.align(16)
 file_table:  // This is where we move the file table to in order to load more files
-fill 0x680
+fill 0x700
 
 custom_heap: // This is where we move the heap to when we need to increase its size
 
