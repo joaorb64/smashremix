@@ -1235,7 +1235,7 @@ scope FGC {
 
         lli   t0, Kazuya.Action.GODFIST
         beq   t1, t0, _fgc_multiplyier_defender_continue
-        lui   at, 0x4000 // 2.0
+        lui   at, 0x4020 // 2.5
 
         lli   t0, Kazuya.Action.WHILE_STAND
         beq   t1, t0, _fgc_multiplyier_defender_continue

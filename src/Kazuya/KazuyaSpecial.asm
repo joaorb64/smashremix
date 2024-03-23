@@ -355,14 +355,14 @@ scope KazuyaSpecial {
             beq     t1, r0, main_normal                         // stick must be neutral in X
             nop
 
-            lb      t2, 0x01C3(a2)                          // t0 = stick_y
-            mtc1    t2, f6                                  // f6 = stick_y
-            abs.s   f6, f6                                  // f6 = abs(stick_y)
-            mfc1    t2, f6                                  // t0 = abs(stick_y)
+            // lb      t2, 0x01C3(a2)                          // t0 = stick_y
+            // mtc1    t2, f6                                  // f6 = stick_y
+            // abs.s   f6, f6                                  // f6 = abs(stick_y)
+            // mfc1    t2, f6                                  // t0 = abs(stick_y)
 
-            slti    t1, t2, 70                             // t1 = 1 if abs(stick_y) < 70
-            beq     t1, r0, main_normal                         // stick must be neutral in Y
-            nop
+            // slti    t1, t2, 70                             // t1 = 1 if abs(stick_y) < 70
+            // beq     t1, r0, main_normal                         // stick must be neutral in Y
+            // nop
 
             lli     t0, 0x1                             // ~
             sw      t0, 0x0184(v0)                      // X and Y are neutral, set tmp var to 1
