@@ -36,6 +36,13 @@ scope Cloud {
     insert SMASHD,"moveset/SMASHD.bin"
 
     insert JUMP1,"moveset/JUMP1.bin"
+    insert JUMP2,"moveset/JUMP2.bin"
+
+    insert TAUNT,"moveset/TAUNT.bin"
+    insert VICTORY,"moveset/VICTORY.bin"
+
+    insert TECHSTAND, "moveset/TECHSTAND.bin"
+    insert TECHROLL, "moveset/TECHFROLL.bin"
 
     // Insert AI attack options
     // constant CPU_ATTACKS_ORIGIN(origin())
@@ -52,7 +59,7 @@ scope Cloud {
     Character.edit_action_parameters(CLOUD,   Action.Run,             File.CLOUD_RUN,               -1,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.RunBrake,        File.CLOUD_RUNBRAKE,          -1,                         -1)
 
-    Character.edit_action_parameters(CLOUD,   Action.Taunt,           File.CLOUD_TAUNT,             -1,                         -1)
+    Character.edit_action_parameters(CLOUD,   Action.Taunt,           File.CLOUD_TAUNT,             TAUNT,                         -1)
 
     Character.edit_action_parameters(CLOUD,   Action.Crouch,          File.CLOUD_CROUCHSTART,       -1,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.CrouchIdle,      File.CLOUD_CROUCHWAIT,        -1,                         -1)
@@ -62,14 +69,18 @@ scope Cloud {
     Character.edit_action_parameters(CLOUD,   Action.FallAerial,      File.CLOUD_FALL_AERIAL,       -1,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.FallSpecial,     File.CLOUD_FALL_SPECIAL,      -1,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.JumpF,           File.CLOUD_JUMPF,          JUMP1,                         0x00000000)
-    Character.edit_action_parameters(CLOUD,   Action.JumpAerialF,     File.CLOUD_JUMPAERIALF,       -1,                         0x00000000)
+    Character.edit_action_parameters(CLOUD,   Action.JumpAerialF,     File.CLOUD_JUMPAERIALF,    JUMP2,                         0x00000000)
     Character.edit_action_parameters(CLOUD,   Action.JumpB,           File.CLOUD_JUMPB,          JUMP1,                         -1)
-    Character.edit_action_parameters(CLOUD,   Action.JumpAerialB,     File.CLOUD_JUMPAERIALB,       -1,                         0x00000000)
+    Character.edit_action_parameters(CLOUD,   Action.JumpAerialB,     File.CLOUD_JUMPAERIALB,    JUMP2,                         0x00000000)
 
     Character.edit_action_parameters(CLOUD,   Action.Grab,            File.CLOUD_GRAB,              GRAB,                       -1)
     Character.edit_action_parameters(CLOUD,   Action.GrabPull,        File.CLOUD_GRABPULL,          GRABPULL,                   -1)
     Character.edit_action_parameters(CLOUD,   Action.ThrowF,          File.CLOUD_THROWF,            THROWF,                         -1)
     Character.edit_action_parameters(CLOUD,   Action.ThrowB,          File.CLOUD_THROWB,            THROWB,                         -1)
+
+    Character.edit_action_parameters(CLOUD,   Action.TechF,           -1,                         TECHROLL,                   -1)
+    Character.edit_action_parameters(CLOUD,   Action.TechB,           -1,                         TECHROLL,                   -1)
+    Character.edit_action_parameters(CLOUD,   Action.Tech,            -1,                         TECHSTAND,                  -1)
 
     Character.edit_action_parameters(CLOUD,   Action.Jab1,            File.CLOUD_JAB1,              JAB1,                       0x00000000)
     Character.edit_action_parameters(CLOUD,   Action.Jab2,            File.CLOUD_JAB2,              JAB2,                       0x40000000)
@@ -101,10 +112,10 @@ scope Cloud {
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(CLOUD, 0x0,               File.CLOUD_IDLE,              GRABPULL,                       -1)
-    Character.edit_menu_action_parameters(CLOUD, 0x1,               File.CLOUD_VICTORY,           GRABPULL,                       -1)
-    Character.edit_menu_action_parameters(CLOUD, 0x2,               File.CLOUD_VICTORY,           GRABPULL,                       -1)
-    Character.edit_menu_action_parameters(CLOUD, 0x3,               File.CLOUD_VICTORY,           GRABPULL,                       -1)
-    Character.edit_menu_action_parameters(CLOUD, 0x4,               File.CLOUD_VICTORY,           GRABPULL,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x1,               File.CLOUD_VICTORY,           VICTORY,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x2,               File.CLOUD_VICTORY,           VICTORY,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x3,               File.CLOUD_VICTORY,           VICTORY,                       -1)
+    Character.edit_menu_action_parameters(CLOUD, 0x4,               File.CLOUD_VICTORY,           VICTORY,                       -1)
 
     Character.edit_menu_action_parameters(CLOUD, 0x5,               File.CLOUD_IDLE,           GRABPULL,                       -1)
     Character.edit_menu_action_parameters(CLOUD, 0x6,               File.CLOUD_IDLE,           GRABPULL,                       -1)

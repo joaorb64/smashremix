@@ -208,6 +208,31 @@ scope CloudUSP {
     // Based on subroutine 0x8015C750, which is the main subroutine of Fox's up special ending.
     // Modified to load Cloud's landing FSM value and disable the interrupt flag.
     scope main_: {
+        // a0 = player object
+        // a2 = player struct
+        lw      v0, 0x0084(a0)              // v0 = player struct
+
+        // Reset tmp variable if frame == 1
+        lwc1    f8, 0x0078(a0)              // t8 = current frame
+        lui     t0, 0x4000                  // t0 = 2.0 not sure why 2 here but it doesn't cause issues here anyways
+		mtc1    t0, f6                      // f6 = 2.0
+        c.eq.s  f8, f6                      // f8 == f6 (current frame == 1) ?
+        nop
+        bc1fl   _reset_tmp_var_end          // skip if frame != 1
+        nop
+        sw      r0, 0x0B30(v0)              // reset tmp variable 2 = 0
+        _reset_tmp_var_end:
+
+        _check_b_press:
+        lhu     t0, 0x01BE(a2)              // load button press buffer
+        andi    t1, t0, 0x4000              // t1 = 0x40 if (B_PRESSED); else t1 = 0
+        beq     t1, r0, _check_b_press_end        // skip if (!B_PRESSED)
+        nop
+
+        lli     t0, 0x1
+        sw      t0, 0x0B30(v0)              // save tmp variable 2 = 1
+        _check_b_press_end:
+
         lwc1    f8, 0x0078(a0)              // load current frame
 
         lui		at, 0x4040					// at = 3.0
@@ -238,23 +263,24 @@ scope CloudUSP {
         bne    t7, t2, _main_normal        // if not performing USP(1), skip
         nop
 
-        lui		at, 0x41F0					// at = 2.0
+        lui		at, 0x41D8					// at = 27
 		mtc1    at, f6                      // ~
         c.lt.s  f8, f6                      // f8 >= f6 (current frame >= 2) ?
         nop
         bc1fl   _main_normal                // skip if haven't reached frame 2
         nop
 
-        lui		at, 0x41A0					// at = 2.0
+        lui		at, 0x41A0					// at = 20
 		mtc1    at, f6                      // ~
         c.lt.s  f6, f8                      // f8 >= f6 (current frame >= 2) ?
         nop
         bc1fl   _main_normal                // skip if haven't reached frame 2
         nop
 
-        lhu     t0, 0x01BE(a2)              // load button press buffer
-        andi    t1, t0, 0x4000              // t1 = 0x40 if (B_PRESSED); else t1 = 0
-        beq     t1, r0, _main_normal        // skip if (!B_PRESSED)
+        // At this point, check if B was ever pressed by using the tmp variable 2
+        lw      t0, 0x0B30(v0)              // load tmp variable 2
+        lli     t1, 0x1
+        bne     t0, t1, _main_normal            // if tmp variable 3 != 1, skip
         nop
 
         // Change into upB2
@@ -425,7 +451,7 @@ scope CloudUSP {
         bne    t7, t2, _end        // if not performing USP(1), skip
         nop
 
-        lui		at, 0x41F0					// at = 2.0
+        lui		at, 0x41C8					// at = 2.0
 		mtc1    at, f6                      // ~
         c.lt.s  f6, f8                      // f8 >= f6 (current frame >= 2) ?
         nop
@@ -1289,11 +1315,11 @@ scope CloudDSP {
         bc1fl   _main_normal                // skip if haven't reached frame 15.0
         nop
 
-        lui		at, 0x41C8					// at = 25.0
+        lui		at, 0x41F0					// at = 30.0
 		mtc1    at, f6                      // ~
-        c.le.s  f8, f6                      // f6 >= f8 (current frame <= 25.0) ?
+        c.le.s  f8, f6                      // f6 >= f8 (current frame <= 30.0) ?
         nop
-        bc1fl   _main_normal                // skip if past frame 25.0
+        bc1fl   _main_normal                // skip if past frame 30.0
         nop
 
         addiu   sp, sp,-0x0038              // allocate stack space
