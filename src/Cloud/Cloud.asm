@@ -184,8 +184,80 @@ scope Cloud {
     dw      CloudUSP.ground_initial_
     OS.patch_end()
 
+    scope Action {
+        constant Jab3(0x0DC)
+        constant JabLoopStart(0x0DD)
+        constant JabLoop(0x0DE)
+        constant JabLoopEnd(0x0DF)
+        constant Appear1(0x0E0)
+        constant Appear2(0x0E1)
+        constant UpSpecial(0x0E2)
+        constant UpSpecialEnd(0x0E3)
+        constant UpSpecialAir(0x0E4)
+        constant Boomerang(0x0E5)
+        constant BoomerangCatch(0x0E6)
+        constant BoomerangMiss(0x0E7)
+        constant BoomerangAir(0x0E8)
+        constant BoomerangCatchAir(0x0E9)
+        constant BoomerangMissAir(0x0EA)
+        constant Bomb(0x0EB)
+        constant BombAir(0x0EC)
+
+        // strings!
+        //string_0x0DC:; String.insert("Jab3")
+        //string_0x0DD:; String.insert("JabLoopStart")
+        //string_0x0DE:; String.insert("JabLoop")
+        //string_0x0DF:; String.insert("JabLoopEnd")
+        //string_0x0E0:; String.insert("Appear1")
+        //string_0x0E1:; String.insert("Appear2")
+        //string_0x0E2:; String.insert("UpSpecial")
+        //string_0x0E3:; String.insert("UpSpecialEnd")
+        //string_0x0E4:; String.insert("UpSpecialAir")
+        string_0x0E5:; String.insert("BladeBeam")
+        //string_0x0E6:; String.insert("BoomerangCatch")
+        //string_0x0E7:; String.insert("BoomerangMiss")
+        string_0x0E8:; String.insert("BladeBeamAir")
+        //string_0x0E9:; String.insert("BoomerangCatchAir")
+        //string_0x0EA:; String.insert("BoomerangMissAir")
+        string_0x0EB:; String.insert("CrossSlash1")
+        string_0x0EC:; String.insert("CrossSlash1Air")
+        string_0x0ED:; String.insert("Climhazzard1")
+        string_0x0EE:; String.insert("Climhazzard2")
+        string_0x0EF:; String.insert("ClimhazzardLand")
+        string_0x0F0:; String.insert("CrossSlash2")
+        string_0x0F1:; String.insert("CrossSlash2Air")
+        string_0x0F2:; String.insert("CrossSlash3")
+        string_0x0F3:; String.insert("CrossSlash3Air")
+
+        action_string_table:
+        dw Action.COMMON.string_jab3
+        dw Action.COMMON.string_jabloopstart
+        dw Action.COMMON.string_jabloop
+        dw Action.COMMON.string_jabloopend
+        dw Action.COMMON.string_appear1
+        dw Action.COMMON.string_appear2
+        dw Action.LINK.string_0x0E2
+        dw Action.LINK.string_0x0E3
+        dw 0
+        dw string_0x0E5
+        dw Action.LINK.string_0x0E6
+        dw Action.LINK.string_0x0E7
+        dw string_0x0E8
+        dw Action.LINK.string_0x0E9
+        dw Action.LINK.string_0x0EA
+        dw string_0x0EB
+        dw string_0x0EC
+        dw string_0x0ED
+        dw string_0x0EE
+        dw string_0x0EF
+        dw string_0x0F0
+        dw string_0x0F1
+        dw string_0x0F2
+        dw string_0x0F3
+    }
+
     // Set action strings
     Character.table_patch_start(action_string, Character.id.CLOUD, 0x4)
-    dw  Action.LINK.action_string_table
+    dw  Action.action_string_table
     OS.patch_end()
 }
