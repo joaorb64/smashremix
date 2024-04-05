@@ -42,6 +42,8 @@ scope Kazuya {
     insert USP, "moveset/USP.bin"
     insert USP_LAND, "moveset/USP_LAND.bin"
 
+    insert EMPTY, "moveset/EMPTY.bin"
+
     // Insert AI attack options
     constant CPU_ATTACKS_ORIGIN(origin())
     insert CPU_ATTACKS,"AI/attack_options.bin"
@@ -57,9 +59,9 @@ scope Kazuya {
 
     Character.edit_action_parameters(KAZUYA,   Action.DashAttack,   File.KAZUYA_DASHATTACK,     DASHATTACK,                   0x40000000)
 
-    Character.edit_action_parameters(KAZUYA,   Action.Crouch,          File.KAZUYA_CROUCHSTART,       -1,                         -1)
-    Character.edit_action_parameters(KAZUYA,   Action.CrouchIdle,      File.KAZUYA_CROUCHWAIT,        -1,                         -1)
-    Character.edit_action_parameters(KAZUYA,   Action.CrouchEnd,       File.KAZUYA_CROUCHEND,         -1,                         -1)
+    Character.edit_action_parameters(KAZUYA,   Action.Crouch,          File.KAZUYA_CROUCHSTART,       EMPTY,                         -1)
+    Character.edit_action_parameters(KAZUYA,   Action.CrouchIdle,      File.KAZUYA_CROUCHWAIT,        EMPTY,                         -1)
+    Character.edit_action_parameters(KAZUYA,   Action.CrouchEnd,       File.KAZUYA_CROUCHEND,         EMPTY,                         -1)
 
     Character.edit_action_parameters(KAZUYA,   Action.JumpF,           File.KAZUYA_JUMP,        -1,                         0x00000000)
     Character.edit_action_parameters(KAZUYA,   Action.JumpB,           File.KAZUYA_JUMP,        -1,                         0x00000000)
@@ -79,7 +81,7 @@ scope Kazuya {
     Character.edit_action_parameters(KAZUYA,   Action.FSmashHigh,   File.KAZUYA_SMASHF,         SMASHF,                       0x40000000)
     Character.edit_action_parameters(KAZUYA,   Action.FSmashLow,    File.KAZUYA_SMASHF,         SMASHF,                       0x40000000)
     Character.edit_action_parameters(KAZUYA,   Action.DSmash,       File.KAZUYA_SMASHD,         SMASHD,                       0x40000000)
-    Character.edit_action_parameters(KAZUYA,   Action.USmash,       File.KAZUYA_SMASHU,         SMASHU,                       0x00000000)
+    Character.edit_action_parameters(KAZUYA,   Action.USmash,       File.KAZUYA_LEFT_SPLITS,    SMASHU,                       0x40000000)
 
     Character.edit_action_parameters(KAZUYA,   Action.AttackAirF,   File.KAZUYA_AIRF,           AIRF,                         -1)
     Character.edit_action_parameters(KAZUYA,   Action.AttackAirU,   File.KAZUYA_AIRU,           AIRU,                         -1)
@@ -115,11 +117,11 @@ scope Kazuya {
     Character.add_new_action(KAZUYA,    WHILE_STAND,    -1,             ActionParams.WHILE_STAND,       -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)
     Character.add_new_action(KAZUYA,    WAVEDASH,       -1,             ActionParams.WAVEDASH,          -1,             KazuyaSpecial.WAVEDASH.main,    0,                              0x800D8C14,                         0x800DDF44)
     Character.add_new_action(KAZUYA,    GODFIST,        -1,             ActionParams.GODFIST,           -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)
-    Character.add_new_action(KAZUYA,    CROUCH_JAB,     Action.DTilt,   ActionParams.CROUCH_JAB,        -1,             KazuyaSpecial.CROUCH_JAB.main,  0,                              0x800D8C14,                         0x800DDF44)
+    Character.add_new_action(KAZUYA,    CROUCH_JAB,     -1,             ActionParams.CROUCH_JAB,        -1,             KazuyaSpecial.CROUCH_JAB.main,  0,                              0x800D8C14,                         0x800DDF44)
     Character.add_new_action(KAZUYA,    SWEEP1,         -1,             ActionParams.SWEEP1,            -1,             KazuyaSpecial.SWEEP.main,       0,                              0x800D8C14,                         0x800DDF44)
     Character.add_new_action(KAZUYA,    SWEEP2,         -1,             ActionParams.SWEEP2,            -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)
     Character.add_new_action(KAZUYA,    TILTU2,         -1,             ActionParams.TILTU2,            -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)
-    Character.add_new_action(KAZUYA,    CROUCH_TILT,    Action.DTilt,   ActionParams.CROUCH_TILT,       -1,             KazuyaSpecial.CROUCH_JAB.main,  0,                              0x800D8C14,                         0x800DDF44)
+    Character.add_new_action(KAZUYA,    CROUCH_TILT,    -1,             ActionParams.CROUCH_TILT,       -1,             KazuyaSpecial.CROUCH_JAB.main,  0,                              0x800D8C14,                         0x800DDF44)
     Character.add_new_action(KAZUYA,    USP,            -1,             ActionParams.USP,               -1,             0x0,                            KazuyaUSP.change_direction_,    KazuyaSpecial.USP.main,             KazuyaSpecial.USP.collision)
     Character.add_new_action(KAZUYA,    USP_LAND,       -1,             ActionParams.USP_LAND,          -1,             0x800D94C4,                     0,                              0x800D8BB4,                         0x800DDF44)
     Character.add_new_action(KAZUYA,    TSUNAMI2,       -1,             ActionParams.TSUNAMI2,          -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)

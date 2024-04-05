@@ -923,11 +923,11 @@ scope FGC {
 
         demon_resolve_crouch_move:
         // we're using t2 to set the action to change to
-        lb      t2, 0x01C2(a2)                          // t0 = stick_x
-        mtc1    t2, f6                                  // f6 = stick_x
-        abs.s   f6, f6                                  // f6 = abs(stick_x)
-        mfc1    t2, f6                                  // t0 = abs(stick_x)
-
+        lb      t2, 0x01C2(a2)                          // t2 = stick_x
+        bgez    t2, demon_resolve_crouch_move_continue	// branch if positive value
+        nop
+        subu    t2, r0, t2					            // t2 = abs(stick.x)
+        demon_resolve_crouch_move_continue:
         slti    t1, t2, 40                             // t1 = 1 if abs(stick_x) < 40
         lli     t2, Kazuya.Action.CROUCH_TILT
         beq     t1, r0, apply_jab_cancel

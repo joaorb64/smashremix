@@ -24,10 +24,12 @@ scope KazuyaSpecial {
             beq     t2, r0, normal            // if A is not pressed, skip
             nop
 
-            lb      t2, 0x01C2(a2)                          // t0 = stick_x
-            mtc1    t2, f6                                  // f6 = stick_x
-            abs.s   f6, f6                                  // f6 = abs(stick_x)
-            mfc1    t2, f6                                  // t0 = abs(stick_x)
+            check_neutral:
+            lb      t2, 0x01C2(a2)                          // t2 = stick_x
+            bgez    t2, check_neutral_continue			    // branch if positive value
+            nop
+            subu    t2, r0, t2					            // t2 = abs(stick.x)
+            check_neutral_continue:
 
             slti    t1, t2, 40                             // t1 = 1 if abs(stick_x) < 40
             beq     t1, r0, normal                         // stick must be neutral in X
@@ -346,11 +348,11 @@ scope KazuyaSpecial {
             nop
 
             check_neutral:
-            lb      t2, 0x01C2(a2)                          // t0 = stick_x
-            mtc1    t2, f6                                  // f6 = stick_x
-            abs.s   f6, f6                                  // f6 = abs(stick_x)
-            mfc1    t2, f6                                  // t0 = abs(stick_x)
-
+            lb      t2, 0x01C2(a2)                          // t2 = stick_x
+            bgez    t2, check_neutral_continue			    // branch if positive value
+            nop
+            subu    t2, r0, t2					            // t2 = abs(stick.x)
+            check_neutral_continue:
             slti    t1, t2, 70                             // t1 = 1 if abs(stick_x) < 70
             beq     t1, r0, main_normal                         // stick must be neutral in X
             nop

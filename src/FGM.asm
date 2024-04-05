@@ -1625,6 +1625,14 @@ scope FGM {
     add_sound(Cloud/sounds/vc_damagefly, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     add_sound(Cloud/sounds/vc_tech, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     add_sound(Cloud/sounds/vc_taunt, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+
+    add_sound(Kazuya/sounds/kaz_yag, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Kazuya/sounds/kaz_ya, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Kazuya/sounds/kaz_uia, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Kazuya/sounds/kaz_toah, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Kazuya/sounds/kaz_ho, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Kazuya/sounds/kaz_hurt, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+    add_sound(Kazuya/sounds/kaz_ko, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     
     // This is always last
     write_sounds()
