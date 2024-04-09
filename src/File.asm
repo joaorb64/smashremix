@@ -2857,4 +2857,5 @@ scope File {
     constant KAZUYA_SMASHF(0x1372)
     constant KAZUYA_DASHATTACK(0x1373)
     constant KAZUYA_LEFT_SPLITS(0x1374)
+    constant KAZUYA_SPECIALN_AIR(0x1375)
  }

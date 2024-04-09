@@ -38,6 +38,7 @@ scope Kazuya {
     insert SMASHU, "moveset/SMASHU.bin"
 
     insert NSP, "moveset/NSP.bin"
+    insert NSP_AIR, "moveset/NSP_AIR.bin"
     insert DSP, "moveset/DSP.bin"
     insert USP, "moveset/USP.bin"
     insert USP_LAND, "moveset/USP_LAND.bin"
@@ -90,15 +91,15 @@ scope Kazuya {
     Character.edit_action_parameters(KAZUYA,   Action.AttackAirB,   File.KAZUYA_AIRB,           AIRB,                         -1)
 
     Character.edit_action_parameters(KAZUYA,   0xE4,                File.KAZUYA_UPPERCUT,       NSP,                          0x40000000)
-    Character.edit_action_parameters(KAZUYA,   0xE5,                File.KAZUYA_UPPERCUT,       NSP,                          0x40000000)
+    Character.edit_action_parameters(KAZUYA,   0xE5,                File.KAZUYA_SPECIALN_AIR,   NSP_AIR,                      0x40000000)
     Character.edit_action_parameters(KAZUYA,   0xE6,                File.KAZUYA_SPECIALD,       DSP,                          0x40000000)
     Character.edit_action_parameters(KAZUYA,   0xE9,                File.KAZUYA_SPECIALD,       DSP,                          0x40000000) // aerial dsp
 
     // Modify Actions               // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
-    Character.edit_action(KAZUYA,   0xE4,              -1,             KazuyaSpecial.NSP.main,     -1,                             -1,                             -1)
-	Character.edit_action(KAZUYA,   0xE5,              -1,             KazuyaSpecial.NSP.main,     -1,                             -1,                             -1)
-    Character.edit_action(KAZUYA,   0xE6,              -1,             0x800D94C4,                  0,                      0x800D8CCC,                             0x800DDEE8)
-	Character.edit_action(KAZUYA,   0xE9,              -1,             0x800D94E8,                  0,                      0x800D91EC,                             0x800DE99C)
+    Character.edit_action(KAZUYA,   0xE4,              -1,             KazuyaSpecial.NSP.main,      0,                             -1,                             0x800DDF44)
+	Character.edit_action(KAZUYA,   0xE5,              -1,             KazuyaSpecial.NSP.main,      0,                             KazuyaSpecial.NSP_AIR.physics,  0x800DE99C)
+    Character.edit_action(KAZUYA,   0xE6,              -1,             0x800D94C4,                  0,                             0x800D8CCC,                     0x800DDEE8)
+	Character.edit_action(KAZUYA,   0xE9,              -1,             0x800D94E8,                  0,                             0x800D91EC,                     0x800DE99C)
 
     // Add Action Parameters                // Action Name      // Base Action  // Animation                    // Moveset Data             // Flags
     Character.add_new_action_params(KAZUYA,    WHILE_STAND,          -1,        File.KAZUYA_WHILE_STAND,        WHILE_STAND,                0x40000000)

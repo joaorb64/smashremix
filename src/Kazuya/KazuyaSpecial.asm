@@ -602,16 +602,28 @@ scope KazuyaSpecial {
             OS.restore_registers()
 
             normal:
-            
+            lw      t0, 0x014C(v0)              // t0 = kinetic state
+            bnez    t0, aerial                 // branch if kinetic state !grounded
+            nop
+
+            grounded:
             jal     0x800D94C4          // original routine
             nop
+            b end
+            nop
+
+            aerial:
+            jal 0x800D94E8
+            nop
             
+            end:
             OS.routine_end(0x20)
         }
     }
 
     scope USP: {
-        constant MOVE_SPEED_Y(0x42A0)   // float 80
+        constant MOVE_SPEED_Y(0x42B4)   // float 90
+        constant MOVE_SPEED_X(0x3F00)   // float 0.5
 
         scope main: {
             OS.routine_begin(0x20)
@@ -627,6 +639,14 @@ scope KazuyaSpecial {
             
             lui     at, MOVE_SPEED_Y            // load y velocity
             sw      at, 0x004C(v0)              // save updated y velocity
+
+            lb      t0, 0x01C2(v0)              // t0 = stick_x
+            mtc1    t0, f14                     // ~
+            cvt.s.w f14, f14                    // f14 = stick x
+            lui     t0, MOVE_SPEED_X            // load move speed into t0
+            mtc1    t0, f12                     // move move speed to fp register
+            mul.s   f10, f14, f12               // multiply move speed by stick_x input
+            swc1    f10, 0x0048(v0)             // store updated x velocity
 
             main_continue:
             jal     0x800D90E0          // original routine
@@ -682,6 +702,159 @@ scope KazuyaSpecial {
             lw             ra, 0x001c (sp)      // load return address
             _end_2:
             OS.routine_end(0x20)
+        }
+    }
+
+    scope NSP_AIR: {
+        constant AIR_Y_SPEED(0x4248)            // current setting - float32 50
+        constant AIR_ACCELERATION(0x3C65)       // current setting - float32 0.014
+        constant AIR_SPEED(0x41A0)              // current setting - float32 20
+        // @ Description
+        // Subroutine which handles movement for Marina's up special.
+        // Uses the moveset data command 5C0000XX (orignally identified as "apply throw?" by toomai)
+        // This command's purpose appears to be setting a temporary variable in the player struct.
+        // The most common use of this variable is to determine when a throw should be applied.
+        // Variable values used by this subroutine:
+        // 0x2 = begin movement
+        // 0x3 = movement
+        // 0x4 = ending
+        scope physics: {
+            // s0 = player struct
+            // s1 = attributes pointer
+            // 0x184 in player struct = temp variable 3
+            addiu   sp, sp,-0x0038              // allocate stack space
+            sw      ra, 0x001C(sp)              // ~
+            sw      s0, 0x0014(sp)              // ~
+            sw      s1, 0x0018(sp)              // store ra, s0, s1
+
+            lw      s0, 0x0084(a0)              // s0 = player struct
+            lw      t0, 0x014C(s0)              // t0 = kinetic state
+
+            OS.copy_segment(0x548F0, 0x40)      // copy from original air physics subroutine
+            li      t8, air_control_             // t8 = air_control_
+
+            _apply_air_physics:
+            or      a0, s0, r0                  // a0 = player struct
+            jalr    t8                          // air control subroutine
+            or      a1, s1, r0                  // a1 = attributes pointer
+            or      a0, s0, r0                  // a0 = player struct
+            jal     0x800D9074                  // air friction subroutine?
+            or      a1, s1, r0                  // a1 = attributes pointer
+
+            _check_begin:
+            lw      t0,  0x4(s0) // t1 = player object
+            lwc1    f8, 0x0078(t0)                 // load current animation frame
+
+            lui		at, 0x4040					// at = 1.0
+            mtc1    at, f6                      // ~
+            c.eq.s  f8, f6                      // f8 == f6 (current frame == 1) ?
+            nop
+            bc1fl   _check_hop           // skip if frame isn't 1
+            nop
+
+            // sw      r0, 0x0048(s0)              // x velocity = 0
+            // sw      r0, 0x004C(s0)              // y velocity = 0
+
+            _check_hop:
+            lwc1    f8, 0x0078(t0)                 // load current animation frame
+            lui		at, 0x41C0					// at = 24.0
+            mtc1    at, f6                      // ~
+            c.eq.s  f8, f6                      // f8 == f6 (current frame == 10) ?
+            nop
+            bc1fl   _end           // skip if frame isn't 10
+            nop
+
+            lui     t1, AIR_Y_SPEED             // t1 = AIR_Y_SPEED
+            sw      t1, 0x004C(s0)              // store y velocity
+
+            lui     t1, AIR_SPEED             // t1 = AIR_Y_SPEED
+            lw      t2, 0x0044(s0)            // t2 = facing direction (1 = right, -1 = left)
+
+            slti    t3, t2, 0
+            beq     t3, r0, set_x_speed
+            nop
+
+            facing_left:
+            mtc1    t1, f6
+            neg.s   f6, f6
+            mfc1    t1, f6
+
+            set_x_speed:
+            sw      t1, 0x0048(s0)            // store x velocity
+
+            _end:
+            lw      ra, 0x001C(sp)              // ~
+            lw      s0, 0x0014(sp)              // ~
+            lw      s1, 0x0018(sp)              // loar ra, s0, s1
+            addiu   sp, sp, 0x0038              // deallocate stack space
+            jr      ra                          // return
+            nop
+        }
+
+        // @ Description
+        // Subroutine which handles Marina's horizontal control for up special.
+        scope air_control_: {
+            addiu   sp, sp,-0x0028              // allocate stack space
+            sw      a1, 0x001C(sp)              // ~
+            sw      ra, 0x0014(sp)              // ~
+            sw      t0, 0x0020(sp)              // ~
+            sw      t1, 0x0024(sp)              // store a1, ra, t0, t1
+            addiu   a1, r0, 0x0008              // a1 = 0x8 (original line)
+            lw      t6, 0x001C(sp)              // t6 = attribute pointer
+            // load an immediate value into a2 instead of the air acceleration from the attributes
+            lui     a2, AIR_ACCELERATION        // a2 = AIR_ACCELERATION
+            lui     a3, AIR_SPEED               // a3 = AIR_SPEED
+            jal     0x800D8FC8                  // air drift subroutine?
+            nop
+            lw      ra, 0x0014(sp)              // ~
+            lw      t0, 0x0020(sp)              // ~
+            lw      t1, 0x0024(sp)              // load ra, t0, t1
+            addiu   sp, sp, 0x0028              // deallocate stack space
+            jr      ra                          // return
+            nop
+        }
+
+        // @ Description
+        // Subroutine which allows a direction change
+        // Uses the moveset data command 580000XX (orignally identified as "set flag" by toomai)
+        // This command's purpose appears to be setting a temporary variable in the player struct.
+        // Variable values used by this subroutine:
+        // 0x2 = change direction
+        scope change_direction_: {
+            // begin by checking for turn inputs
+            lw      a1, 0x0084(a0)              // a1 = player struct
+
+            lui		at, 0x4000					// at = 1.0
+            mtc1    at, f6                      // ~
+            lwc1    f8, 0x0078(a0)              // ~
+            c.eq.s  f8, f6                      // ~
+            nop
+            bc1fl   _end               // skip if haven't reached frame 3
+            nop
+
+            lb      t6, 0x01C2(a1)              // t6 = stick_x
+            lw      t7, 0x0044(a1)              // t7 = DIRECTION
+            multu   t6, t7                      // ~
+            mflo    t6                          // t6 = stick_x * DIRECTION
+            slti    at, t6, -39                 // at = 1 if stick_x < -39, else at = 0
+            beqz    at, _end                    // branch if stick_x >= -39
+            nop
+
+            // if we're here, stick_x is opposite the facing direction, so turn the character around
+            subu    t7, r0, t7                  // ~
+            sw      t7, 0x0044(a1)              // reverse and update DIRECTION
+
+            mtc1    t7, f6                      // ~
+            cvt.s.w f6, f6                      // f6 = direction
+            lui     at, 0x8013                  // ~
+            lwc1    f8, 0xFE90(at)              // at = rotation constant
+            mul.s   f8, f8, f6                  // f8 = rotation constant * direction
+            lw      t7, 0x08E8(a1)              // t6 = character control joint struct
+            swc1    f8, 0x0034(t7)              // update character rotation to match direction
+
+            _end:
+            jr      ra                          // return
+            nop
         }
     }
 }
