@@ -89,6 +89,74 @@ scope Parry {
         nop
     }
 
+    // 800E2A90 + 74
+    scope attack_parry_shield: {
+        OS.patch_start(0x5E304, 0x800E2B04)
+        j       attack_parry_shield
+        nop
+        _return:
+        OS.patch_end()
+
+        // s0 = victim struct
+        // 0x38(sp) = attacker struct
+        // t0 = hit damage
+        or      v1, r0, t0      // v1 = hit damage
+        or      t0, r0, s0      // t0 = victim struct
+        lw      t4, 0x38(sp)    // t4 = attacker struct
+
+        //Toggles.read(entry_perfect_shield, at)      // at = Perfect shield toggle
+        //beqz    at, _original                       // branch if toggle is disabled
+        addiu   at, r0, Action.ShieldOff             // at = shield player action
+        // if here, check for a perfect shield
+        lw      t2, 0x0024(t0)                      // t2 = current players action
+        bne     t2, at, _original                   // branch if not shielding
+        nop
+
+        // Update parry flag
+        OS.save_registers()
+        lbu     t1, 0x000D(t4)              // t1 = attacker port
+        li      t2, is_hit_parry            // ~
+        addu    t3, t2, t1                  // t3 = px is_hit_parry address
+        lbu     t1, 0x0000(t3)              // t2 = is_hit_parry
+        addi t1, 0x1                        // is_hit_parry += 1
+        sb   t1, 0x0000(t3)                 // update is_hit_parry
+        OS.restore_registers()
+
+        // Calculate hitbox hitlag
+        OS.save_registers()
+        // s32 gmCommon_DamageCalcHitLag(s32 damage, s32 status_id, f32 hitlag_mul)
+        or a0, r0, v1                           // a0 = hit damage
+        lw a1, 0x0024(t0)                      // a1 = current players action
+        //lw a2, 0x7E0(s5)
+        lui a2, 0x3F80 // TODO: should load hitlag multiplier
+
+        jal 0x800EA1C0
+        nop
+        
+        sw v0, 0x0040(t4)
+        OS.restore_registers()
+
+        lw t3, 0x0040(t4) // t3 = attacker original hitlag
+        addi t4, t3, 0xB // add 11
+        sw t4, 0x0040(t0) // save to victim
+
+        lw t2, 0x0004(t0) // t2 = victim object
+
+        jal activate_parry
+        nop        
+
+        j 0x800E2B74
+        nop
+
+        _original:
+        addu    t0, t8, t9
+        sw      t0,0x7cc(s0) // og line 1: victim_fp->shield_damage_total += (attacker_hit->damage + attacker_hit->shield_damage);
+        lw      v0, 0xc(s1) // og line 2
+
+        j       _return
+        nop
+    }
+
     // 800E3418 + f0
     scope projectile_parry: {
         OS.patch_start(0x5ED08, 0x800E3508)
