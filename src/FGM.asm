@@ -1633,6 +1633,8 @@ scope FGM {
     add_sound(Kazuya/sounds/kaz_ho, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     add_sound(Kazuya/sounds/kaz_hurt, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     add_sound(Kazuya/sounds/kaz_ko, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
+
+    add_sound(sounds/misc/parry, SAMPLE_RATE_16000, FGM_TYPE_VOICE, 0, -1)
     
     // This is always last
     write_sounds()

@@ -26,9 +26,9 @@ scope Parry {
     // @ Description
     // Don't change players action to shield stun
     // 800E2D44 + a0
-    scope shield_stun_action_change_skip: {
+    scope attack_parry: {
         OS.patch_start(0x5E5E4, 0x800E2DE4)
-        j       shield_stun_action_change_skip
+        j       attack_parry
         nop
         _return:
         OS.patch_end()
@@ -76,10 +76,15 @@ scope Parry {
         sw t4, 0x0040(t0) // save to victim
 
         jal activate_parry
-        nop        
+        nop
 
-        j 0x800E2EC8
-        addiu s0, sp, 0x003C
+        addiu   s0,sp,0x3c
+
+        // // copy the part that generates the hitbox nullify effect
+        // OS.copy_segment(0x5E6C8, 0x18) // copy 6 lines at (800E2D44 + 184)
+
+        j 0x800E2EEC // jump to the end of the function
+        nop
 
         _original:
         jal 0x800E2CC0                          // og line1
@@ -112,6 +117,12 @@ scope Parry {
         bne     t2, at, _original                   // branch if not shielding
         nop
 
+        // generates nullify effect
+        // OS.copy_segment(0x5E35C, 0x18) // 800E2A90 + cc, 6 lines
+
+        lw      t0, 0xc(s1)          // t0 = attacker_hit->damage
+        lw      t4, 0x38(sp)         // t4 = attacker struct
+
         // Update parry flag
         OS.save_registers()
         lbu     t1, 0x000D(t4)              // t1 = attacker port
@@ -125,8 +136,8 @@ scope Parry {
         // Calculate hitbox hitlag
         OS.save_registers()
         // s32 gmCommon_DamageCalcHitLag(s32 damage, s32 status_id, f32 hitlag_mul)
-        or a0, r0, v1                           // a0 = hit damage
-        lw a1, 0x0024(t0)                      // a1 = current players action
+        or a0, r0, t0                           // a0 = hit damage
+        lw a1, 0x0024(s0)                      // a1 = current players action
         //lw a2, 0x7E0(s5)
         lui a2, 0x3F80 // TODO: should load hitlag multiplier
 
@@ -138,14 +149,15 @@ scope Parry {
 
         lw t3, 0x0040(t4) // t3 = attacker original hitlag
         addi t4, t3, 0xB // add 11
-        sw t4, 0x0040(t0) // save to victim
+        sw t4, 0x0040(s0) // save to victim
 
-        lw t2, 0x0004(t0) // t2 = victim object
+        or t0, r0, s0 // t0 = victim struct
+        lw t2, 0x0004(s0) // t2 = victim object
 
         jal activate_parry
         nop        
 
-        j 0x800E2B74
+        j 0x800E2B74 // 800E2A90 + E4
         nop
 
         _original:
@@ -157,9 +169,9 @@ scope Parry {
         nop
     }
 
-    // 800E3418 + f0
+    // 800E3418 + 68
     scope projectile_parry: {
-        OS.patch_start(0x5ED08, 0x800E3508)
+        OS.patch_start(0x5EC80, 0x800E3480)
         j       projectile_parry
         nop
         _return:
@@ -185,6 +197,13 @@ scope Parry {
 
         lw t1, 0x40(sp) // t1 = hitbox damage
 
+        sw      t1, 0x240(s0) // projectile->hit_shield_damage = damage
+        sw      r0, 0x248(s0) // projectile->shield_collide_vec.x = 0
+        sw      r0, 0x24C(s0) // projectile->shield_collide_vec.y = 0
+        sw      r0, 0x250(s0) // projectile->shield_collide_vec.z = 0
+        lui     t3, 0x42b4 // t3 = 90
+        sw      t3, 0x244(s0) // projectile->shield_collide_angle = 1
+
         // Calculate hitbox hitlag
         OS.save_registers()
         // s32 gmCommon_DamageCalcHitLag(s32 damage, s32 status_id, f32 hitlag_mul)
@@ -199,20 +218,20 @@ scope Parry {
         sw v0, 0x0040(t0)
         OS.restore_registers()
 
-        j   0x800E359C // Pretend the hit didn't happen
+        j   0x800E35A4 // 800E3418+18c: Pretend the hit didn't happen
         nop
 
         _original:
-        addiu   a0, a0, 0x11C0  // og line1
-        lw      v1, 0x0000(a0)  // og line2
+        lw      t9,0x48(s1)  // og line1
+        sll     t1,t9,0x2  // og line2
 
         j       _return
         nop
     }
 
-    // ftMain_UpdateShieldStatWeapon: 800E3048 + C8
+    // ftMain_UpdateShieldStatWeapon: 800E3048 + 5C
     scope projectile_parry_on_shield: {
-        OS.patch_start(0x5E910, 0x800E3110)
+        OS.patch_start(0x5E8A4, 0x800E30A4)
         j       projectile_parry_on_shield
         nop
         _return:
@@ -231,24 +250,6 @@ scope Parry {
         bne     t1, at, _original                   // branch if not shielding
         nop
 
-        // original function
-        // has to be done before we delete the shield to avoid a null pointer
-        lw      t1,0x8f4(s1)
-        addiu   s0,sp,0x30
-        move    a0,s0
-        sw      v1,0x3c(sp)
-        lw      a2,0x48(sp)
-        lw      a3,0x54(sp)
-        jal     0x800F0C4C
-        sw      t1,0x10(sp)
-        lw      t2,0x44(sp)
-        lw      v1,0x3c(sp)
-        move    a0,s0
-        lw      t3,0x3c(t2)
-        jal     0x80100BF0
-        addu    a1,t3,v1
-        // original function end
-
         lw      v1,0x3c(sp) // restore v1
         or      t0, r0, s1 // restore t0 = victim struct
 
@@ -258,6 +259,13 @@ scope Parry {
         nop
 
         lw t1,0x3c(sp) // t1 = hitbox damage
+
+        sw      t1, 0x240(s0) // projectile->hit_shield_damage = damage
+        sw      r0, 0x248(s0) // projectile->shield_collide_vec.x = 0
+        sw      r0, 0x24C(s0) // projectile->shield_collide_vec.y = 0
+        sw      r0, 0x250(s0) // projectile->shield_collide_vec.z = 0
+        lui     t3, 0x42b4 // t3 = 90
+        sw      t3, 0x244(s0) // projectile->shield_collide_angle = 1
 
         // Calculate hitbox hitlag
         OS.save_registers()
@@ -273,13 +281,147 @@ scope Parry {
         sw v0, 0x0040(t0)
         OS.restore_registers()
 
-        j 0x800E31A0 // go to the end of the original function
+        j 0x800E31A0 // 800E3048+158: go to the end of the original function
         nop
 
         _original:
-        lw t3, 0x07CC(s1) // original line 1
-        lw t7, 0x07C8(s1) // original line 2
+        lw      v1,0x3c(sp) // original line 1
+        lw      t9,0x240(s0) // original line 2
 
+        j       _return
+        nop
+    }
+
+    // ftMain_UpdateDamageStatItem: 800E39B0 + 238
+    scope item_parry: {
+        OS.patch_start(0x5F3E8, 0x800E3BE8)
+        j       item_parry
+        nop
+        _return:
+        OS.patch_end()
+
+        // 0x38(sp) = damage
+        // a0 = victim struct
+
+        or      t0, r0, a0 // t0 = victim struct
+
+        //Toggles.read(entry_perfect_shield, at)      // at = Perfect shield toggle
+        //beqz    at, _original                       // branch if toggle is disabled
+        addiu   at, r0, Action.ShieldOff             // at = shield player action
+        // if here, check for a perfect shield
+        lw      t1, 0x0024(t0)                      // t0 = current players action
+        bne     t1, at, _original                   // branch if not shielding
+        nop
+
+        lw t2, 0x0004(t0) // t2 = player object
+
+        jal activate_parry
+        nop
+
+        lw t1, 0x38(sp) // t1 = hitbox damage
+
+        sw t1, 0x274(s0) // ap->hit_shield_damage = damage;
+        lui t3, 0x42b4 // t3 = 90
+        sw r0,0x264(s0) // ap->hit_victim_damage = 0; < we're not hitting a character, but a shield!
+        swc t3, 0x278(s0) //ap->shield_collide_angle = angle;
+        sw r0, 0x27c(s0) // ap->shield_collide_vec.x = 0.0F;
+        sw r0, 0x278(s0) // ap->shield_collide_vec.y = 0.0F;
+        sw r0, 0x280(s0) // ap->shield_collide_vec.z = 0.0F;
+
+        // Calculate hitbox hitlag
+        OS.save_registers()
+        // s32 gmCommon_DamageCalcHitLag(s32 damage, s32 status_id, f32 hitlag_mul)
+        or a0, r0, t1
+        lw a1, 0x0024(t0)                      // a1 = current players action
+        //lw a2, 0x7E0(s5)
+        lui a2, 0x3F80 // TODO: should load hitlag multiplier
+
+        jal 0x800EA1C0
+        nop
+        
+        sw v0, 0x0040(t0)
+        OS.restore_registers()
+
+        j 0x800E3C90    // ignore collision
+        nop
+
+        _original:
+        lw          t0, 0x0044(sp)      // og 0
+        lui         a0, 0x8013          // og 1
+        addiu       a0, a0, 0x11C0      // og 2
+
+        j       _return
+        nop
+    }
+    
+    // ftMain_UpdateShieldStatItem: 800E36F8 + D8
+    scope item_parry_on_shield: {
+        OS.patch_start(0x5EFD0, 0x800E37D0)
+        j       item_parry_on_shield
+        nop
+        _return:
+        OS.patch_end()
+
+        // s1 = victim struct
+        // t6 / 0x7cc(s1) = damage
+
+        or      t0, r0, s1 // t0 = victim struct
+
+        //Toggles.read(entry_perfect_shield, at)      // at = Perfect shield toggle
+        //beqz    at, _original                       // branch if toggle is disabled
+        addiu   at, r0, Action.ShieldOff             // at = shield player action
+        // if here, check for a perfect shield
+        lw      t1, 0x0024(t0)                      // t0 = current players action
+        bne     t1, at, _original                   // branch if not shielding
+        nop
+
+        // original function
+        // has to be done before we delete the shield to avoid a null pointer
+        // generates nullify effect
+        // addu t6, t4, t5         // og 1
+        // sw t6, 0x07cc(s1)       // og 3
+        // OS.copy_segment(0x5F014, 0x38)
+        // original function end
+
+        // or      t0, r0, s1      // t0 = victim struct
+        lw      t6, 0x7cc(s1)   // t6 = damage
+        lw      t2, 0x0004(t0)  // t2 = player object
+
+        jal activate_parry
+        nop
+
+        lw t1, 0x7cc(s1) // t1 = hitbox damage
+
+        // Calculate hitbox hitlag
+        OS.save_registers()
+        // s32 gmCommon_DamageCalcHitLag(s32 damage, s32 status_id, f32 hitlag_mul)
+        or a0, r0, t1
+        lw a1, 0x0024(t0)                      // a1 = current players action
+        //lw a2, 0x7E0(s5)
+        lui a2, 0x3F80 // TODO: should load hitlag multiplier
+
+        jal 0x800EA1C0
+        nop
+
+        sw v0, 0x0040(t0)
+        OS.restore_registers()
+
+        j 0x800E384C // go to the end of the original function
+        nop
+
+        _original:
+        addu t6, t4, t5         // og 1
+        beqz at, _beqz_to_jump  // og 2 <- had to adapt to a jump
+        sw t6, 0x07CC(s1)       // og 3
+
+        j _end
+        nop
+
+        _beqz_to_jump:
+        j 0x800E3814
+        nop
+
+        _end:
         j       _return
         nop
     }
@@ -339,7 +481,7 @@ scope Parry {
         sb      t1, 0x05BB(t0)              // set hurtbox state to 0x0003(intangible)
 
         // play sound effect
-        lli     a0, 0x8B                    // pokeball open
+        lli     a0, 0x5B5                   // parry sfx
         jal     FGM.play_                   // play sfx
         nop
 
@@ -348,7 +490,7 @@ scope Parry {
         addiu   sp,sp,-0x30
         or      a0, r0, t2
         sw      r0, 0x10(sp)
-        li      a1, 0x16
+        li      a1, 0x16 // shockwave GFX
         lw      t2, 0x44(t0)
         sw      r0, 0x1c(sp)
         sw      r0, 0x18(sp)

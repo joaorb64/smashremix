@@ -871,6 +871,12 @@ scope FGC {
         lw      t0, 0x0024(a2)                   // t0 = current action
         lw      t1,  0x4(a2)                     // t1 = fighter object
 
+        // OS.save_registers()
+        // lw      a0, 0x4(a2) // a0 = fighter object
+        // jal     auto_turnaround
+        // nop
+        // OS.restore_registers()
+
         lli    t1, Action.Jab1
         beq    t0, t1, demon_apply_root_motion
         nop
@@ -1012,6 +1018,61 @@ scope FGC {
 
         b goto_fcg_tap_hold_end_
         nop
+    }
+
+    // a0 = player object
+    scope auto_turnaround: {
+        OS.routine_begin(0x20)
+
+        sw      a0, 0x0004(sp)              // ~
+        sw      a1, 0x0008(sp)              // ~
+        sw      a2, 0x000C(sp)              // ~
+        // sw      ra, 0x0010(sp)              // ~
+        // sw      a1, 0x0014(sp)              // save registers
+
+        lw      t0, 0x0084(a0)              // t0 = player struct
+
+        lw      t6, 0x0B18(t0)              //
+        lw      t7, 0x0B1C(t0)              // save player struct variables
+
+        sw      r0, 0x0B18(t0)              // target = NULL
+        sw      r0, 0x0B1C(t0)              // X_DIFF = 0
+
+        jal     fcg_tap_hold.check_for_targets_          // check_for_targets_
+        nop
+
+        lw      a0, 0x0004(sp)              // ~
+        lw      a1, 0x0008(sp)              // ~
+        lw      a2, 0x000C(sp)              // ~ restore a0, a1, a2
+
+        lw      t0, 0x0084(a0)              // t0 = player struct
+
+        sw      t6, 0x0B18(t0)              //
+        sw      t7, 0x0B1C(t0)              // restore player struct variables
+
+        beq     v0, r0, _end          // branch if no target was found
+        nop
+
+        // apply turnaround
+        mtc1    v1, f0                      // f0 = xdiff
+        mtc1    r0, f2                      // f2 = 0
+        c.le.s  f2, f0
+        bc1t    _end
+
+        lw      t7, 0x0044(t0)              // t7 = DIRECTION
+        subu    t7, r0, t7                  // ~
+        sw      t7, 0x0044(t0)              // reverse and update DIRECTION
+
+        mtc1    t7, f6                      // ~
+        cvt.s.w f6, f6                      // f6 = direction
+        lui     t2, 0x8013                  // ~
+        lwc1    f8, 0xFE90(t2)              // t2 = rotation constant
+        mul.s   f8, f8, f6                  // f8 = rotation constant * direction
+        lw      t7, 0x08E8(t0)              // t6 = character control joint struct
+        swc1    f8, 0x0034(t0)              // update character rotation to match direction
+
+        _end:
+        OS.routine_end(0x20)
     }
 
     // Hitlag just ended
