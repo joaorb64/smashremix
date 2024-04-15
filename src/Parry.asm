@@ -331,9 +331,13 @@ scope Parry {
 
         lw t3, 0x384(s0) // load function for when the item hits a shield
         lw a0, 0x0004(s0) // load item object from item struct
+
+        beqz t3, shield_collision_after
+        nop
         jalr t3 // run function for shield collision
         nop
 
+        shield_collision_after:
         lw t1, 0x38(sp) // t1 = hitbox damage
         lw t0, 0x4C(sp) // t0 = victim struct
 
