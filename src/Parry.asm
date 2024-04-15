@@ -201,7 +201,7 @@ scope Parry {
         sw      r0, 0x248(s0) // projectile->shield_collide_vec.x = 0
         sw      r0, 0x24C(s0) // projectile->shield_collide_vec.y = 0
         sw      r0, 0x250(s0) // projectile->shield_collide_vec.z = 0
-        lui     t3, 0x42b4 // t3 = 90
+        lui     t3, 0x4296 // t3 = 75
         sw      t3, 0x244(s0) // projectile->shield_collide_angle = 1
 
         // Calculate hitbox hitlag
@@ -264,7 +264,7 @@ scope Parry {
         sw      r0, 0x248(s0) // projectile->shield_collide_vec.x = 0
         sw      r0, 0x24C(s0) // projectile->shield_collide_vec.y = 0
         sw      r0, 0x250(s0) // projectile->shield_collide_vec.z = 0
-        lui     t3, 0x42b4 // t3 = 90
+        lui     t3, 0x4296 // t3 = 75
         sw      t3, 0x244(s0) // projectile->shield_collide_angle = 1
 
         // Calculate hitbox hitlag
@@ -321,12 +321,21 @@ scope Parry {
         lw t1, 0x38(sp) // t1 = hitbox damage
 
         sw t1, 0x274(s0) // ap->hit_shield_damage = damage;
-        lui t3, 0x42b4 // t3 = 90
+        lui t3, 0x4296 // t3 = 75
         sw r0,0x264(s0) // ap->hit_victim_damage = 0; < we're not hitting a character, but a shield!
-        swc t3, 0x278(s0) //ap->shield_collide_angle = angle;
+        sw t3, 0x278(s0) //ap->shield_collide_angle = angle;
         sw r0, 0x27c(s0) // ap->shield_collide_vec.x = 0.0F;
         sw r0, 0x278(s0) // ap->shield_collide_vec.y = 0.0F;
-        sw r0, 0x280(s0) // ap->shield_collide_vec.z = 0.0F;
+        lui t3, 0x3f80 // t3 = 1.0F
+        sw t3, 0x280(s0) // ap->shield_collide_vec.z = 0.0F;
+
+        lw t3, 0x384(s0) // load function for when the item hits a shield
+        lw a0, 0x0004(s0) // load item object from item struct
+        jalr t3 // run function for shield collision
+        nop
+
+        lw t1, 0x38(sp) // t1 = hitbox damage
+        lw t0, 0x4C(sp) // t0 = victim struct
 
         // Calculate hitbox hitlag
         OS.save_registers()
@@ -342,7 +351,7 @@ scope Parry {
         sw v0, 0x0040(t0)
         OS.restore_registers()
 
-        j 0x800E3C90    // ignore collision
+        j 0x800E3C98 // jump to the end of function
         nop
 
         _original:
