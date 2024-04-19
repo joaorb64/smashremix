@@ -223,7 +223,7 @@ scope CharacterSelect {
     dw  0xC9F0 + 0x200                      // 0x48 - RYU
     dw  0xD220 + 0x200                     // 0x49 - KEN
     dw  0x11B58 + 0x200                    // 0x4A - CLOUD
-    dw  0xC9F0 + 0x200                      // 0x4B - KAZUYA
+    dw  0xB4C0 + 0x200                      // 0x4B - KAZUYA
     // ADD NEW CHARACTERS HERE
 
     // REMIX POLYGONS
