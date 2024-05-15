@@ -608,6 +608,7 @@ scope Zoom {
         nop
     }
 
+    // 0x8000A5E4
     scope objects_update: {
         OS.patch_start(0xB1EC, 0x8000A5EC)
         j       objects_update
@@ -645,6 +646,27 @@ scope Zoom {
 
         jal 0x8010CECC // update camera
         nop
+
+        li      t6, Zoom.zoom_background_object
+        lw      a0, 0x0(t6)
+
+        beqz    a0, after_obj
+        nop
+
+        ori     t3, r0, 0x0001  // % 1
+
+        // Using t3 in the "and" working as a "mod" operation (division remainder)
+        li      t5, Global.current_screen_frame_count // ~
+        lw      t5, 0x0000(t5)           // t5 = global frame count
+
+        and     t7, t5, t3
+        beqz    t7, after_obj
+        nop
+
+        jal     Zoom.effect_update
+        nop
+
+        after_obj:
 
         OS.restore_registers()
 
