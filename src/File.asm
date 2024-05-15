@@ -2840,7 +2840,7 @@ scope File {
     constant KAZUYA_TILTF(0x1361)
     constant KAZUYA_CROUCH_TILT(0x1362)
     constant KAZUYA_TILTD(0x1363)
-    constant KAZUYA_UPPERCUT(0x1364)
+    constant KAZUYA_SPECIALN(0x1364)
     constant KAZUYA_SPECIALD(0x1365)
     constant KAZUYA_AIRN(0x1366)
     constant KAZUYA_AIRD(0x1367)
@@ -2858,4 +2858,9 @@ scope File {
     constant KAZUYA_DASHATTACK(0x1373)
     constant KAZUYA_LEFT_SPLITS(0x1374)
     constant KAZUYA_SPECIALN_AIR(0x1375)
+    constant KAZUYA_RR3KICKS1(0x1376)
+    constant KAZUYA_RR3KICKS2(0x1377)
+    constant KAZUYA_RR3KICKS3(0x1378)
+    constant KAZUYA_RR3KICKS4(0x1379)
+    constant KAZUYA_SPECIALN2(0x137A)
  }

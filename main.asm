@@ -106,6 +106,7 @@ include "src/DragonKingHUD.asm"
 include "src/Accessibility.asm"
 include "src/BlastZone.asm"
 include "src/MagnifyingGlass.asm"
+include "src/Zoom.asm"
 
 // CHARACTER
 include "src/Character.asm"

@@ -871,11 +871,49 @@ scope FGC {
         lw      t0, 0x0024(a2)                   // t0 = current action
         lw      t1,  0x4(a2)                     // t1 = fighter object
 
-        // OS.save_registers()
-        // lw      a0, 0x4(a2) // a0 = fighter object
-        // jal     auto_turnaround
-        // nop
-        // OS.restore_registers()
+        auto_turnaround_check:
+        lw      t1,  0x4(a2)                     // t1 = fighter object
+        lwc1    f8, 0x0078(t1)              // load current frame into f8
+        
+        // If on first animation frame, check if we have to change to the proximity move
+        lui at, 0x4000
+        mtc1 at, f6
+        c.eq.s f8, f6
+        nop
+        bc1fl auto_turnaround_check_end
+        nop
+
+        lli    t1, Action.Jab1
+        beq    t0, t1, apply_auto_turnaround
+        nop
+
+        lli    t1, Action.UTilt
+        beq    t0, t1, apply_auto_turnaround
+        nop
+
+        lli    t1, Kazuya.Action.CROUCH_JAB
+        beq    t0, t1, apply_auto_turnaround
+        nop
+
+        lli    t1, Kazuya.Action.CROUCH_TILT
+        beq    t0, t1, apply_auto_turnaround
+        nop
+
+        lli    t1, Kazuya.Action.WHILE_STAND
+        beq    t0, t1, apply_auto_turnaround
+        nop
+
+        b auto_turnaround_check_end
+        nop
+        
+        apply_auto_turnaround:
+        OS.save_registers()
+        lw      a0, 0x4(a2) // a0 = fighter object
+        jal     auto_turnaround
+        nop
+        OS.restore_registers()
+
+        auto_turnaround_check_end:
 
         lli    t1, Action.Jab1
         beq    t0, t1, demon_apply_root_motion
@@ -907,6 +945,14 @@ scope FGC {
 
         lli     t1, Action.FTiltLow
         beq     t0, t1, demon_patch_tsunami
+        nop
+
+        lli     t1, Action.FTiltMidHigh
+        beq     t0, t1, demon_patch_ftilthigh
+        nop
+
+        lli     t1, Action.FTiltHigh
+        beq     t0, t1, demon_patch_ftilthigh
         nop
         
         lhu     t1, 0x01BE(a2)              // load button press buffer
@@ -994,6 +1040,14 @@ scope FGC {
         b goto_fcg_tap_hold_end_
         nop
 
+        demon_patch_ftilthigh:
+        // Change the main function used for utilt
+        li t0, KazuyaSpecial.RR3KICKS.main
+        sw t0, 0x9D4(a2)
+
+        b goto_fcg_tap_hold_end_
+        nop
+
         demon_wavedash_check:
         lw      t0, 0x0024(a2)                   // t0 = current action
 
@@ -1069,7 +1123,7 @@ scope FGC {
         lwc1    f8, 0xFE90(t2)              // t2 = rotation constant
         mul.s   f8, f8, f6                  // f8 = rotation constant * direction
         lw      t7, 0x08E8(t0)              // t6 = character control joint struct
-        swc1    f8, 0x0034(t0)              // update character rotation to match direction
+        swc1    f8, 0x0034(t7)              // update character rotation to match direction
 
         _end:
         OS.routine_end(0x20)

@@ -235,6 +235,126 @@ scope KazuyaSpecial {
         }
     }
 
+    scope RR3KICKS: {
+        constant A_PRESSED(0x8000)  // bitmask for a press
+        constant B_PRESSED(0x4000)  // bitmask for b press
+
+        // tmp variable 3 0x0184 -- used to check if A or B was ever pressed down during the move
+
+        scope main: {
+            OS.routine_begin(0x20)
+
+            lw      v0, 0x0084(a0)  // v0 = player struct
+
+            lw      t0, 0x0078(a0)  // t0 = current animation frame
+            lui     t1, 0x4000      // t1 = 1.0F
+
+            // if frame != 1, skip
+            bne     t0, t1, main_continue
+            nop
+            
+            sw      r0, 0x0184(v0)              // reset tmp variable 3 = 0
+
+            main_continue:
+            sw      a0, 0x0010(sp)
+            
+            lw      v0, 0x0084(a0)              // loads player struct into v0
+            lhu     t1, 0x01BE(v0)              // load button press buffer
+            andi    t2, t1, A_PRESSED           // t2 = 0x80 if (A_PRESSED); else t2 = 0
+            bne     t2, r0, register_press            // if A is pressed
+            nop
+
+            andi    t2, t1, B_PRESSED           // t2 = 0x80 if (A_PRESSED); else t2 = 0
+            bne     t2, r0, register_press            // if A is pressed
+            nop
+
+            b   normal
+            nop
+
+            register_press:
+            lli     t0, 0x1
+            sw      t0, 0x0184(v0)
+
+            b       normal
+            nop
+
+            normal:
+            lw     t3, 0x0024(v0)              // t3 = current action
+
+            // Here, we load into t1 the frame in which each step of the move should check for a transition
+            lli    t2, Action.FTiltMidHigh
+            beq    t1, t2, normal_continue
+            lui    t1, 0x41A8      // t1 = 21.0F
+
+            lli    t2, Action.FTiltHigh
+            beq    t1, t2, normal_continue
+            lui    t1, 0x41A8      // t1 = 21.0F
+
+            lli    t2, Action.FTiltMidHigh
+            beq    t1, t2, normal_continue
+            lui    t1, 0x4170      // t1 = 15.0F
+
+            lli    t2, Action.FTiltMidHigh
+            beq    t1, t2, normal_continue
+            lui    t1, 0x41A8      // t1 = 21.0F
+
+            normal_continue:
+            lw      t0, 0x0078(a0)  // t0 = current animation frame
+            mtc1    t0, f6
+            mtc1    t1, f8
+
+            c.eq.s  f6, f8
+            nop
+            bc1fl   main_normal
+            nop
+
+            lw      t0, 0x0184(v0)          // was A or B ever pressed during the move?
+            beq     t0, r0, main_normal     // If not, main_normal
+            nop
+
+            // all conditions are met
+            b cancel_next
+            nop
+
+            cancel_next:
+            lw     t1, 0x0024(v0)              // t1 = current action
+
+            // we'll use t2 to store the next action as we jump
+
+            lli    t2, Action.FTiltMidHigh
+            beq    t1, t2, cancel_next_change_action
+            lli    t2, Kazuya.Action.RR3KICKS2
+
+            lli    t2, Action.FTiltHigh
+            beq    t1, t2, cancel_next_change_action
+            lli    t2, Kazuya.Action.RR3KICKS2
+
+            lli    t2, Kazuya.Action.RR3KICKS2
+            beq    t1, t2, cancel_next_change_action
+            lli    t2, Kazuya.Action.RR3KICKS3
+
+            lli    t2, Kazuya.Action.RR3KICKS3
+            beq    t1, t2, cancel_next_change_action
+            lli    t2, Kazuya.Action.RR3KICKS4
+
+            cancel_next_change_action:
+            OS.save_registers()
+            or      a1, r0, t2                  // a1 = t2 = next action
+            lui     a3, 0x0                     // a2(starting frame) = 0.0
+            lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+            sw      r0, 0x0010(sp)              // argument 4 = 0
+            jal     0x800E6F24                  // change action
+            nop
+            OS.restore_registers()
+            OS.routine_end(0x20)
+
+            main_normal:
+            jal     0x800D94C4          // original routine
+            nop
+            OS.routine_end(0x20)
+        }
+    }
+
     scope UTILT: {
         constant A_PRESSED(0x8000)  // bitmask for a press
 
@@ -619,10 +739,92 @@ scope KazuyaSpecial {
             end:
             OS.routine_end(0x20)
         }
+
+        scope light_to_hard: {
+            OS.routine_begin(0x20)
+
+            lwc1    f8, 0x0078(a0)              // load current animation frame
+            lui		at, 0x4100					// at = 8.0
+            mtc1    at, f6                      // ~
+            c.eq.s  f8, f6                      // f8 == f6 (current frame == 8) ?
+            nop
+            bc1fl   _end           // skip if frame isn't greater than 6
+            nop
+
+            lhu     t0, 0x01BC(a2)              // load button press buffer
+            andi    t1, t0, 0x4000              // t1 = 0x40 if (B_PRESSED); else t1 = 0
+            beq     t1, r0, _end               // skip if (!B_PRESSED)
+            nop
+
+            addiu   sp, sp,-0x0038              // allocate stack space
+            sw      ra, 0x0004(sp)
+            sw      a0, 0x0008(sp)
+            sw      a1, 0x000C(sp)              // store variables
+            sw      a2, 0x0010(sp)              // store variables
+            sw      a3, 0x0014(sp)              // store variables
+            sw      v0, 0x0018(sp)              // store variables
+            addiu   sp, sp,-0x0030              // allocate stack space
+
+            lw      v0, 0x0034(a2)              // v0 = player struct
+
+            lli     a1, Kazuya.Action.SPECIALN2 // a1 = Action
+            lw      a2, 0x0078(a0)              // a2(starting frame) = current animation frame
+            lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+            sw      r0, 0x0010(sp)              // argument 4 = 0
+            jal     0x800E6F24                  // change action
+            nop
+
+            addiu   sp, sp, 0x0030              // allocate stack space
+            lw      ra, 0x0004(sp)              // restore ra
+            lw      a0, 0x0008(sp)
+            lw      a1, 0x000C(sp)              // restore a2
+            lw      a2, 0x0010(sp)              // restore a2
+            lw      a3, 0x0014(sp)              // restore a2
+            lw      v0, 0x0018(sp)              // restore a2
+            addiu   sp, sp, 0x0038              // deallocate stack space
+
+            _end:
+            OS.routine_end(0x20)
+        }
+    }
+
+    scope DSP: {
+        scope air_collision: {
+            OS.routine_begin(0x20)
+            sw      ra, 0x0014(sp)              // store ra
+            li      a1, air_to_ground          // a1(transition subroutine) = air_to_ground
+            jal     0x800DE80C                  // common air collision subroutine (transition on landing, allow ledge grab)
+            nop 
+            lw      ra, 0x0014(sp)              // load ra
+            OS.routine_end(0x20)
+        }
+
+        scope air_to_ground: {
+            addiu   sp, sp,-0x0038              // allocate stack space
+            sw      ra, 0x001C(sp)              // store ra
+            sw      a0, 0x0038(sp)              // 0x0038(sp) = player object
+            lw      a0, 0x0084(a0)              // a0 = player struct
+            jal     0x800DEE98                  // set grounded state
+            sw      a0, 0x0034(sp)              // 0x0034(sp) = player struct
+            lw      v0, 0x0034(sp)              // v0 = player struct
+            lw      a0, 0x0038(sp)              // a0 = player object
+            
+            addiu   a1, r0, 0xE6              // a1 = equivalent ground action for current air action
+            
+            lw      a2, 0x0078(a0)              // a2(starting frame) = current animation frame
+            lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+            lli     t6, 0x0001                  // ~
+            jal     0x800E6F24                  // change action
+            sw      t6, 0x0010(sp)              // argument 4 = 1 (continue hitbox)
+            lw      ra, 0x001C(sp)              // load ra
+            addiu   sp, sp, 0x0038              // deallocate stack space
+            jr      ra                          // return
+            nop
+        }
     }
 
     scope USP: {
-        constant MOVE_SPEED_Y(0x42B4)   // float 90
+        constant MOVE_SPEED_Y(0x42C8)   // float 100
         constant MOVE_SPEED_X(0x3F00)   // float 0.5
 
         scope main: {
@@ -853,6 +1055,39 @@ scope KazuyaSpecial {
             swc1    f8, 0x0034(t7)              // update character rotation to match direction
 
             _end:
+            jr      ra                          // return
+            nop
+        }
+
+        scope collision: {
+            OS.routine_begin(0x20)
+            sw      ra, 0x0014(sp)              // store ra
+            li      a1, air_to_ground          // a1(transition subroutine) = air_to_ground
+            jal     0x800DE80C                  // common air collision subroutine (transition on landing, allow ledge grab)
+            nop 
+            lw      ra, 0x0014(sp)              // load ra
+            OS.routine_end(0x20)
+        }
+
+        scope air_to_ground: {
+            addiu   sp, sp,-0x0038              // allocate stack space
+            sw      ra, 0x001C(sp)              // store ra
+            sw      a0, 0x0038(sp)              // 0x0038(sp) = player object
+            lw      a0, 0x0084(a0)              // a0 = player struct
+            jal     0x800DEE98                  // set grounded state
+            sw      a0, 0x0034(sp)              // 0x0034(sp) = player struct
+            lw      v0, 0x0034(sp)              // v0 = player struct
+            lw      a0, 0x0038(sp)              // a0 = player object
+            
+            addiu   a1, r0, 0xE4              // a1 = equivalent ground action for current air action
+            
+            lw      a2, 0x0078(a0)              // a2(starting frame) = current animation frame
+            lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
+            lli     t6, 0x0001                  // ~
+            jal     0x800E6F24                  // change action
+            sw      t6, 0x0010(sp)              // argument 4 = 1 (continue hitbox)
+            lw      ra, 0x001C(sp)              // load ra
+            addiu   sp, sp, 0x0038              // deallocate stack space
             jr      ra                          // return
             nop
         }

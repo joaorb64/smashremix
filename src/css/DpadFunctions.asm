@@ -111,24 +111,20 @@ scope dpad_macro_check_: {
     beqz    t4, _normal             // branch if dpad is not down
 
     addiu   t4, r0, 0x0001          // t4 = 1 (Smash)
-    beq     at, t4, _check_usmash   // branch accordingly
-    nop
-
-    lh      t4, 0x0000(v0)          // get current button held value
-    andi    t4, t4, 0x0F00          // check if holding DPAD
-    bnez    t4, _normal             // skip if holding DPAD was just pressed last frame
+    beql    at, t4, _check_usmash   // branch accordingly
+    lli     t9, Joypad.A            // t9 = button to press
 
     addiu   t4, r0, 0x0003          // t4 = 3 (Special)
-    beql    at, t4, _add_stick_input// branch accordingly
-    ori     v1, a3, 0x4000          // add B press to bitmasks
+    beql    at, t4, _check_usmash   // branch accordingly
+    lli     t9, Joypad.B            // t9 = button to press
 
     b        _normal                // if none of above, proceed normally (safety branch)
     nop
 
-    // check if jumpsquat into usmash
+    // check if jumpsquat into usmash (or uspecial)
     _check_usmash:
-    andi   at, a3, Joypad.DU        // check if dpad up pressed
-    beqz   at, _smash_other         // branch if not inputting dpad up
+    andi    at, a3, Joypad.DU       // check if dpad up pressed
+    beqz    at, _smash_other        // branch if not inputting dpad up
     nop
 
     // usmash
@@ -141,15 +137,21 @@ scope dpad_macro_check_: {
     lli     t4, Action.JumpSquat
     beq     at, t4, _smash_input    // input A if jumpsquat
     nop
+    lli     t4, Action.Shield
+    beq     at, t4, _add_c_jump     // input jump if shielding
+    nop
+    lli     t4, Action.ShieldJumpSquat
+    beq     at, t4, _smash_input    // input A if shield jumpsquat
+    nop
 
     _smash_other:
     lh      t4, 0x0000(v0)          // get current button held value
     andi    t4, t4, 0x0F00          // check if holding DPAD D, L, R
     bnez    t4, _normal             // skip if holding DPAD was just pressed last frame
-    nop
+    nop                             // note: this check prevents button repeat SPAM
 
     _smash_input:
-    ori     v1, a3, Joypad.A        // If here, add A press
+    or      v1, a3, t9              // If here, add button press (A or B press)
     _add_stick_input:
     andi    t4, a3, Joypad.DU       // check if pressing up
     bnez    t4, _overwrite
@@ -200,6 +202,14 @@ scope dpad_macro_check_: {
     bnez    t4, _normal             // skip if holding DPAD was just pressed last frame
 
     lw      at, 0x0024(a2)          // get current action id
+    lli     t4, Action.Shield       // t4 = Action.Shield
+    beq     at, t4, _shielded_tilt  // branch if shielding or rolling
+    lli     t4, Action.ShieldOn     // ~
+    beq     at, t4, _shielded_tilt  // ~
+    lli     t4, Action.RollF        // ~
+    beq     at, t4, _shielded_tilt  // ~
+    lli     t4, Action.RollB        // ~
+    beq     at, t4, _shielded_tilt  // ~
     lli     t4, Action.Run          // t4 = Action.Run
     beql    at, t4, pc() + 12       // don't try and turn while running
     addiu   t9, r0, 0x0003          // t9 = 3 (so criteria can't be met)
@@ -222,12 +232,48 @@ scope dpad_macro_check_: {
     lli     t4, 0x2800              // t4 = halfway max stick X value
     beqz    at, _normal             // if none of above, proceed normally (safety branch)
     addiu   t9, t9, 0x0001
+    b       _tilt_pressed
+    nop
+
+    _shielded_tilt:
+    or      v1, a3, r0              // (don't) add A press to bitmasks
+    andi    t4, a3, Joypad.DU       // check if pressing up
+    bnez    t4, _overwrite
+    lli     t4, 0x0035              // t4 = less-than-max stick Y value (short jump)
+
+    andi    t4, a3, Joypad.DD
+    bnez    t4, _tilt_pressed
+    lli     t4, 0x00D8              // t4 = halfway min stick Y value
+
+    andi    at, a3, Joypad.DL
+    bnez    at, _overwrite
+    lli     t4, 0xB000              // t4 = min stick X value
+
+    andi    at, a3, Joypad.DR
+    bnezl   at, _overwrite
+    lli     t4, 0x5000              // t4 = max stick X value
+    b       _normal                 // if none of above, proceed normally (safety branch)
+    nop
 
     _tilt_pressed:
     // if the player is in the air, don't do direction check
     lw      at, 0x014C(a2)          // at = 0 (ground) or 1 (air)
     bnez    at, _tilt_A_press       // use this instead, if airborne
     nop
+    // patch for running tilts compatibility
+    // running_tilts_compatibility_check: {
+    //     Toggles.read(entry_running_tilts, t5)   // t0 = running tilts toggle
+    //     beqz    t5, running_tilts_compatibility_check_end
+    //     nop
+    //     lw      at, 0x0024(a2)          // get current action id
+    //     lli     t5, Action.RunBrake     // t5 = Action.RunBrake
+    //     beq     at, t5, _tilt_A_press   // press input directly
+    //     nop
+    //     lli     t5, Action.TurnRun      // t5 = Action.TurnRun
+    //     beq     at, t5, _tilt_A_press   // press input directly
+    //     nop
+    // }
+    // running_tilts_compatibility_check_end:
     beqz    t9, _turn_and_tilt      // branch if pressing in opposite direction
     nop
     andi    at, a3, 0x0300          // at = 1 if pressed DL or DR
@@ -333,18 +379,34 @@ scope dpad_macro_check_: {
     lw      at, 0x0008(a2)                       // get current character id
     lli     t5, Character.id.FOX
     beq     at, t5, _dpad_move_check_action_spacies // branch if relevant character...
+    lli     t5, Character.id.JFOX
+    beq     at, t5, _dpad_move_check_action_spacies
     lli     t5, Character.id.FALCO
     beq     at, t5, _dpad_move_check_action_spacies
     lli     t5, Character.id.WOLF
     beq     at, t5, _dpad_move_check_action_spacies
+    lli     t5, Character.id.PEPPY
+    beq     at, t5, _dpad_move_check_action_spacies
     lli     t5, Character.id.MTWO
     beq     at, t5, _dpad_move_check_action_m2
+    lli     t5, Character.id.SHEIK
+    beq     at, t5, _dpad_move_check_action_sheik
     // WIP (maybe he's fine as-is?)
-    // lli     t5, Character.id.PIKACHU
-    // beq     at, t5, _dpad_move_check_action_pika
-    lli     t5, Character.id.PEPPY
-    bne     at, t5, _dpad_move_check_up          // ...otherwise skip checking special action
+    lli     t5, Character.id.PIKACHU
+    beq     at, t5, _dpad_move_check_action_pika
+    lli     t5, Character.id.JPIKA
+    beq     at, t5, _dpad_move_check_action_pika
+    lli     t5, Character.id.EPIKA
+    beq     at, t5, _dpad_move_check_action_pika
+    lli     t5, Character.id.GOEMON
+    beq     at, t5, _dpad_move_check_action_mystical_ninjas
+    lli     t5, Character.id.EBI
+    beq     at, t5, _dpad_move_check_action_mystical_ninjas
+    nop
+    b       _dpad_move_check_up                  // ...otherwise skip checking special action
     _dpad_move_check_action_spacies:
+    andi    at, a0, 0x0300                       // at = 0 if not pressing Joypad.DL or Joypad.DR
+    beqz    at, _dpad_move_check_up              // branch if non-diagonal input
     lw      at, 0x0024(a2)                       // get current action id (spacies share these FOX action values)
     sltiu   t5, at, Action.FOX.LaserAir          // branch if action is less than FOX.LaserAir
     bnez    t5, _dpad_move_check_up
@@ -355,26 +417,48 @@ scope dpad_macro_check_: {
     lli     t5, Action.FOX.FireFoxStart          // t5 = Action.FOX.FireFoxStart (0xE3)
     beq     at, t5, _dpad_move_check_special
     lli     t5, Action.FOX.FireFoxStartAir       // t5 = Action.FOX.FireFoxStartAir (0xE4)
-    bne     at, t5, _dpad_move_check_up          // branch if current action id didn't match any of the above
+    beq     at, t5, _dpad_move_check_special
+    nop
+    b       _dpad_move_check_up                  // branch if current action id didn't match any of the above
+    nop
     _dpad_move_check_action_pika:
-    lli     t5, Action.PIKACHU.QuickAttackStart  // t5 = Action.PIKACHU.QuickAttackStart
-    beq     at, t5, _dpad_move_check_special
-    // lli     t5, Action.PIKACHU.QuickAttack       // t5 = Action.PIKACHU.QuickAttack
-    // beq     at, t5, _dpad_move_check_special
-    lli     t5, Action.PIKACHU.QuickAttackEnd    // t5 = Action.PIKACHU.QuickAttackEnd
-    beq     at, t5, _dpad_move_check_special
-    lli     t5, Action.PIKACHU.QuickAttackStartAir // t5 = Action.PIKACHU.QuickAttackStartAir
-    beq     at, t5, _dpad_move_check_special
-    // lli     t5, Action.PIKACHU.QuickAttackAir    // t5 = Action.PIKACHU.QuickAttackAir
-    // beq     at, t5, _dpad_move_check_special
-    lli     t5, Action.PIKACHU.QuickAttackEndAir // t5 = Action.PIKACHU.QuickAttackEndAir
-    bne     at, t5, _dpad_move_check_up
+    lw      at, 0x0024(a2)                       // get current action id
+    sltiu   t5, at, Action.PIKACHU.QuickAttackStart
+    bnez    t5, _dpad_move_check_up              // branch if action is less than PIKACHU.QuickAttackStart
+    sltiu   t5, at, Action.PIKACHU.QuickAttackEndAir + 1
+    beqz    t5, _dpad_move_check_up              // branch if action is greater than PIKACHU.QuickAttackEndAir
+    // if we're here, this is Pika USP
+    andi    at, a0, 0x0300                       // at = 1 if pressing Joypad.DL or Joypad.DR
+    bnez    at, _dpad_move_check_special         // branch if diagonal input
+    nop
+    b       _dpad_move_check_up_max              // for Pika USP non-diagonal inputs we want to use maximum values
+    nop
     _dpad_move_check_action_m2:
     lw      at, 0x0024(a2)                       // get current action id
     lli     t5, Mewtwo.Action.TeleportStart      // t5 = Mewtwo.Action.TeleportStart
     beq     at, t5, _dpad_move_check_special
     lli     t5, Mewtwo.Action.TeleportStartAir   // t5 = Mewtwo.Action.TeleportStartAir
     beq     at, t5, _dpad_move_check_special
+    nop
+    b       _dpad_move_check_up                  // branch if current action id didn't match any of the above
+    nop
+    _dpad_move_check_action_sheik:
+    lw      at, 0x0024(a2)                       // get current action id
+    lli     t5, Sheik.Action.USPG_BEGIN          // t5 = Sheik.Action.USPG_BEGIN
+    beq     at, t5, _dpad_move_check_special
+    lli     t5, Sheik.Action.USPA_BEGIN          // t5 = Sheik.Action.USPA_BEGIN
+    beq     at, t5, _dpad_move_check_special
+    nop
+    b       _dpad_move_check_up                  // branch if current action id didn't match any of the above
+    nop
+    _dpad_move_check_action_mystical_ninjas:
+    lw      at, 0x0024(a2)                       // get current action id
+    lli     t5, Goemon.Action.USP                // t5 = Goemon.Action.USP (note: Ebisumaru USP has same ID)
+    beq     at, t5, pc() + 12                    // continue if id matches
+    lli     t5, Goemon.Action.USPAttack          // t5 = Goemon.Action.USPAttack
+    bne     at, t5, _dpad_move_check_up          // branch if current action id didn't match any of the above
+    nop
+    b       _dpad_move_check_up_max              // for Mystical Ninja USP we want to use maximum values
     nop
 
     _dpad_move_check_up:
@@ -384,6 +468,15 @@ scope dpad_macro_check_: {
     bnezl   at, pc() + 12           // if the player is in the air, use appropriate stick value
     addiu   t4, t4, 0x0028          // add halfway max stick Y value
     addiu   t4, t4, 0x0050          // add max stick Y value
+    b       _dpad_move_check_down
+    nop
+
+    _dpad_move_check_up_max:
+    andi    at, a0, Joypad.DU       // check if pressing up...
+    bnezl   at, pc() + 8            // ...and if so...
+    addiu   t4, t4, 0x0050          // ...add max stick Y value
+    b       _dpad_move_check_down
+    lw      at, 0x014C(a2)          // at = 0 (ground) or 1 (air)
 
     _dpad_move_check_down:
     andi    at, a0, Joypad.DD       // check if pressing down
@@ -516,6 +609,55 @@ scope dpad_macro_check_: {
     _normal_return:
     j       0x800E134C              // original line 1
     sh      v1, 0x0002(v0)          // original line 2
+
+}
+
+// @ Description
+// Hook into routine that writes Joypad held bitmask to player struct (non-cpu players)
+// Handles Dpad Macros (Held state)
+// Note: this is needed to continue holding Special (e.g. Kirby NSP, Yoshi USP) or charge smash attacks
+scope dpad_macro_check_held_: {
+    OS.patch_start(0x5CB78, 0x800E1378)
+    j       dpad_macro_check_held_
+    nop
+    OS.patch_end()
+
+    // v1, at, t3, t7 are safe to edit
+
+    li      t3, dpad_macro_table    // t3 = dpad macro table
+    lb      t7, 0x000D(a2)          // t7 = player port
+    sll     t7, t7, 0x0002          // t7 = offset
+    addu    t3, t3, t7              // t3 = player entry in dpad_macro_table
+    lw      t7, 0x0000(t3)          // t7 = players value in table
+
+    beqz    t7, _end                // branch if it's disabled for this port
+    nop
+
+    addiu   t3, r0, 0x0003          // t3 = 3 (Special)
+    beql    t7, t3, _check_dpad     // branch accordingly
+    lli     t7, Joypad.B            // t7 = button to press
+
+    // note: only need to hold 'A' if Charged Smash Attacks are enabled
+    li      at, Toggles.entry_charged_smashes
+    lw      at, 0x0004(at)          // at = entry_charged_smashes (0 if OFF, 1 ON)
+    beqz    at, _end                // branch if toggle disabled
+    nop
+
+    addiu   t3, r0, 0x0001          // t3 = 1 (Smash)
+    beql    t7, t3, _check_dpad     // branch accordingly
+    lli     t7, Joypad.A            // t7 = button to press
+
+    b        _end                   // branch if none of above
+    nop
+
+    _check_dpad:
+    andi    t3, a3, 0x0F00          // check if holding DPAD U, D, L, R
+    bnezl   t3, pc() + 8            // if so, add appropriate button to button held bitmask
+    or      a3, a3, t7              // add 'A' or 'B' held button
+
+    _end:
+    j       0x800E1430              // original line 1, modified to jump
+    sh      a3, 0x0000(v0)          // original line 2
 
 }
 

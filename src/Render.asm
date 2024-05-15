@@ -1016,7 +1016,7 @@ scope Render {
         sw      r0, 0x0034(sp)
 
         lli     a0, 0x0401                  // global obj ID for room
-        or      a2, r0, a1                  // group
+        ori      a2, r0, 0x9                  // group
         lli     a1, 0x0000                  // routine to run
         jal     0x8000B93C                  // create room object
         lui     a3, 0x8000                  // order in group

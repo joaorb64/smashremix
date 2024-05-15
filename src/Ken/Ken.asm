@@ -272,24 +272,24 @@ scope Ken {
 
     // Edit cpu attack behaviours
     // edit_attack_behavior(table, attack, override, start_hb, end_hb, min_x, max_x, min_y, max_y)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, DAIR,   -1,  14,   24,  -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, DSPA,   -1,  12,   31,  -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, DSPG,   -1,  16,   38,  -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, DSMASH, -1,  16,   35,  -1, -1, -1, -1) // todo: coords
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, DTILT,  -1,  8,    15,  -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, FAIR,   -1,  7,    19,  -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, FSMASH, -1,  24,   33,  -1, -1, -1, -1) // todo: coords
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, FTILT,  -1,  10,   16,  -1, -1, -1, -1)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, DAIR,   -1,  8,   18,   -1, -1, -1, -1)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, DSPA,   -1,  8,   32,   -1, -1, -1, -1)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, DSPG,   -1,  8,   32,   -1, -1, -1, -1)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, DSMASH, -1,  5,   9,    -1, -1, -1, -1) // todo: coords
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, DTILT,  -1,  3,    6,  -1, -1, -1, -1)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, FAIR,   -1,  8,    15,  -1, -1, -1, -1)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, FSMASH, -1,  15,   17,  -1, -1, -1, -1) // todo: coords
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, FTILT,  -1,  9,   16,  -1, -1, -1, -1)
     AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, GRAB,   -1,  6,    6,   -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, JAB,    -1,  5,    8,   -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, NAIR,   -1,  7,    17,  -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, NSPA,   -1,  47,   52,  -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, NSPG,   -1,  47,   52,  -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, UAIR,   -1,  7,    17,  -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, USPA,   -1,  16,   51,  -1, -1, -1, -1)
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, USPG,   -1,  15,   55,  -1, -1, -1, -1) // todo: coords
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, USMASH, -1,  19,   33,  -1, -1, -1, -1) // todo: coords
-    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, UTILT,  -1,  34,   40,  -1, -1, -1, -1) // todo: coords
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, JAB,    -1,  4,    7,   -1, -1, -1, -1)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, NAIR,   -1,  4,    30,  -1, -1, -1, -1)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, NSPG,   -1,  12,   70,  -1, -1, -1, -1)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, NSPA,   -1,  12,   70,  -1, -1, -1, -1)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, UAIR,   -1,  5,    12,  -1, -1, -1, -1)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, USPA,   -1,  6,    18,   89, 475, 0, 1000)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, USPG,   -1,  6,    18,   89, 475, 0, 1700)
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, USMASH, -1,  8,   17,  -1, -1, -1, -1) // todo: coords
+    AI.edit_attack_behavior(CPU_ATTACKS_ORIGIN, UTILT,  -1,  5,   8,  -1, -1, -1, -1) // todo: coords
 
     // @ Description
     // Ken's extra actions

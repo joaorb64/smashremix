@@ -7,8 +7,14 @@ scope Kazuya {
     insert WHILE_STAND, "moveset/WHILE_STAND.bin"
     insert WAVEDASH, "moveset/WAVEDASH.bin"
     insert GODFIST, "moveset/GODFIST.bin"
+
     insert SWEEP1, "moveset/SWEEP1.bin"
     insert SWEEP2, "moveset/SWEEP2.bin"
+
+    insert RR3KICKS1, "moveset/RR3KICKS1.bin"
+    insert RR3KICKS2, "moveset/RR3KICKS2.bin"
+    insert RR3KICKS3, "moveset/RR3KICKS3.bin"
+    insert RR3KICKS4, "moveset/RR3KICKS4.bin"
 
     insert DASHATTACK, "moveset/DASHATTACK.bin"
 
@@ -38,6 +44,7 @@ scope Kazuya {
     insert SMASHU, "moveset/SMASHU.bin"
 
     insert NSP, "moveset/NSP.bin"
+    insert NSP2, "moveset/NSP2.bin"
     insert NSP_AIR, "moveset/NSP_AIR.bin"
     insert DSP, "moveset/DSP.bin"
     insert USP, "moveset/USP.bin"
@@ -76,6 +83,9 @@ scope Kazuya {
     Character.edit_action_parameters(KAZUYA,   Action.FTiltMidLow,   File.KAZUYA_TSUNAMI_1,   TSUNAMI1,                   0x40000000)
     Character.edit_action_parameters(KAZUYA,   Action.FTiltLow,      File.KAZUYA_TSUNAMI_1,   TSUNAMI1,                   0x40000000)
 
+    Character.edit_action_parameters(KAZUYA,   Action.FTiltMidHigh,   File.KAZUYA_RR3KICKS1,   RR3KICKS1,                  0x40000000)
+    Character.edit_action_parameters(KAZUYA,   Action.FTiltHigh,      File.KAZUYA_RR3KICKS1,   RR3KICKS1,                  0x40000000)
+
     Character.edit_action_parameters(KAZUYA,   Action.DTilt,        File.KAZUYA_TILTD,          TILTD,                        0x40000000)
 
     Character.edit_action_parameters(KAZUYA,   Action.FSmash,       File.KAZUYA_SMASHF,         SMASHF,                       0x40000000)
@@ -90,16 +100,16 @@ scope Kazuya {
     Character.edit_action_parameters(KAZUYA,   Action.AttackAirD,   File.KAZUYA_AIRD,           AIRD,                         -1)
     Character.edit_action_parameters(KAZUYA,   Action.AttackAirB,   File.KAZUYA_AIRB,           AIRB,                         -1)
 
-    Character.edit_action_parameters(KAZUYA,   0xE4,                File.KAZUYA_UPPERCUT,       NSP,                          0x40000000)
+    Character.edit_action_parameters(KAZUYA,   0xE4,                File.KAZUYA_SPECIALN,       NSP,                          0x40000000)
     Character.edit_action_parameters(KAZUYA,   0xE5,                File.KAZUYA_SPECIALN_AIR,   NSP_AIR,                      0x40000000)
     Character.edit_action_parameters(KAZUYA,   0xE6,                File.KAZUYA_SPECIALD,       DSP,                          0x40000000)
     Character.edit_action_parameters(KAZUYA,   0xE9,                File.KAZUYA_SPECIALD,       DSP,                          0x40000000) // aerial dsp
 
-    // Modify Actions               // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM          // Movement/Physics ASM         // Collision ASM
-    Character.edit_action(KAZUYA,   0xE4,              -1,             KazuyaSpecial.NSP.main,      0,                             -1,                             0x800DDF44)
-	Character.edit_action(KAZUYA,   0xE5,              -1,             KazuyaSpecial.NSP.main,      0,                             KazuyaSpecial.NSP_AIR.physics,  0x800DE99C)
-    Character.edit_action(KAZUYA,   0xE6,              -1,             0x800D94C4,                  0,                             0x800D8CCC,                     0x800DDEE8)
-	Character.edit_action(KAZUYA,   0xE9,              -1,             0x800D94E8,                  0,                             0x800D91EC,                     0x800DE99C)
+    // Modify Actions               // Action          // Staling ID   // Main ASM                 // Interrupt/Other ASM            // Movement/Physics ASM         // Collision ASM
+    Character.edit_action(KAZUYA,   0xE4,              -1,             KazuyaSpecial.NSP.main,      KazuyaSpecial.NSP.light_to_hard, 0x800D8C14,                     0x800DDF44)
+	Character.edit_action(KAZUYA,   0xE5,              -1,             KazuyaSpecial.NSP.main,      0,                               KazuyaSpecial.NSP_AIR.physics,  KazuyaSpecial.NSP_AIR.collision)
+    Character.edit_action(KAZUYA,   0xE6,              -1,             0x800D94C4,                  0,                               0x800D8C14,                     0x800DDF44)
+	Character.edit_action(KAZUYA,   0xE9,              -1,             0x800D94E8,                  0,                               0x800D91EC,                     KazuyaSpecial.DSP.air_collision)
 
     // Add Action Parameters                // Action Name      // Base Action  // Animation                    // Moveset Data             // Flags
     Character.add_new_action_params(KAZUYA,    WHILE_STAND,          -1,        File.KAZUYA_WHILE_STAND,        WHILE_STAND,                0x40000000)
@@ -113,6 +123,10 @@ scope Kazuya {
     Character.add_new_action_params(KAZUYA,    USP,                  -1,        File.KAZUYA_USP,                USP,                        0x00000000)
     Character.add_new_action_params(KAZUYA,    USP_LAND,             -1,        File.KAZUYA_USP_LAND,           USP_LAND,                   0x00000000)
     Character.add_new_action_params(KAZUYA,    TSUNAMI2,             -1,        File.KAZUYA_TSUNAMI_2,          TSUNAMI2,                   0x40000000)
+    Character.add_new_action_params(KAZUYA,    RR3KICKS2,            -1,        File.KAZUYA_RR3KICKS2,          RR3KICKS2,                  0x40000000)
+    Character.add_new_action_params(KAZUYA,    RR3KICKS3,            -1,        File.KAZUYA_RR3KICKS3,          RR3KICKS3,                  0x40000000)
+    Character.add_new_action_params(KAZUYA,    RR3KICKS4,            -1,        File.KAZUYA_RR3KICKS4,          RR3KICKS4,                  0x40000000)
+    Character.add_new_action_params(KAZUYA,    SPECIALN2,            -1,        File.KAZUYA_SPECIALN2,          NSP2,                       0x40000000)
 
     // Add Actions                   // Action Name     // Base Action  //Parameters                    // Staling ID   // Main ASM                     // Interrupt/Other ASM          // Movement/Physics ASM             // Collision ASM
     Character.add_new_action(KAZUYA,    WHILE_STAND,    -1,             ActionParams.WHILE_STAND,       -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)
@@ -126,6 +140,10 @@ scope Kazuya {
     Character.add_new_action(KAZUYA,    USP,            -1,             ActionParams.USP,               -1,             0x0,                            KazuyaUSP.change_direction_,    KazuyaSpecial.USP.main,             KazuyaSpecial.USP.collision)
     Character.add_new_action(KAZUYA,    USP_LAND,       -1,             ActionParams.USP_LAND,          -1,             0x800D94C4,                     0,                              0x800D8BB4,                         0x800DDF44)
     Character.add_new_action(KAZUYA,    TSUNAMI2,       -1,             ActionParams.TSUNAMI2,          -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)
+    Character.add_new_action(KAZUYA,    RR3KICKS2,      -1,             ActionParams.RR3KICKS2,         -1,             KazuyaSpecial.RR3KICKS.main,    0,                              0x800D8C14,                         0x800DDF44)
+    Character.add_new_action(KAZUYA,    RR3KICKS3,      -1,             ActionParams.RR3KICKS3,         -1,             KazuyaSpecial.RR3KICKS.main,    0,                              0x800D8C14,                         0x800DDF44)
+    Character.add_new_action(KAZUYA,    RR3KICKS4,      -1,             ActionParams.RR3KICKS4,         -1,             0x800D94C4,                     0,                              0x800D8C14,                         0x800DDF44)
+    Character.add_new_action(KAZUYA,    SPECIALN2,      -1,             ActionParams.SPECIALN2,         -1,             KazuyaSpecial.NSP.main,         0,                              0x800D8C14,                         0x800DDF44)
 
     // Modify Menu Action Parameters             // Action          // Animation                // Moveset Data             // Flags
     Character.edit_menu_action_parameters(KAZUYA,   0x0,            File.KAZUYA_IDLE,              -1,                         -1)
@@ -239,17 +257,17 @@ scope Kazuya {
         // string_0x0E1:; String.insert("AppearRight1")
         // string_0x0E2:; String.insert("AppearLeft1")
         // string_0x0E3:; String.insert("AppearRight2")
-        string_0x0E4:; String.insert("Hadouken")
-        string_0x0E5:; String.insert("HadoukenAir")
-        string_0x0E6:; String.insert("WarlockKick")
-        string_0x0E7:; String.insert("WarlockKickFromGroundAir")
-        string_0x0E8:; String.insert("Hadouken")
-        string_0x0E9:; String.insert("HadoukenAir")
-        string_0x0EA:; String.insert("TatsumakiLight")
+        string_0x0E4:; String.insert("---")
+        string_0x0E5:; String.insert("---")
+        string_0x0E6:; String.insert("---")
+        string_0x0E7:; String.insert("---")
+        string_0x0E8:; String.insert("LightningUppercut")
+        string_0x0E9:; String.insert("LightningUppercutAir")
+        string_0x0EA:; String.insert("StoneHead")
         string_0x0EB:; String.insert("---")
-        string_0x0EC:; String.insert("DarkDiveCatch")
-        string_0x0ED:; String.insert("TatsumakiAir")
-        string_0x0EE:; String.insert("DarkDiveEnd2")
+        string_0x0EC:; String.insert("---")
+        string_0x0ED:; String.insert("StoneHeadAir")
+        string_0x0EE:; String.insert("---")
 
         string_0x0F3:; String.insert("WhileStand")
         string_0x0F4:; String.insert("Wavedash")
@@ -261,8 +279,11 @@ scope Kazuya {
         string_0x0FA:; String.insert("CrouchTilt")
         string_0x0FB:; String.insert("Usp")
         string_0x0FC:; String.insert("UspLand")
-        string_0x0FD:; String.insert("TsunamiKick")
-        string_0x0FE:; String.insert("ShoryukenHard")
+        string_0x0FD:; String.insert("TsunamiKick2")
+        string_0x0FE:; String.insert("RoundhouseToTripleSpinKick2")
+        string_0x0FF:; String.insert("RoundhouseToTripleSpinKick3")
+        string_0x100:; String.insert("RoundhouseToTripleSpinKick4")
+        string_0x101:; String.insert("LightningScrewUppercut")
 
         action_string_table:
         dw 0
@@ -297,6 +318,9 @@ scope Kazuya {
         dw string_0x0FC
         dw string_0x0FD
         dw string_0x0FE
+        dw string_0x0FF
+        dw string_0x100
+        dw string_0x101
     }
 
     // Set action strings
