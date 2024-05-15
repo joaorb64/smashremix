@@ -190,8 +190,8 @@ scope Zoom {
         
         // IF TRUE, WE HAVE A KO
         // APPLY ZOOM
-        // beqz    t0, _original
-        // nop
+        beqz    t0, _original
+        nop
 
         set_zoom:
         OS.save_registers()
@@ -542,10 +542,6 @@ scope Zoom {
         jal 0x8000DF34 // animate
         nop
 
-        //
-
-        //
-
         OS.routine_end(0x20)
     }
 
@@ -589,12 +585,31 @@ scope Zoom {
         nop
         //
 
-        // li      t6, Zoom.zoom_background_object
-        // lw      a0, 0x0(t6)
-        // beqz    a0, after_destroy
-        // jal     Render.DESTROY_OBJECT_             // destroy the object
-        // nop
-        // sw      r0, 0x0(t6)
+        li      t6, Zoom.zoom_background_object
+        lw      a0, 0x0(t6)
+        beqz    a0, after_destroy
+        nop
+
+        // destroy ko background
+        addiu   sp, sp, -0x0020     // allocate stack space
+        sw      ra, 0x0004(sp)      // save registers
+        sw      t0, 0x000C(sp)      // ~
+        sw      t5, 0x0010(sp)      // ~
+        sw      t6, 0x0014(sp)      // ~
+        sw      t8, 0x0018(sp)      // ~
+        sw      v1, 0x001C(sp)      // ~
+        jal     Render.DESTROY_OBJECT_             // destroy the object
+        nop
+        lw      ra, 0x0004(sp)      // restore registers
+        lw      t0, 0x000C(sp)      // ~
+        lw      t5, 0x0010(sp)      // ~
+        lw      t6, 0x0014(sp)      // ~
+        lw      t8, 0x0018(sp)      // ~
+        lw      v1, 0x001C(sp)      // ~
+        addiu   sp, sp, 0x0020      // deallocate stack space
+        //
+
+        sw      r0, 0x0(t6)
 
         after_destroy:
 
