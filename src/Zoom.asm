@@ -148,6 +148,7 @@ scope Zoom {
         li      v1, 0x80131300 // base for blastzone positions
         lw      v1, 0x0(v1)
 
+        // top blastzone
         lh      t0, 0x0074(v1) // top blastzone
         mtc1    t0, f18
         cvt.s.w f18, f18 // f18 = top blastzone (float)
@@ -155,6 +156,29 @@ scope Zoom {
         lwc1    f10, 0xC(sp)  // f10 = max player y position
 
         c.le.s  f18, f10      // is top blastzone <= player y? f18 <= 10?
+        nop
+        bc1tl   set_zoom_flag1
+        nop
+
+        // side blastzones
+        mtc1 t1, f10  // f10 = final player x position
+
+        // left
+        lh      t0, 0x007A(v1) // left blastzone
+        mtc1    t0, f18
+        cvt.s.w f18, f18 // f18 = left blastzone (float)
+
+        c.le.s  f10, f18      // is player x <= left blastzone? f10 <= 18?
+        nop
+        bc1tl   set_zoom_flag1
+        nop
+
+        // right
+        lh      t0, 0x0078(v1) // right blastzone
+        mtc1    t0, f18
+        cvt.s.w f18, f18 // f18 = right blastzone (float)
+
+        c.le.s  f18, f10      // is right blastzone <= player x? f18 <= 10?
         nop
         bc1tl   set_zoom_flag1
         nop
