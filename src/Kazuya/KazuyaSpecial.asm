@@ -283,20 +283,20 @@ scope KazuyaSpecial {
 
             // Here, we load into t1 the frame in which each step of the move should check for a transition
             lli    t2, Action.FTiltMidHigh
-            beq    t1, t2, normal_continue
-            lui    t1, 0x41A8      // t1 = 21.0F
+            beq    t2, t3, normal_continue
+            lui    t1, 0x41A0      // t1 = 20.0F
 
             lli    t2, Action.FTiltHigh
-            beq    t1, t2, normal_continue
-            lui    t1, 0x41A8      // t1 = 21.0F
+            beq    t2, t3, normal_continue
+            lui    t1, 0x41A0      // t1 = 20.0F
 
-            lli    t2, Action.FTiltMidHigh
-            beq    t1, t2, normal_continue
-            lui    t1, 0x4170      // t1 = 15.0F
+            lli    t2, Kazuya.Action.RR3KICKS2
+            beq    t2, t3, normal_continue
+            lui    t1, 0x4198      // t1 = 19.0F
 
-            lli    t2, Action.FTiltMidHigh
-            beq    t1, t2, normal_continue
-            lui    t1, 0x41A8      // t1 = 21.0F
+            lli    t2, Kazuya.Action.RR3KICKS3
+            beq    t2, t3, normal_continue
+            lui    t1, 0x41B0      // t1 = 22.0F
 
             normal_continue:
             lw      t0, 0x0078(a0)  // t0 = current animation frame
