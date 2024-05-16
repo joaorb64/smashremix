@@ -340,7 +340,7 @@ scope KazuyaSpecial {
             cancel_next_change_action:
             OS.save_registers()
             or      a1, r0, t2                  // a1 = t2 = next action
-            lui     a3, 0x0                     // a2(starting frame) = 0.0
+            or      a2, r0, r0                  // a2(starting frame) = 0.0
             lui     a3, 0x3F80                  // a3(frame speed multiplier) = 1.0
             sw      r0, 0x0010(sp)              // argument 4 = 0
             jal     0x800E6F24                  // change action

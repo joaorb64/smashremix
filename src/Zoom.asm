@@ -183,6 +183,24 @@ scope Zoom {
         bc1tl   set_zoom_flag1
         nop
 
+        // bottom blastzone
+        lw      t0, 0xEC(s0)    // t0 = clipping id cpu is above (0xFFFF if none)
+        addiu   at, r0, 0xFFFF
+        bne     at, t0, set_zoom_flag0  // branch ground below
+        nop
+
+        lh      t0, 0x0076(v1) // bottom blastzone
+        mtc1    t0, f18
+        cvt.s.w f18, f18 // f18 = bottom blastzone (float)
+
+        mtc1 t2, f10  // f10 = final player y position
+
+        c.le.s  f10, f18      // is player y <= bottom blastzone? f18 <= 10?
+        nop
+        bc1tl   set_zoom_flag1
+        nop
+
+        // default (no zoom)
         b set_zoom_flag0
         nop
 
