@@ -12,21 +12,21 @@ scope Zoom {
     zoom_background:; dw 0x00000000
     zoom_background_object:; dw 0x00000000
 
-    // 800E61EC + 24C
+    // 80140EE4 + 600
     scope was_just_hit: {
-        OS.patch_start(0x61C38, 0x800E6438)
+        OS.patch_start(0xBBF24, 0x801414E4)
         j       was_just_hit
         nop
         _return:
         OS.patch_end()
 
         // If knockback <= 0, skip
-        lwc1    f16, 0x7E0(s0)
-        mtc1    r0, f2
-        c.le.s  f16, f2
-        nop
-        bc1t    _original
-        nop
+        // lwc1    f16, 0x7E0(s0)
+        // mtc1    r0, f2
+        // c.le.s  f16, f2
+        // nop
+        // bc1t    _original
+        // nop
 
         // KNOCKBACK CHECK START
         // This code calculates the knockback trajectory
@@ -227,13 +227,158 @@ scope Zoom {
         // note: check 0x800E2048 for knockback stuff
 
         addiu   sp, sp, -0x0090
-        lw      t0, 0x0(sp)
+        lw      t0, 0x0(sp) // load flag value
         addiu   sp, sp, 0x0090
+
+        // if flag is already not zero, skip special move check
+        bnez    t0, set_zoom
+        nop
         
-        // IF TRUE, WE HAVE A KO
-        // APPLY ZOOM
+        attacker_special_move_check:
+        OS.save_registers()
+        jal     0x800E7ED4 // get v0 = attacker_object
+        lw      a0,0x110(sp)
+
+        beqz    v0, attacker_special_move_check_end // if null, skip
+        nop
+
+        lw      v1, 0x84(v0)    // load attacker struct
+        lw      t0, 0x0008(v1)  // t0 = character id
+        lw      t1, 0x0024(v1)  // t1 = current action
+
+        ori     t2, r0, Character.id.CAPTAIN
+        beq     t0, t2, attacker_special_move_captain
+        nop
+
+        ori     t2, r0, Character.id.GND
+        beq     t0, t2, attacker_special_move_gnd
+        nop
+
+        ori     t2, r0, Character.id.JIGGLYPUFF
+        beq     t0, t2, attacker_special_move_jigglypuff
+        nop
+
+        ori     t2, r0, Character.id.DK
+        beq     t0, t2, attacker_special_move_dk
+        nop
+
+        ori     t2, r0, Character.id.LUIGI
+        beq     t0, t2, attacker_special_move_luigi
+        nop
+
+        ori     t2, r0, Character.id.NESS
+        beq     t0, t2, attacker_special_move_ness
+        nop
+
+        ori     t2, r0, Character.id.LUCAS
+        beq     t0, t2, attacker_special_move_lucas
+        nop
+
+        b attacker_special_move_check_end
+        nop
+
+        attacker_special_move_captain:
+        lli    t0, Action.CAPTAIN.FalconPunch
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        lli    t0, Action.CAPTAIN.FalconPunchAir
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        b attacker_special_move_check_end
+        nop
+
+        attacker_special_move_dk:
+        lli    t0, Action.DK.GiantPunchFullyCharged
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        lli    t0, Action.DK.GiantPunchFullyChargedAir
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        b attacker_special_move_check_end
+        nop
+
+        attacker_special_move_luigi:
+        lli    t0, Action.LUIGI.SuperJumpPunch
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        b attacker_special_move_check_end
+        nop
+
+        attacker_special_move_gnd:
+        lli    t0, Ganondorf.Action.WarlockPunch
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        lli    t0, Ganondorf.Action.WarlockPunchAir
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        lli    t0, Action.UTilt
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        b attacker_special_move_check_end
+        nop
+
+        attacker_special_move_jigglypuff:
+        lli    t0, Action.JIGGLY.Rest
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        lli    t0, Action.JIGGLY.RestAir
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        b attacker_special_move_check_end
+        nop
+
+        attacker_special_move_ness:
+        lli    t0, Action.NESS.PKTA
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        lli    t0, Action.NESS.PKTAAir
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        b attacker_special_move_check_end
+        nop
+
+        attacker_special_move_lucas:
+        lli    t0, Lucas.Action.PKTA
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        lli    t0, Lucas.Action.PKTAAir
+        beq    t0, t1, attacker_special_move_set_flag
+        nop
+
+        b attacker_special_move_check_end
+        nop
+
+        attacker_special_move_set_flag:
+        lli     t0, 0x2
+        addiu   sp, sp, -0x0020
+        sw      t0, 0x0(sp) // set flag value
+        addiu   sp, sp, 0x0020
+
+        attacker_special_move_check_end:
+        OS.restore_registers()
+
+        addiu   sp, sp, -0x0090
+        lw      t0, 0x0(sp) // load flag value
+        addiu   sp, sp, 0x0090
+
+        // if flag is zero, original behavior
         beqz    t0, _original
         nop
+        // IF TRUE, WE HAVE A KO
+        // APPLY ZOOM
 
         set_zoom:
         OS.save_registers()
@@ -243,7 +388,7 @@ scope Zoom {
 
         // func_ovl2_8010CF44(fighter_gobj, 0.0F, 0.0F, ftGetStruct(fighter_gobj)->attributes->closeup_cam_zoom, 0.1F, 28.0F);
 
-        addiu   sp,sp,-0x30
+        addiu   sp,sp,-0x70
 
         or      a1, r0, r0
         or      a2, r0, r0
@@ -255,11 +400,10 @@ scope Zoom {
         li     t0, 0x41E00000
         sw      t0, 0x0014(sp)              // argument 5
         
-
         jal 0x8010CF44
         nop
 
-        addiu   sp,sp,0x30
+        addiu   sp,sp,0x70
 
         // todo: call
         // gPlayerCommonInterface.is_ifmagnify_display = FALSE;
@@ -269,6 +413,16 @@ scope Zoom {
         sw      t0, 0x0000(t1)     // update zoom timer
 
         // Hide stage
+        hide_stage:
+        addiu   sp, sp, -0x0020
+        lw      t0, 0x0(sp) // load flag value
+        addiu   sp, sp, 0x0020
+
+        lli     t1, 0x1
+
+        bne     t0, t1, hide_stage_end
+        nop
+
         ori     a0, r0, 0x1
         lli     a1, 0x1
         jal     Render.toggle_group_display_
@@ -278,6 +432,7 @@ scope Zoom {
         lli     a1, 0x1
         jal     Render.toggle_group_display_
         nop
+        hide_stage_end:
         //
 
         // Render background
@@ -372,56 +527,6 @@ scope Zoom {
         lw      s0,0x3c(sp)
         addiu   sp,sp,0x58
         // create camera end
-
-        // // bg camera
-        // addiu   sp,sp,-0x48
-        // sw      ra,0x3c(sp)
-        // li      t6,0x800CD2CC
-        // li      t7,0x50
-        // li      t8,0
-        // li      t9,1
-        // li      t1,-1
-        // li      t2,1
-        // li      t3,1
-        // sw      t3,0x30(sp)
-        // sw      t2,0x28(sp)
-        // sw      t1,0x20(sp)
-        // sw      t9,0x1c(sp)
-        // sw      t8,0x18(sp)
-        // sw      t7,0x14(sp)
-        // sw      t6,0x10(sp)
-        // sw      r0,0x24(sp)
-        // sw      r0,0x2c(sp)
-        // sw      r0,0x34(sp)
-        // li      a0,0x3eb
-        // move    a1,r0
-        // li      a2,9
-        // jal     0x8000B93C
-        // lui     a3,0x8000
-        // li      v1,0x801314B0
-        // lw      t4,0x20(v1)
-        // lw      t5,0x24(v1)
-        // lw      t6,0x28(v1)
-        // lw      t7,0x2c(v1)
-        // mtc1    t4,f4
-        // mtc1    t5,f6
-        // mtc1    t6,f8
-        // mtc1    t7,f10
-        // cvt.s.w f4,f4
-        // sw      v0,0x44(sp)
-        // lw      t0,0x74(v0)
-        // cvt.s.w f6,f6
-        // mfc1    a1,f4
-        // addiu   a0,t0,8
-        // cvt.s.w f8,f8
-        // mfc1    a2,f6
-        // cvt.s.w f16,f10
-        // mfc1    a3,f8
-        // jal     0x80007080
-        // swc1    f16,0x10(sp)
-        // lw      ra,0x3c(sp)
-        // lw      v0,0x44(sp)
-        // addiu   sp,sp,0x48
 
         create_gfx:
         addiu   sp,sp,-0x28
@@ -526,13 +631,13 @@ scope Zoom {
         addiu   a2,r0,0
         jal     0x8000BE28
         addu    a1,t8,t9
-        li      a1,Zoom.effect_update // render routine
+        li      a1,0x8000DF34 // render routine
         or      a0,s0,r0 // object
         addiu   a2,r0,1 // room
         jal     Render.REGISTER_OBJECT_ROUTINE_ // 0x80008188
         addiu   a3,r0,1 // group order (0-5)
 
-        jal     Zoom.effect_update
+        jal     0x8000DF34
         or      a0,s0,r0 // object
 
         addiu   sp,sp,0x28
@@ -544,47 +649,11 @@ scope Zoom {
         OS.restore_registers()
 
         _original:
-        lw      t8, 0x7f8(s0)   // original lines
-        li      at, 2           // original lines
+        ori     t6, t7, 0x1   // original lines
+        sb      t6, 0x18F(s0)
 
         j       _return
         nop
-    }
-
-    scope effect_update: {
-        OS.routine_begin(0x20)
-
-        // a0 = effect object
-
-        // //
-        // li      v1, 0x800465B0
-        // lw      v0, 0x0(v1)
-        // lui     t1, 0x50
-        // ori     t1,t1,0x41C8
-        // addiu   t6,v0,0x8
-        // sw      t6,0x0(v1)
-        // sw      r0,0x4(v0)
-        // sw      t7,0x0(v0)
-        // lw      v0,0x0(v1)
-        // ori     t9,t9,0x001C
-        // andi    t4,a1,0x00FF
-        // addiu   t8,v0,0x0008
-        // sw      t0,0x0(v1)
-        // sw      t1,0x4(v0)
-        // sw      t9,0x0(v0)
-        // lw      v0,0x0(v1)
-        // addiu   at,r0,0xFF00
-        // or      t5,t4,at
-        // addiu   t2,v0,0x0008
-        // sw      t2,0x0(v1)
-        // lui     t3,0xFA00
-        // sw      t3,0x0(v0)
-        // //
-
-        jal 0x8000DF34 // animate
-        nop
-
-        OS.routine_end(0x20)
     }
 
     // 8010CAE0 + 10
@@ -720,7 +789,7 @@ scope Zoom {
         beqz    t7, after_obj
         nop
 
-        jal     Zoom.effect_update
+        jal     0x8000DF34
         nop
 
         after_obj:
