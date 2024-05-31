@@ -9,13 +9,13 @@ scope Zoom {
     dw  0x00000000                                  // z offset
     dw  0x00000000                                  // unused
 
-    zoom_background:; dw 0x00000000
+    zoom_background_file:; dw 0x00000000
     zoom_background_object:; dw 0x00000000
 
-    // 80140EE4 + 600
-    scope was_just_hit: {
+    // 80140EE4 + 600 = 801414E4
+    scope final_knockback_was_set: {
         OS.patch_start(0xBBF24, 0x801414E4)
-        j       was_just_hit
+        j       final_knockback_was_set
         nop
         _return:
         OS.patch_end()
@@ -59,6 +59,116 @@ scope Zoom {
         nop
     }
 
+    // cmManager_MakeWallpaperCamera: function that creates the background room/camera
+    // 8010DB54 + BC = 8010DC10
+    scope create_zoom_camera: {
+        OS.patch_start(0x89410, 0x8010DC10)
+        j       create_zoom_camera
+        nop
+        _return:
+        OS.patch_end()
+
+        // load background effect
+        // background: 0042 0x03050 0x3FFFC - Intro Fighters Clash Object
+        Render.load_file(0x04B, Zoom.zoom_background_file)
+
+        // Reset zoom timer
+        // Needed to not carry slow-mo when training mode is reset
+        li      t0, zoom_timer     // t0 = zoom_timer address
+        sw      r0, 0x0000(t0)
+
+        // create camera/room for the background effect
+        addiu       sp,sp,-0x58
+        sw          ra,0x44(sp)
+        sw          s1,0x40(sp)
+        sw          s0,0x3c(sp)
+
+        li          v0,0x80017EC0
+        li          t6,0x3C
+        li          t8,0
+        li          t9,0x20
+        li          t7,1
+        li          t0,1
+        li          t1,1
+        li          t2,1
+
+        sw          t2,0x30(sp)
+        sw          t1,0x28(sp)
+        sw          t0,0x24(sp)
+        sw          t7,0x20(sp)
+        sw          t9,0x1c(sp)
+        sw          t8,0x18(sp)
+        sw          t6,0x14(sp)
+        sw          v0,0x10(sp)
+        sw          v0,0x4c(sp)
+        sw          r0,0x2c(sp)
+        sw          r0,0x34(sp)
+        li          a0,0x3EF
+        or          a1,r0,r0
+        li          a2,0x9
+        jal         0x8000B93C
+        lui         a3,0x8000
+        lui         s1,0x8013
+        addiu       s1,s1,0x14B0
+        lw          t3,0x20(s1)
+        lw          t4,0x24(s1)
+        lw          t5,0x28(s1)
+        lw          t6,0x2C(s1)
+        mtc1        t3,f4
+        mtc1        t4,f6
+        mtc1        t5,f8
+        mtc1        t6,f10
+        cvt.s.w     f4,f4
+        lw          s0,0x74(v0)
+        addiu       a0,s0,0x8
+        cvt.s.w     f6,f6
+        mfc1        a1,f4
+        cvt.s.w     f8,f8
+        mfc1        a2,f6
+        cvt.s.w     f16,f10
+        mfc1        a3,f8
+        jal         0x80007080
+        swc1        f16,0x10(sp)
+        lw          t8,0x28(s1)
+        lw          t9,0x20(s1)
+        lw          t0,0x2c(s1)
+        lw          t1,0x24(s1)
+        subu        t7,t8,t9
+        mtc1        t7,f18
+        subu        t2,t0,t1
+        mtc1        t2,f6
+        cvt.s.w     f4,f18
+        mtc1        r0,f0
+        lw          t3,0x80(s0)
+        lui         at,0x44FA
+        mtc1        at,f16
+        cvt.s.w     f8,f6
+        ori         t4,t3,0x0004
+        sw          t4,0x80(s0)
+        swc1        f0,0x50(s0)
+        swc1        f0,0x4c(s0)
+        swc1        f0,0x48(s0)
+        div.s       f10,f4,f8
+        swc1        f0,0x40(s0)
+        swc1        f0,0x3c(s0)
+        swc1        f16,0x44(s0)
+
+        swc1        f10,0x24(s0)
+
+        lw      ra,0x44(sp)
+        lw      s1,0x40(sp)
+        lw      s0,0x3c(sp)
+        addiu   sp,sp,0x58
+        // create camera end
+
+        _original:
+        lw      ra,0x3c(sp) // original line 1
+        lw      v0,0x44(sp) // original line 2
+
+        j       _return
+        nop
+    }
+
     // 8010CAE0 + 10
     scope camera_update: {
         OS.patch_start(0x882F0, 0x8010CAF0)
@@ -66,6 +176,13 @@ scope Zoom {
         nop
         _return:
         OS.patch_end()
+
+        li      t0, Global.match_info
+        lw      t0, 0x0000(t0)              // t0 = match info
+        lbu     t0, 0x0011(t0)              // t0 = 2 if paused, 1 if unpaused
+        lli     t1, 0x2
+        beq     t0, t1, _original               // if paused, skip and do not count zoom timer frames
+        nop
 
         li      t0, zoom_timer     // t0 = zoom_timer address
         lw      t1, 0x0000(t0)     // t1 = zoom timer
@@ -81,11 +198,23 @@ scope Zoom {
         nop
 
         became_zero:
-        OS.save_registers()
+        addiu   sp, sp, -0x0030             // allocate stack space
+        sw      ra, 0x0004(sp)              // save ra
+        sw      a0, 0x0008(sp)              // save a1
+        sw      a1, 0x001C(sp)              // save a1
+        sw      a2, 0x0020(sp)              // save a2
+        sw      s0, 0x0024(sp)              // save s0
+        sw      t6, 0x0028(sp)              // save t6
+
         // Reset camera mode
         // This function calls: cmManager_SetCameraStatus(gCameraStruct.status_default);
         jal 0x8010CF20
         nop
+
+        // gPlayerCommonInterface.is_ifmagnify_display = TRUE;
+        addiu   t0, r0, 0x0001                  // t0 = TRUE
+        lui     t1, 0x8013                      // t1 = ram location
+        sb      t0, 0x1580(t1)                  // save magnifying glass value
 
         // Enable stage display
         ori     a0, r0, 0x1
@@ -126,8 +255,13 @@ scope Zoom {
         sw      r0, 0x0(t6)
 
         after_destroy:
-
-        OS.restore_registers()
+        lw      ra, 0x0004(sp)              // restore ra
+        lw      a0, 0x0008(sp)              // restore a1
+        lw      a1, 0x001C(sp)              // restore a1
+        lw      a2, 0x0020(sp)              // restore a2
+        lw      s0, 0x0024(sp)              // restore s0
+        lw      t6, 0x0028(sp)              // restore t6
+        addiu   sp, sp, 0x0030             // allocate stack space
         
         _original:
         sw a0, 0x0018(sp) // original line 1
@@ -150,6 +284,27 @@ scope Zoom {
         li      t0, zoom_timer     // t0 = zoom_timer address
         lw      t1, 0x0000(t0)     // t1 = zoom timer
 
+        li      t8, Global.current_screen   // ~
+        lbu     t8, 0x0000(t8)              // t8 = current screen
+        addiu   t3, r0, 0x0016              // Vs screen ID
+        beq     t3, t8, battle_scene        // stage check if in vs
+        addiu   t3, r0, 0x0036              // Training screen ID
+        beq     t3, t8, battle_scene        // stage check if in vs
+        addiu   t3, r0, 0x0077              // Special 1p screen ID used for Allstar and Multiman
+        beq     t3, t8, battle_scene        // stage check if in vs
+        addiu   t3, r0, 0x0001              // 1p screen ID
+        bne     t3, t8, non_battle_scene    // if not in any of the battle screens, skip to standard
+        nop
+
+        b non_battle_scene
+        nop
+
+        non_battle_scene:
+        sw      r0, 0x0000(t0)     // set zoom timer to 0
+        b       _original          // ignore this patch
+        nop
+
+        battle_scene:
         bgt     t1, r0, _cancel_update_check
         nop
 
@@ -157,6 +312,8 @@ scope Zoom {
         nop
 
         _cancel_update_check:
+        // Every 16 frames we run the original update function once, effectively
+        // implementing a slow-mo effect similar to training mode's 1/4 speed
         ori         t3, r0, 0x000F  // % 16
 
         // Using t3 in the "and" working as a "mod" operation (division remainder)
@@ -164,24 +321,33 @@ scope Zoom {
         lw      t5, 0x0000(t5)           // t5 = global frame count
 
         and     t7, t5, t3
-        beqz    t7, _original
+        beqz    t7, _original // perform original update function on objects
         nop
 
         addiu sp, sp, 0x28 // deallocate what the original function did earlier
 
-        OS.save_registers()
+        addiu   sp, sp, -0x0030             // allocate stack space
+        sw      ra, 0x0004(sp)              // save ra
+        sw      a1, 0x001C(sp)              // save a1
+        sw      a2, 0x0020(sp)              // save a2
+        sw      s0, 0x0024(sp)              // save s0
+        sw      t6, 0x0028(sp)              // save t6
+        // The camera never gets frozen, update it
         lui a0, 0x8013
         lw  a0, 0x1460(a0) // get camera
 
         jal 0x8010CECC // update camera
         nop
 
+        // Load the background object
         li      t6, Zoom.zoom_background_object
         lw      a0, 0x0(t6)
 
-        beqz    a0, after_obj
+        // if the background object doesn't exist, skip
+        beqz    a0, after_background_obj
         nop
 
+        // if the background object exists, update it once every 2 frames
         ori     t3, r0, 0x0001  // % 1
 
         // Using t3 in the "and" working as a "mod" operation (division remainder)
@@ -189,15 +355,19 @@ scope Zoom {
         lw      t5, 0x0000(t5)           // t5 = global frame count
 
         and     t7, t5, t3
-        beqz    t7, after_obj
+        beqz    t7, after_background_obj
         nop
 
         jal     0x8000DF34
         nop
 
-        after_obj:
-
-        OS.restore_registers()
+        after_background_obj:
+        lw      ra, 0x0004(sp)              // restore ra
+        lw      a1, 0x001C(sp)              // restore a1
+        lw      a2, 0x0020(sp)              // restore a2
+        lw      s0, 0x0024(sp)              // restore s0
+        lw      t6, 0x0028(sp)              // restore t6
+        addiu   sp, sp, 0x0030             // allocate stack space
 
         jr ra
         nop
@@ -441,8 +611,10 @@ scope Zoom {
 
         addiu   sp,sp,0x70
 
-        // todo: call
         // gPlayerCommonInterface.is_ifmagnify_display = FALSE;
+        addiu   t0, r0, 0x0000                  // t0 = FALSE
+        lui     t1, 0x8013                      // t1 = ram location
+        sb      t0, 0x1580(t1)                  // save magnifying glass value
 
         lli     t0, 0x0028
         li      t1, zoom_timer     // t1 = zoom_timer address
@@ -471,215 +643,169 @@ scope Zoom {
         FGM.play(187)
         
         hide_stage_end:
-        //
 
-        // Render background
-        // background: 0042 0x03050 0x3FFFC - Intro Fighters Clash Object
-        Render.load_file(0x04B, Zoom.zoom_background)
+        // spawn gfx logic
+        create_gfx: {
+            // load background graphic into t6
+            li      t6, Zoom.zoom_background_file
+            lw      t6, 0x0(t6)
 
-        li      t6, Zoom.zoom_background
-        lw      t6, 0x0(t6)
+            addiu   sp,sp,-0x60
 
-        render:
-        create_camera:
-        // create camera
-        addiu       sp,sp,-0x58
-        sw          ra,0x44(sp)
-        sw          s1,0x40(sp)
-        sw          s0,0x3c(sp)
+            addiu   sp, sp, -0x0030             // allocate stack space
+            sw      ra, 0x0004(sp)              // save ra
+            sw      a1, 0x001C(sp)              // save a1
+            sw      a2, 0x0020(sp)              // save a2
+            sw      s0, 0x0024(sp)              // save s0
 
-        li          v0,0x80017EC0
-        li          t6,0x3C
-        li          t8,0
-        li          t9,0x20
-        li          t7,1
-        li          t0,1
-        li          t1,1
-        li          t2,1
+            delete_old_gfx: {
+                li      t6, Zoom.zoom_background_object
+                lw      a0, 0x0(t6)
+                beqz    a0, after_destroy
+                nop
 
-        sw          t2,0x30(sp)
-        sw          t1,0x28(sp)
-        sw          t0,0x24(sp)
-        sw          t7,0x20(sp)
-        sw          t9,0x1c(sp)
-        sw          t8,0x18(sp)
-        sw          t6,0x14(sp)
-        sw          v0,0x10(sp)
-        sw          v0,0x4c(sp)
-        sw          r0,0x2c(sp)
-        sw          r0,0x34(sp)
-        li          a0,0x3EF
-        or          a1,r0,r0
-        li          a2,0x9
-        jal         0x8000B93C
-        lui         a3,0x8000
-        lui         s1,0x8013
-        addiu       s1,s1,0x14B0
-        lw          t3,0x20(s1)
-        lw          t4,0x24(s1)
-        lw          t5,0x28(s1)
-        lw          t6,0x2C(s1)
-        mtc1        t3,f4
-        mtc1        t4,f6
-        mtc1        t5,f8
-        mtc1        t6,f10
-        cvt.s.w     f4,f4
-        lw          s0,0x74(v0)
-        addiu       a0,s0,0x8
-        cvt.s.w     f6,f6
-        mfc1        a1,f4
-        cvt.s.w     f8,f8
-        mfc1        a2,f6
-        cvt.s.w     f16,f10
-        mfc1        a3,f8
-        jal         0x80007080
-        swc1        f16,0x10(sp)
-        lw          t8,0x28(s1)
-        lw          t9,0x20(s1)
-        lw          t0,0x2c(s1)
-        lw          t1,0x24(s1)
-        subu        t7,t8,t9
-        mtc1        t7,f18
-        subu        t2,t0,t1
-        mtc1        t2,f6
-        cvt.s.w     f4,f18
-        mtc1        r0,f0
-        lw          t3,0x80(s0)
-        lui         at,0x44FA
-        mtc1        at,f16
-        cvt.s.w     f8,f6
-        ori         t4,t3,0x0004
-        sw          t4,0x80(s0)
-        swc1        f0,0x50(s0)
-        swc1        f0,0x4c(s0)
-        swc1        f0,0x48(s0)
-        div.s       f10,f4,f8
-        swc1        f0,0x40(s0)
-        swc1        f0,0x3c(s0)
-        swc1        f16,0x44(s0)
+                // destroy ko background
+                addiu   sp, sp, -0x0020     // allocate stack space
+                sw      ra, 0x0004(sp)      // save registers
+                sw      t0, 0x000C(sp)      // ~
+                sw      t5, 0x0010(sp)      // ~
+                sw      t6, 0x0014(sp)      // ~
+                sw      t8, 0x0018(sp)      // ~
+                sw      v1, 0x001C(sp)      // ~
+                jal     Render.DESTROY_OBJECT_             // destroy the object
+                nop
+                lw      ra, 0x0004(sp)      // restore registers
+                lw      t0, 0x000C(sp)      // ~
+                lw      t5, 0x0010(sp)      // ~
+                lw      t6, 0x0014(sp)      // ~
+                lw      t8, 0x0018(sp)      // ~
+                lw      v1, 0x001C(sp)      // ~
+                addiu   sp, sp, 0x0020      // deallocate stack space
+                //
 
-        swc1        f10,0x24(s0)
+                sw      r0, 0x0(t6)
+                after_destroy:
+            }
+            
+            addiu   a0,r0,0x03F0
+            or      a1,r0,r0
+            addiu   a2,r0,0x000D
+            jal     Render.CREATE_OBJECT_ // 0x80009968
+            lui     a3,0x8000
 
-        lw      ra,0x44(sp)
-        lw      s1,0x40(sp)
-        lw      s0,0x3c(sp)
-        addiu   sp,sp,0x58
-        // create camera end
+            li      t6, Zoom.zoom_background_object
+            sw      v0, 0x0(t6) // save background object
 
-        create_gfx:
-        addiu   sp,sp,-0x28
+            // lui     t6,(UPPER + 0x1)
+            // lw      t6,LOWER(t6) // original
+            li      t6, Zoom.zoom_background_file
+            lw      t6, 0x0(t6)
 
-        addiu   a0,r0,0x03F0
-        or      a1,r0,r0
-        addiu   a2,r0,0x000D
-        jal     Render.CREATE_OBJECT_ // 0x80009968
-        lui     a3,0x8000
+            lui     t7,0x0000
+            addiu   t7,t7,0x35F8
+            or      s0,v0,r0
+            or      a0,v0,r0
+            or      a2,r0,r0
+            jal     0x8000F120
+            addu    a1,t6,t7
+            lui     a1,0x8001
+            addiu   t8,r0,-1
+            sw      t8,0x10(sp)
+            addiu   a1,a1,0x4038 // RAM address of ASM for creating the display list
+            or      a0,s0,r0 // object address (v0 from 0x80009968)
+            addiu   a2,r0,0x5 // room
+            jal     Render.DISPLAY_INIT_ // 0x80009DF4
+            lui     a3,0x8000 // order
+            
+            // lui     at,0x8013
+            // lwc1    f0,0x2700(at) // original
+            li      at, 0x3FCCCCCD // scale
+            mtc1    at, f0
 
-        li      t6, Zoom.zoom_background_object
-        sw      v0, 0x0(t6) // save background object
+            lui     at,0x4470
+            mtc1    at,f4
+            lui     at,0x43B4
+            mtc1    at,f6
+            
+            lw      t1,0x74(s0) // load location vector
 
-        // lui     t6,(UPPER + 0x1)
-        // lw      t6,LOWER(t6) // original
-        li      t6, Zoom.zoom_background
-        lw      t6, 0x0(t6)
+            lui     at,0x0
+            mtc1    at,f8
+            swc1    f8,0x1C(t1) // location x
 
-        lui     t7,0x0000
-        addiu   t7,t7,0x35F8
-        or      s0,v0,r0
-        or      a0,v0,r0
-        or      a2,r0,r0
-        jal     0x8000F120
-        addu    a1,t6,t7
-        lui     a1,0x8001
-        addiu   t8,r0,-1
-        sw      t8,0x10(sp)
-        addiu   a1,a1,0x4038 // RAM address of ASM for creating the display list
-        or      a0,s0,r0 // object address (v0 from 0x80009968)
-        addiu   a2,r0,0x5 // room
-        jal     Render.DISPLAY_INIT_ // 0x80009DF4
-        lui     a3,0x8000 // order
-        
-        // lui     at,0x8013
-        // lwc1    f0,0x2700(at) // original
-        li      at, 0x3FC00000 // scale
-        mtc1    at, f0
+            lui     at,0x0
+            mtc1    at,f8
+            swc1    f8,0x20(t1) // location y
 
-        lui     at,0x4470
-        mtc1    at,f4
-        lui     at,0x43B4
-        mtc1    at,f6
-        
-        lw      t1,0x74(s0) // load location vector
+            lui     at,0x0
+            mtc1    at,f8
+            swc1    f8,0x24(t1) // location z
 
-        lui     at,0x0
-        mtc1    at,f8
-        swc1    f8,0x1C(t1) // location x
+            // lui     t6,(UPPER + 0x1) // original
+            li      t6, Zoom.zoom_background_file
+            lw      t6, 0x0(t6)
+            srl     t6, t6, 16
+            sll     t6, t6, 16
 
-        lui     at,0x0
-        mtc1    at,f8
-        swc1    f8,0x20(t1) // location y
-
-        lui     at,0x0
-        mtc1    at,f8
-        swc1    f8,0x24(t1) // location z
-
-        // lui     t6,(UPPER + 0x1) // original
-        li      t6, Zoom.zoom_background
-        lw      t6, 0x0(t6)
-        srl     t6, t6, 16
-        sll     t6, t6, 16
-
-        lui     at,0x8013
-        
-        lw      t2,0x74(s0)
-        lwc1    f10,0x2704(at)
+            lui     at,0x8013
+            
+            lw      t2,0x74(s0)
+            lwc1    f10,0x2704(at)
 
 
-        // addiu   t7,t7,LOWER // original
-        lui     t7,0x0000
-        addiu   t7,0x2AA8
-        // li      t7, Zoom.zoom_background
-        // lw      t7, 0x0(t7)
-        // andi    t7, t7, 0xFFFF
+            // addiu   t7,t7,LOWER // original
+            lui     t7,0x0000
+            addiu   t7,0x2AA8
+            // li      t7, Zoom.zoom_background_file
+            // lw      t7, 0x0(t7)
+            // andi    t7, t7, 0xFFFF
 
-        swc1    f10,0x34(t2)
-        lw      t3,0x74(s0)
-        or      a0,s0,r0
-        swc1    f0,0x40(t3) // scale x
-        lw      t4,0x74(s0)
-        swc1    f0,0x44(t4) // scale y
-        lw      t5,0x74(s0)
-        swc1    f0,0x48(t5) // scale z
+            swc1    f10,0x34(t2)
+            lw      t3,0x74(s0)
+            or      a0,s0,r0
+            swc1    f0,0x40(t3) // scale x
+            lw      t4,0x74(s0)
+            swc1    f0,0x44(t4) // scale y
+            lw      t5,0x74(s0)
+            swc1    f0,0x48(t5) // scale z
 
-        // lw      t6,LOWER(t6) // original
-        li      t6, Zoom.zoom_background
-        lw      t6, 0x0(t6)
+            // lw      t6,LOWER(t6) // original
+            li      t6, Zoom.zoom_background_file
+            lw      t6, 0x0(t6)
 
-        jal     0x8000F8F4
-        addu    a1,t6,t7
+            jal     0x8000F8F4
+            addu    a1,t6,t7
 
-        // lui     t8,(UPPER + 0x1)
-        // lw      t8,LOWER(t8) // original
-        li      t8, Zoom.zoom_background
-        lw      t8, 0x0(t8)
+            // lui     t8,(UPPER + 0x1)
+            // lw      t8,LOWER(t8) // original
+            li      t8, Zoom.zoom_background_file
+            lw      t8, 0x0(t8)
 
-        lui     t9,0x0000
-        addiu   t9,t9,0x3700
-        or      a0,s0,r0
-        addiu   a2,r0,0
-        jal     0x8000BE28
-        addu    a1,t8,t9
-        li      a1,0x8000DF34 // render routine
-        or      a0,s0,r0 // object
-        addiu   a2,r0,1 // room
-        jal     Render.REGISTER_OBJECT_ROUTINE_ // 0x80008188
-        addiu   a3,r0,1 // group order (0-5)
+            lui     t9,0x0000
+            addiu   t9,t9,0x3700
+            or      a0,s0,r0
+            addiu   a2,r0,0
+            jal     0x8000BE28
+            addu    a1,t8,t9
+            li      a1,0x8000DF34 // render routine
+            or      a0,s0,r0 // object
+            addiu   a2,r0,1 // room
+            addiu   a3,r0,1 // group order (0-5)
+            jal     Render.REGISTER_OBJECT_ROUTINE_ // 0x80008188
+            addiu   sp, sp, -0x0030
+            addiu   sp, sp, 0x0030
 
-        jal     0x8000DF34
-        or      a0,s0,r0 // object
+            jal     0x8000DF34
+            or      a0,s0,r0 // object
 
-        addiu   sp,sp,0x28
-        // render end
+            lw      a2, 0x0020(sp)              // restore a2
+            lw      a1, 0x001C(sp)              // restore a1
+            lw      s0, 0x0024(sp)              // restore s0
+            lw      ra, 0x0004(sp)              // restore ra
+            addiu   sp, sp, 0x0030              // deallocate stack space
+
+            addiu   sp,sp,0x60
+        }
 
         _end:
         OS.routine_end(0x80)
